@@ -1,20 +1,24 @@
 export async function handler(event) {
+
   try {
     const data = JSON.parse(event.body || "{}");
 
-    const message = data.message;
+    console.log("📦 PRINT JOB RECEIVED:", data.message);
 
-    console.log("PRINT REQUEST RECEIVED:");
-    console.log(message);
-
-    // Here we just accept request (real printing happens in print service)
+    // FORWARD TO LOCAL PRINT AGENT
+    await fetch("http://localhost:3001/print", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: data.message
+      })
+    });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        message: "Print job queued"
-      })
+      body: JSON.stringify({ success: true })
     };
 
   } catch (err) {
