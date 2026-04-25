@@ -242,11 +242,16 @@ function goHome(){
 }
 
 // LOGOUT
-function logout(){
+async function logout(){
 
-  sendLog(`🚪 LOGOUT\n👤 ${user}\n⏰ ${getTime()}`);
+  let user = sessionStorage.getItem("wms_user") || "UNKNOWN";
+
+  try {
+    await track("LOGOUT");
+  } catch(e){}
 
   sessionStorage.removeItem("wms_user");
+
   window.location.replace("login.html");
 }
 
