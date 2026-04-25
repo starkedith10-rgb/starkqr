@@ -186,6 +186,18 @@ document.addEventListener("DOMContentLoaded", function() {
   generateStickersFromData([{PARTCODE:'', Description:'', SerialNo:'', Port:''}]);
 });
 </script>
-
+<script>
+function sendPrint(data) {
+  fetch("/.netlify/functions/print", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: data
+    })
+  });
+}
+</script>
 </body>
 </html>
