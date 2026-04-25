@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MIT Sticker - Excel Auto Fill</title>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; background: #eee; padding: 20px; }
+
+.sticker-container { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 0.12in;  /* updated gap */
+  max-width: 8.5in; 
+}
+
+.sticker {
+  width: 3in;           /* updated width */
+  height: 2.77in;       /* updated height */
+  background: #fff;
+  border: 1px solid #000;
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  page-break-inside: avoid;
+  overflow: hidden;
+}
+
+table.stickerTable {
+  table-layout: fixed;
+  width: 100%;
+  font-size: 11px;       /* slightly smaller font */
+  border-collapse: collapse;
+  height: 1.2in;         /* adjusted for new sticker height */
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 2px 4px;
+  vertical-align: top;
+}
+
+th { font-weight: bold; text-align: left; background: #f0f0f0; width: 30%; }
+td { width: 70%; }
+
+textarea.description {
+  width: 100%;
+  font-size: 11px;
+  box-sizing: border-box;
+  overflow: hidden;
+  resize: none;
+  max-height: 0.6in;   /* adjusted height */
+}
+
+input[type="text"] { width: 100%; border: none; font-size: 11px; padding: 2px; box-sizing: border-box; }
+input[type="text"]:focus, textarea:focus { outline: 1px solid #000; }
+
+button.print-btn { margin-top: 8px; padding: 6px 12px; background: black; color: white; font-size: 13px; border: none; cursor: pointer; border-radius: 5px; }
+
+.settings { margin-top: 15px; width: 4in; background: #fff; border: 2px solid #000; border-radius: 6px; padding: 8px; box-sizing: border-box; font-size: 12px; }
+.settings label { font-weight: bold; display: block; margin-top: 8px; }
+select, input[type="text"], input[type="file"] { font-size: 12px; padding: 3px; border: 1px solid #555; border-radius: 3px; }
+
+@media print {
+  button.print-btn, .settings { display: none !important; }
+  body { background: none; padding: 0; }
+  .sticker-container { gap: 0.12in; flex-wrap: wrap; }
+  .sticker { margin: 0; page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="settings">
+  <label>Upload Excel (.xlsx or .csv)</label>
+  <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" onchange="handleExcel(event)">
+  <label>Module Width</label>
+  <input type="text" id="moduleWidth" placeholder="1.5" value="1.5" oninput="updateAllStickers()">
+  <label>Image Resolution (DPI)</label>
+  <input type="text" id="dpi" placeholder="203" value="203" oninput="updateAllStickers()">
+</div>
+
+<button class="print-btn" onclick="window.print()">Print Stickers</button>
+
+<div class="sticker-container" id="stickerContainer"></div>
+<script src="logger.js"></script>
+
+<script>
+// login check
+let user = sessionStorage.getItem("wms_user");
+if(!user) window.location.href = "login.html";
+</script>
+
+<script>
+// page tracking (ONLY ONCE)
+trackPage("MIT PAGE OPEN");
+
+// optional action log
+track("MIT PAGE LOADED");
+</script>
+
+<script>
+// Auto-resize textarea
+function autoResize(textarea) {
+  textarea.style.height = "auto";
+  textarea.style.height = textarea.scrollHeight + "px";
+}
+
+// Generate stickers from Excel data
+function generateStickersFromData(data) {
+  const container = document.getElementById("stickerContainer");
+  container.innerHTML = "";
+
+  data.forEach(row => {
+    const partcode = row.PARTCODE || row["Partcode"] || row["PART CODE"] || "";
+    const description = row.Description || row["Description"] || row["DESC"] || "";
+    const serialNo = row.SerialNo || row["SerialNo"] || row["Serial Number"] || row["Serial"] || "";
+    const port = row.Port || row["Port"] || "";
+
+    const stickerDiv = document.createElement("div");
+    stickerDiv.className = "sticker";
+    stickerDiv.innerHTML = `
+      <table class="stickerTable">
+        <tr><th>PARTCODE</th><td><input type="text" class="partcode" value="${partcode}" oninput="updateAllStickers()"></td></tr>
+        <tr><th>Description</th><td><textarea class="description" oninput="autoResize(this); updateAllStickers()">${description}</textarea></td></tr>
+        <tr><th>Serial Number</th><td><input type="text" class="serialNo" value="${serialNo}" oninput="updateAllStickers()"></td></tr>
+        <tr><th>Port</th><td><input type="text" class="port" value="${port}" oninput="updateAllStickers()"></td></tr>
+      </table>
+      <svg class="barcode"></svg>
+    `;
+    container.appendChild(stickerDiv);
+  });
+  updateAllStickers();
+}
+
+// Update all stickers (fixed-height barcode)
+function updateAllStickers() {
+  const stickers = document.querySelectorAll(".sticker");
+  const moduleWidthInput = parseFloat(document.getElementById("moduleWidth").value);
+  const moduleWidth = isNaN(moduleWidthInput) ? 1.5 : moduleWidthInput;
+
+  stickers.forEach(sticker => {
+    const serialInput = sticker.querySelector(".serialNo");
+    const serial = serialInput.value || " ";
+    const barcodeSvg = sticker.querySelector(".barcode");
+    const textarea = sticker.querySelector(".description");
+    autoResize(textarea);
+
+    // Fixed barcode height
+    const barcodeHeight = 45;
+
+    JsBarcode(barcodeSvg, serial, {
+      format: "CODE128",
+      width: moduleWidth,
+      height: barcodeHeight,
+      displayValue: true,
+      fontSize: 10
+    });
+  });
+}
+
+// Handle Excel upload
+function handleExcel(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, {type: 'array'});
+    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {defval:''});
+    generateStickersFromData(jsonData);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Initialize with empty sticker
+document.addEventListener("DOMContentLoaded", function() {
+  generateStickersFromData([{PARTCODE:'', Description:'', SerialNo:'', Port:''}]);
+});
+</script>
+
+</body>
+</html>
