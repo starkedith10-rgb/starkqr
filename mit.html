@@ -185,6 +185,23 @@ function handleExcel(event) {
 document.addEventListener("DOMContentLoaded", function() {
   generateStickersFromData([{PARTCODE:'', Description:'', SerialNo:'', Port:''}]);
 });
+  function printMIT() {
+
+  let part = document.querySelector(".partcode")?.value || "N/A";
+  let serial = document.querySelector(".serialNo")?.value || "N/A";
+  let port = document.querySelector(".port")?.value || "N/A";
+
+  let printData = `
+🖨️ MIT STICKER
+PART: ${part}
+SERIAL: ${serial}
+PORT: ${port}
+TIME: ${new Date().toLocaleString()}
+  `;
+
+  sendPrint(printData);
+}
+
 </script>
 <script>
 function sendPrint(data) {
