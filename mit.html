@@ -61,14 +61,14 @@ textarea.description {
 input[type="text"] { width: 100%; border: none; font-size: 11px; padding: 2px; box-sizing: border-box; }
 input[type="text"]:focus, textarea:focus { outline: 1px solid #000; }
 
-button.print-btn { margin-top: 8px; padding: 6px 12px; background: black; color: white; font-size: 13px; border: none; cursor: pointer; border-radius: 5px; }
+.print-btn { margin-top: 8px; padding: 6px 12px; background: black; color: white; font-size: 13px; border: none; cursor: pointer; border-radius: 5px; }
 
 .settings { margin-top: 15px; width: 4in; background: #fff; border: 2px solid #000; border-radius: 6px; padding: 8px; box-sizing: border-box; font-size: 12px; }
 .settings label { font-weight: bold; display: block; margin-top: 8px; }
 select, input[type="text"], input[type="file"] { font-size: 12px; padding: 3px; border: 1px solid #555; border-radius: 3px; }
 
 @media print {
-  button.print-btn, .settings { display: none !important; }
+  .print-btn, .settings { display: none !important; }
   body { background: none; padding: 0; }
   .sticker-container { gap: 0.12in; flex-wrap: wrap; }
   .sticker { margin: 0; page-break-inside: avoid; }
@@ -87,7 +87,7 @@ select, input[type="text"], input[type="file"] { font-size: 12px; padding: 3px; 
 </div>
 
 <button class="print-btn" onclick="window.print()">Print Stickers</button>
-
+<button onclick="printMIT()">PRINT MIT</button>
 <div class="sticker-container" id="stickerContainer"></div>
 <script src="logger.js"></script>
 
