@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JARVIS QR Generator - 3D Text</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Orbitron', sans-serif;
+      background: #cce6ff;
+      color: #003366;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    body { display: flex; flex-direction: column; }
+    .container { display: flex; flex: 1; width: 100%; height: 100%; }
+
+    /* Left panel */
+    .left-panel {
+      background: rgba(0, 51, 102, 0.85);
+      border-right: 2px solid #66b2ff;
+      border-radius: 0 15px 15px 0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
+      width: 280px;
+      box-shadow: inset 0 0 20px rgba(102, 178, 255, 0.2);
+    }
+
+    /* 3D Heading */
+    .left-panel h2 {
+      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #66b2ff;
+      text-shadow: 1px 1px #004080, 2px 2px #003366;
+      text-align: center;
+    }
+
+    input[type="file"], .qr-options select, .qr-options input, .qr-options button {
+      font-size: 13px;
+      padding: 5px 8px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border: 1px solid #66b2ff;
+      background: rgba(0, 102, 204, 0.2);
+      color: #e0f0ff;
+    }
+
+    .qr-options label { display: block; margin: 4px 0 2px; font-weight: bold; color: #99ccff; }
+
+    /* 3D Quote */
+    .quote {
+      margin-top: auto;
+      font-size: 12px;
+      color: #99ccff;
+      font-style: italic;
+      text-align: center;
+      padding: 8px;
+      border-top: 1px solid #66b2ff;
+      text-shadow: 1px 1px #004080, 2px 2px #003366;
+    }
+
+    /* Right panel */
+    .right-panel {
+      flex: 1;
+      text-align: center;
+      background: #e0f0ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px;
+    }
+
+    #qrCanvas {
+      border: 2px solid #0066cc;
+      background: rgba(0, 51, 102, 0.2);
+      margin-bottom: 10px;
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .navigation button, .download-btn {
+      background: #66b2ff;
+      color: #003366;
+      border: 1px solid #004080;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 2px;
+    }
+
+    .navigation button:hover, .download-btn:hover {
+      background: #003366;
+      color: #66b2ff;
+    }
+
+    #counter, #info { font-size: 12px; margin: 2px 0; font-weight: bold; color: #99ccff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <h2>Stark QR</h2>
+      <input type="file" id="fileInput" accept=".xlsx,.xls">
+
+      <div id="counter">QR 0 / 0</div>
+      <div id="info">Rows in this QR: 0</div>
+
+      <div class="qr-options">
+        <label for="moduleWidthUnit">Module Width Unit</label>
+        <select id="moduleWidthUnit">
+          <option value="default" selected>Fit (Default)</option>
+          <option value="px">Pixels</option>
+          <option value="mm">Millimeters</option>
+          <option value="in">Inches</option>
+        </select>
+
+        <label for="moduleWidth">Module Width</label>
+        <input type="number" id="moduleWidth" value="4" min="1" max="20">
+
+        <label for="dpi">Image Resolution (DPI)</label>
+        <input type="number" id="dpi" value="96" min="72" max="300">
+
+        <label for="imageFormat">Image Format</label>
+        <select id="imageFormat">
+          <option value="png" selected>PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="webp">WEBP</option>
+        </select>
+
+        <button id="refreshQRBtn">Refresh QR</button>
+      </div>
+
+      <div class="quote">
+        "No amount of money ever bought a single second of time." – Tony Stark
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <canvas id="qrCanvas"></canvas>
+      <div class="navigation">
+        <button id="prevBtn">← Previous</button>
+        <button id="nextBtn">Next →</button>
+        <button id="refreshBtn">Refresh / Upload</button>
+        <button id="downloadBtn" class="download-btn">Download QR</button>
+      </div>
+    </div>
+  </div>
+
+<script src="logger.js"></script>
+
+<script>
+track("SERIAL PAGE");
+</script>
+
+<script>
+let user = sessionStorage.getItem("wms_user");
+if(!user) window.location.href = "login.html";
+
+sendLog(`📦 SERIAL PAGE\n👤 ${user}\n⏰ ${getTime()}`);
+</script>
+<script>
+let qrBatches=[], batchRowCounts=[], currentIndex=0;
+const MAX_QR_LENGTH=2200;
+
+const fileInput=document.getElementById('fileInput');
+const qrCanvas=document.getElementById('qrCanvas');
+const counter=document.getElementById('counter');
+const info=document.getElementById('info');
+const prevBtn=document.getElementById('prevBtn');
+const nextBtn=document.getElementById('nextBtn');
+const downloadBtn=document.getElementById('downloadBtn');
+const refreshBtn=document.getElementById('refreshBtn');
+const moduleWidthInput=document.getElementById('moduleWidth');
+const dpiInput=document.getElementById('dpi');
+const imageFormatSelect=document.getElementById('imageFormat');
+const refreshQRBtn=document.getElementById('refreshQRBtn');
+
+fileInput.addEventListener('change', handleFile);
+prevBtn.addEventListener('click', prevQR);
+nextBtn.addEventListener('click', nextQR);
+downloadBtn.addEventListener('click', downloadQR);
+refreshBtn.addEventListener('click', refreshApp);
+refreshQRBtn.addEventListener('click',()=>{ if(qrBatches.length>0) generateQR(); });
+window.addEventListener('resize',()=>{ if(qrBatches.length>0) generateQR(); });
+
+function handleFile(e){
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const data=new Uint8Array(e.target.result);
+    const workbook=XLSX.read(data,{type:'array'});
+    const sheet=workbook.Sheets[workbook.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(sheet);
+    const payloadRows=rows.map(r=>buildRow(r));
+    const result=buildBatches(payloadRows);
+    qrBatches=result.batches; batchRowCounts=result.counts; currentIndex=0;
+    qrBatches.length>0 ? generateQR() : clearQR();
+  };
+  reader.readAsArrayBuffer(e.target.files[0]);
+}
+
+function buildRow(r){
+  return "\x01\x17"+"1\t"+
+    (r["ORDER NUMBER"]||"")+"\t"+
+    (r["LPN"]||"")+"\t"+
+    "\f"+(r["LOCK CODE"]||"")+"\t"+
+    (r["ITEM CODE"]||"")+"\t"+
+    (r["QTY"]||"")+"\t"+
+    (r["LOT"]||"")+"\t"+
+    "\t\x01"+(r["SERIAL NUMBER"]||"")+"\t"+"\x05";
+}
+
+function buildBatches(rows){
+  let batches=[], counts=[], current="", rowCount=0;
+  rows.forEach(r=>{
+    const candidate=current?current+r:r;
+    if(candidate.length>MAX_QR_LENGTH){ batches.push(current); counts.push(rowCount); current=r; rowCount=1; }
+    else { current=candidate; rowCount++; }
+  });
+  if(current){ batches.push(current); counts.push(rowCount); }
+  return {batches, counts};
+}
+
+function generateQR(){
+  if(qrBatches.length===0) return;
+  const rightPanel=document.querySelector('.right-panel');
+  const navHeight=document.querySelector('.navigation').offsetHeight;
+  const availableHeight=rightPanel.clientHeight-navHeight-20;
+  const availableWidth=rightPanel.clientWidth-20;
+  const size=Math.min(availableHeight,availableWidth);
+  const moduleWidth=parseInt(moduleWidthInput.value)||4;
+  const dpi=parseInt(dpiInput.value)||96;
+  const scale=dpi/96;
+
+  qrCanvas.width=size*scale; qrCanvas.height=size*scale;
+  const ctx=qrCanvas.getContext('2d'); ctx.setTransform(scale,0,0,scale,0,0);
+  ctx.clearRect(0,0,size,size);
+
+  QRCode.toCanvas(qrCanvas,qrBatches[currentIndex],{errorCorrectionLevel:'L',width:size,margin:moduleWidth},err=>{if(err) console.error(err);});
+
+  counter.textContent=`QR ${currentIndex+1} / ${qrBatches.length}`;
+  info.textContent=`Rows in this QR: ${batchRowCounts[currentIndex]}`;
+}
+
+function prevQR(){ if(currentIndex>0){ currentIndex--; generateQR(); } }
+function nextQR(){ if(currentIndex<qrBatches.length-1){ currentIndex++; generateQR(); } }
+function clearQR(){ const ctx=qrCanvas.getContext('2d'); ctx.clearRect(0,0,qrCanvas.width,qrCanvas.height); counter.textContent="QR 0 / 0"; info.textContent="Rows in this QR: 0"; }
+
+function downloadQR(){
+  if(qrBatches.length===0) return;
+  const format=imageFormatSelect.value;
+  const dpi=parseInt(dpiInput.value)||96;
+  const tempCanvas=document.createElement('canvas');
+  tempCanvas.width=qrCanvas.width; tempCanvas.height=qrCanvas.height;
+  const ctx=tempCanvas.getContext('2d'); const scale=dpi/96;
+  tempCanvas.width*=scale; tempCanvas.height*=scale; ctx.scale(scale,scale);
+  ctx.drawImage(qrCanvas,0,0);
+  const link=document.createElement('a'); link.download=`qr_${currentIndex+1}.${format}`;
+  link.href=tempCanvas.toDataURL(`image/${format}`); link.click();
+}
+
+function refreshApp(){ qrBatches=[]; batchRowCounts=[]; currentIndex=0; clearQR(); fileInput.value=""; fileInput.focus(); }
+</script>
+</body>
+</html>

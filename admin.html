@@ -1,0 +1,19 @@
+<h2>Live Activity</h2>
+<div id="logs"></div>
+
+<script>
+async function loadLogs(){
+
+  const res = await fetch("/logs.json");
+  const data = await res.json();
+
+  document.getElementById("logs").innerHTML =
+    data.reverse().map(l =>
+      `<p>${l.time} - ${l.user} - ${l.event}</p>`
+    ).join("");
+
+}
+
+setInterval(loadLogs, 3000);
+loadLogs();
+</script>

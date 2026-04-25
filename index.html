@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>STARK QR</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- QR LIBRARY -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial;
+    }
+
+    body {
+      background: #f3f6fa;
+    }
+
+    /* HEADER */
+    .topbar {
+      background: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .home-btn {
+      background: #2d63d1;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      color: #2d63d1;
+    }
+
+    #headerQR {
+      width: 40px;
+      height: 40px;
+    }
+
+    .logout-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 230px;
+      height: 100vh;
+      background: #1f2a3a;
+      color: white;
+      position: fixed;
+      top: 10;
+      left: 0;
+      padding-top: 20px;
+    }
+
+    .menu li {
+      padding: 14px 18px;
+      cursor: pointer;
+      display: flex;
+      gap: 10px;
+      color: #cfd6e4;
+    }
+
+    .menu li:hover {
+      background: #2d63d1;
+      color: white;
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: 230px;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: white;
+      width: 200px;
+      height: 120px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .card i {
+      font-size: 28px;
+      color: #2d63d1;
+      margin-bottom: 10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<!-- 🔥 HEADER -->
+<div class="topbar">
+
+  <div class="left">
+    <button class="home-btn" onclick="goHome()">
+      <i class="fa fa-home"></i> Home
+    </button>
+
+    <div>Stark QR</div>
+  </div>
+
+  <div class="right">
+    <div id="userBox"></div>
+    <div id="headerQR"></div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <ul class="menu">
+
+    <li onclick="downloadExcel('accept.xlsx')">
+      <i class="fa fa-file-excel"></i> Accept
+    </li>
+
+    <li onclick="downloadExcel('outbound.xlsx')">
+      <i class="fa fa-file-excel"></i> Outbound
+    </li>
+
+    <li onclick="downloadExcel('serial.xlsx')">
+      <i class="fa fa-file-excel"></i> Serial
+    </li>
+
+    <li onclick="downloadExcel('nonserial.xlsx')">
+      <i class="fa fa-file-excel"></i> Non-Serial
+    </li>
+
+  </ul>
+</div>
+
+<!-- CONTENT -->
+<div class="main">
+  <div class="content">
+
+    <div class="cards">
+
+      <div class="card" onclick="go('accept.html')">
+        <i class="fa fa-check-circle"></i>
+        <div>Accept</div>
+      </div>
+
+      <div class="card" onclick="go('outbound.html')">
+        <i class="fa fa-truck"></i>
+        <div>Outbound</div>
+      </div>
+
+      <div class="card" onclick="go('serial.html')">
+        <i class="fa fa-box"></i>
+        <div>Serial</div>
+      </div>
+
+      <div class="card" onclick="go('nonserial.html')">
+        <i class="fa fa-cubes"></i>
+        <div>Non-Serial</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="logger.js"></script>
+
+<script>
+track("DASHBOARD OPEN");
+</script>
+
+<script>
+
+// CHECK LOGIN
+let user = sessionStorage.getItem("wms_user");
+
+if(!user){
+  window.location.href = "login.html";
+}
+
+// SHOW USER
+document.getElementById("userBox").innerText = "👤 " + user;
+
+// LOG DASHBOARD
+sendLog(`📂 DASHBOARD\n👤 ${user}\n⏰ ${getTime()}`);
+
+// QR
+new QRCode(document.getElementById("headerQR"), {
+  text: "OWNED BY SHARATH",
+  width: 40,
+  height: 40
+});
+
+// NAV
+function go(page){
+  window.location.href = page;
+}
+
+function goHome(){
+  window.location.href = "index.html";
+}
+
+// LOGOUT
+function logout(){
+
+  sendLog(`🚪 LOGOUT\n👤 ${user}\n⏰ ${getTime()}`);
+
+  sessionStorage.removeItem("wms_user");
+  window.location.replace("login.html");
+}
+
+// DOWNLOAD
+function downloadExcel(file){
+  let a = document.createElement("a");
+  a.href = "templates/" + file;
+  a.download = file;
+  a.click();
+}
+
+</script>
+
+</body>
+</html>

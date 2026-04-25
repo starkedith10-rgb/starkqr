@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WMS Login</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #f3f6fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      background: #2d63d1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>WMS LOGIN</h2>
+  <input type="text" id="username" placeholder="Enter Username">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- LOGGER -->
+<script src="logger.js"></script>
+
+<script>
+function login(){
+
+  let user = document.getElementById("username").value;
+
+  if(user.trim() === ""){
+    alert("Enter username");
+    return;
+  }
+
+  sessionStorage.setItem("wms_user", user);
+
+  track("LOGIN");
+
+  // REDIRECT FAST
+  window.location.href = "index.html";
+
+  // LOG IN BACKGROUND
+  sendLog(`🔐 LOGIN\n👤 ${user}\n⏰ ${getTime()}`);
+}
+</script>
+
+</body>
+</html>
