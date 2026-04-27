@@ -191,15 +191,21 @@ document.addEventListener("DOMContentLoaded", function() {
   let serial = document.querySelector(".serialNo")?.value || "N/A";
   let port = document.querySelector(".port")?.value || "N/A";
 
-  let printData = `
-🖨️ MIT STICKER
-PART: ${part}
-SERIAL: ${serial}
-PORT: ${port}
-TIME: ${new Date().toLocaleString()}
-  `;
+  let tspl = `
+SIZE 100 mm, 50 mm
+GAP 2 mm, 0 mm
+CLS
 
-  sendPrint(printData);
+TEXT 30,30,"3",0,1,1,"PART: ${part}"
+TEXT 30,70,"3",0,1,1,"SERIAL: ${serial}"
+TEXT 30,110,"3",0,1,1,"PORT: ${port}"
+
+BARCODE 30,150,"128",80,1,0,2,2,"${serial}"
+
+PRINT 1
+`;
+
+  sendPrint(tspl);
 }
 
 </script>
