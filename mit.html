@@ -211,7 +211,7 @@ PRINT 1
 </script>
 <script>
 function sendPrint(data) {
-  fetch("/.netlify/functions/print", {
+  fetch("http://localhost:3001/print", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -220,7 +220,6 @@ function sendPrint(data) {
       message: data
     })
   });
-}
-</script>
+}</script>
 </body>
 </html>
