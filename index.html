@@ -25,7 +25,6 @@
     }
 
     /* HEADER */
-
     .topbar{
       height:60px;
       background:white;
@@ -70,7 +69,6 @@
     }
 
     /* SIDEBAR */
-
     .sidebar{
       width:220px;
       height:calc(100vh - 60px);
@@ -101,14 +99,12 @@
     }
 
     /* MAIN */
-
     .main{
       margin-left:220px;
       padding:20px;
     }
 
     /* CARDS */
-
     .cards{
       display:flex;
       gap:20px;
@@ -145,10 +141,7 @@
       font-weight:bold;
     }
 
-    /* =========================
-       PENDING DASHBOARD (SMALL)
-    ========================= */
-
+    /* DASHBOARD */
     .pending-box{
       background:white;
       border-radius:12px;
@@ -212,6 +205,7 @@
       color:#2d63d1;
     }
 
+    /* TABLE */
     .table-section{
       margin-top:20px;
       max-height:250px;
@@ -249,31 +243,6 @@
       font-weight:bold;
     }
 
-    /* RESPONSIVE */
-
-    @media(max-width:768px){
-
-      .sidebar{
-        width:100%;
-        height:auto;
-        position:relative;
-        top:0;
-      }
-
-      .main{
-        margin-left:0;
-      }
-
-      .cards{
-        justify-content:center;
-      }
-
-      .metric-row{
-        flex-direction:column;
-      }
-
-    }
-
   </style>
 
 </head>
@@ -281,69 +250,50 @@
 <body>
 
 <!-- HEADER -->
-
 <div class="topbar">
 
   <div class="left">
-
     <button class="home-btn" onclick="goHome()">
       <i class="fa fa-home"></i> Home
     </button>
-
     <h2>Stark QR</h2>
-
   </div>
 
   <div class="right">
-
     <div id="userBox"></div>
-
     <div id="headerQR"></div>
-
-    <button class="logout-btn" onclick="logout()">
-      Logout
-    </button>
-
+    <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 
 </div>
 
 <!-- SIDEBAR -->
-
 <div class="sidebar">
-
   <ul class="menu">
 
     <li onclick="go('accept.html')">
-      <i class="fa fa-check-circle"></i>
-      Accept
+      <i class="fa fa-check-circle"></i> Accept
     </li>
 
     <li onclick="go('mit.html')">
-      <i class="fa fa-print"></i>
-      MIT
+      <i class="fa fa-print"></i> MIT
     </li>
 
     <li onclick="go('serial.html')">
-      <i class="fa fa-box"></i>
-      Serial
+      <i class="fa fa-box"></i> Serial
     </li>
 
     <li onclick="go('nonserial.html')">
-      <i class="fa fa-cubes"></i>
-      Non-Serial
+      <i class="fa fa-cubes"></i> Non-Serial
     </li>
 
   </ul>
-
 </div>
 
 <!-- MAIN -->
-
 <div class="main">
 
   <!-- CARDS -->
-
   <div class="cards">
 
     <div class="card" onclick="go('accept.html')">
@@ -369,64 +319,53 @@
   </div>
 
   <!-- DASHBOARD -->
+  <div class="pending-box">
 
-  <div class="dashboard-section">
+    <div class="pending-header">
+      W2R Scanning Pending Dashboard
+    </div>
 
-    <div class="pending-box">
+    <div class="pending-content">
 
-      <div class="pending-header">
-        W2R Scanning Pending Dashboard
+      <div class="metric">
+        <span>Total Pending Quantity</span>
+        <h1 id="pendingQty">0</h1>
       </div>
 
-      <div class="pending-content">
+      <!-- NEW 3 METRICS -->
+      <div class="metric-row">
 
-        <div class="metric">
-
-          <span>Total Pending Quantity</span>
-
-          <h1 id="pendingQty">0</h1>
-
+        <div class="small-box">
+          <p>Quantity Required</p>
+          <h2 id="qtyRequired">0</h2>
         </div>
 
-        <div class="metric-row">
-
-          <div class="small-box">
-
-            <p>Total Items</p>
-
-            <h2 id="itemCount">0</h2>
-
-          </div>
-
-          <div class="small-box">
-
-            <p>Critical Items</p>
-
-            <h2 id="criticalCount">0</h2>
-
-          </div>
-
+        <div class="small-box">
+          <p>Scanned Quantity</p>
+          <h2 id="qtyScanned">0</h2>
         </div>
 
-        <div class="table-section">
-
-          <table>
-
-            <thead>
-
-              <tr>
-                <th>Item Code</th>
-                <th>Pending Qty</th>
-              </tr>
-
-            </thead>
-
-            <tbody id="pendingTable"></tbody>
-
-          </table>
-
+        <div class="small-box">
+          <p>Pending Quantity</p>
+          <h2 id="pendingQtyBox">0</h2>
         </div>
 
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-section">
+        <table>
+
+          <thead>
+            <tr>
+              <th>Item Code</th>
+              <th>Pending Qty</th>
+            </tr>
+          </thead>
+
+          <tbody id="pendingTable"></tbody>
+
+        </table>
       </div>
 
     </div>
@@ -463,10 +402,8 @@
   function logout(){
 
     if(confirm("Logout?")){
-
       sessionStorage.removeItem("wms_user");
       window.location.replace("login.html");
-
     }
 
   }
@@ -483,11 +420,14 @@
       document.getElementById("pendingQty").innerText =
         data.totalPending.toLocaleString();
 
-      document.getElementById("itemCount").innerText =
-        data.totalItems;
+      document.getElementById("qtyRequired").innerText =
+        data.totalRequired?.toLocaleString?.() ?? 0;
 
-      document.getElementById("criticalCount").innerText =
-        data.criticalItems;
+      document.getElementById("qtyScanned").innerText =
+        data.totalScanned?.toLocaleString?.() ?? 0;
+
+      document.getElementById("pendingQtyBox").innerText =
+        data.totalPending?.toLocaleString?.() ?? 0;
 
       let html = "";
 
