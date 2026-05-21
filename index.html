@@ -127,7 +127,6 @@
       font-weight:bold;
     }
 
-    /* DASHBOARD */
     .pending-box{
       background:white;
       border-radius:12px;
@@ -193,7 +192,6 @@
       color:#2d63d1;
     }
 
-    /* TEAM BOX */
     .team-box{
       margin-top:15px;
       display:flex;
@@ -248,7 +246,6 @@
 
 <body>
 
-<!-- TOP -->
 <div class="topbar">
 
   <div class="left">
@@ -264,7 +261,6 @@
 
 </div>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
 
   <ul class="menu">
@@ -276,7 +272,6 @@
 
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
   <div class="cards">
@@ -299,7 +294,6 @@
 
   </div>
 
-  <!-- DASHBOARD -->
   <div class="pending-box">
 
     <div class="pending-header">
@@ -313,7 +307,6 @@
         <h1 id="pendingQty">0</h1>
       </div>
 
-      <!-- QUANTITIES -->
       <div class="metric-row">
 
         <div class="small-box">
@@ -333,10 +326,8 @@
 
       </div>
 
-      <!-- DYNAMIC TEAM WISE -->
       <div class="team-box" id="teamBox"></div>
 
-      <!-- TABLE -->
       <div class="table-section">
         <table>
           <thead>
@@ -400,7 +391,7 @@
       document.getElementById("qtyScanned").innerText = data.totalScanned ?? 0;
       document.getElementById("pendingQtyBox").innerText = data.totalPending ?? 0;
 
-      // TEAM WISE DYNAMIC
+      // TEAM DYNAMIC (NO UNKNOWN)
       let teamHTML = "";
       const teams = data.teamWise || {};
 
@@ -414,7 +405,6 @@
 
       document.getElementById("teamBox").innerHTML = teamHTML;
 
-      // TABLE
       let html = "";
 
       (data.itemList || []).forEach(row => {
