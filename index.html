@@ -21,7 +21,6 @@
       background:#eef2f7;
     }
 
-    /* TOP BAR */
     .topbar{
       height:60px;
       background:white;
@@ -65,7 +64,6 @@
       cursor:pointer;
     }
 
-    /* SIDEBAR */
     .sidebar{
       width:220px;
       height:calc(100vh - 60px);
@@ -87,7 +85,6 @@
       align-items:center;
       gap:14px;
       cursor:pointer;
-      transition:0.3s;
     }
 
     .menu li:hover{
@@ -95,13 +92,11 @@
       color:white;
     }
 
-    /* MAIN */
     .main{
       margin-left:220px;
       padding:20px;
     }
 
-    /* CARDS */
     .cards{
       display:flex;
       gap:20px;
@@ -136,7 +131,7 @@
     .pending-box{
       background:white;
       border-radius:12px;
-      max-width:900px;
+      max-width:950px;
       margin:20px auto;
       box-shadow:0 3px 10px rgba(0,0,0,0.1);
       overflow:hidden;
@@ -175,10 +170,12 @@
       display:flex;
       gap:12px;
       margin-top:15px;
+      flex-wrap:wrap;
     }
 
     .small-box{
       flex:1;
+      min-width:150px;
       background:#f5f7fb;
       padding:12px;
       border-radius:10px;
@@ -192,7 +189,7 @@
     }
 
     .small-box h2{
-      font-size:28px;
+      font-size:26px;
       color:#2d63d1;
     }
 
@@ -226,10 +223,22 @@
       background:#f5f7fb;
     }
 
-    .critical{
-      background:#ffe5e5;
-      color:red;
+    .team-box{
+      margin-top:15px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .team-card{
+      flex:1;
+      min-width:150px;
+      background:#e9f0ff;
+      padding:12px;
+      border-radius:10px;
+      text-align:center;
       font-weight:bold;
+      color:#1f2a3a;
     }
 
   </style>
@@ -269,26 +278,23 @@
 <!-- MAIN -->
 <div class="main">
 
+  <!-- CARDS -->
   <div class="cards">
 
     <div class="card" onclick="go('accept.html')">
-      <i class="fa fa-check-circle"></i>
-      <div>Accept</div>
+      <i class="fa fa-check-circle"></i><div>Accept</div>
     </div>
 
     <div class="card" onclick="go('mit.html')">
-      <i class="fa fa-print"></i>
-      <div>MIT</div>
+      <i class="fa fa-print"></i><div>MIT</div>
     </div>
 
     <div class="card" onclick="go('serial.html')">
-      <i class="fa fa-box"></i>
-      <div>Serial</div>
+      <i class="fa fa-box"></i><div>Serial</div>
     </div>
 
     <div class="card" onclick="go('nonserial.html')">
-      <i class="fa fa-cubes"></i>
-      <div>Non-Serial</div>
+      <i class="fa fa-cubes"></i><div>Non-Serial</div>
     </div>
 
   </div>
@@ -297,7 +303,7 @@
   <div class="pending-box">
 
     <div class="pending-header">
-      W2R Scanning Pending Dashboard
+      W2R Scanning Dashboard
     </div>
 
     <div class="pending-content">
@@ -307,6 +313,7 @@
         <h1 id="pendingQty">0</h1>
       </div>
 
+      <!-- QUANTITY -->
       <div class="metric-row">
 
         <div class="small-box">
@@ -326,12 +333,23 @@
 
       </div>
 
+      <!-- TEAM WISE -->
+      <div class="team-box">
+
+        <div class="team-card" id="teamA">Team A: 0</div>
+        <div class="team-card" id="teamB">Team B: 0</div>
+        <div class="team-card" id="teamC">Team C: 0</div>
+
+      </div>
+
+      <!-- TABLE -->
       <div class="table-section">
         <table>
           <thead>
             <tr>
               <th>Item Code</th>
               <th>Pending Qty</th>
+              <th>Team</th>
             </tr>
           </thead>
           <tbody id="pendingTable"></tbody>
@@ -395,14 +413,26 @@
       document.getElementById("pendingQtyBox").innerText =
         data.totalPending ?? 0;
 
+      // TEAM WISE
+      document.getElementById("teamA").innerText =
+        "Team A: " + (data.teamWise?.["Team A"] ?? 0);
+
+      document.getElementById("teamB").innerText =
+        "Team B: " + (data.teamWise?.["Team B"] ?? 0);
+
+      document.getElementById("teamC").innerText =
+        "Team C: " + (data.teamWise?.["Team C"] ?? 0);
+
+      // TABLE
       let html = "";
 
       (data.itemList || []).forEach(row => {
 
         html += `
-          <tr class="${row.pending > 1000 ? 'critical' : ''}">
+          <tr>
             <td>${row.item}</td>
             <td>${row.pending}</td>
+            <td>${row.team}</td>
           </tr>
         `;
 
@@ -410,18 +440,8 @@
 
       document.getElementById("pendingTable").innerHTML = html;
 
-      document.getElementById("pendingQty").style.color =
-        (data.totalPending > 10000) ? "red" : "green";
-
     }catch(err){
-
       console.log(err);
-
-      document.getElementById("pendingQty").innerText = "0";
-      document.getElementById("qtyRequired").innerText = "0";
-      document.getElementById("qtyScanned").innerText = "0";
-      document.getElementById("pendingQtyBox").innerText = "0";
-
     }
 
   }
