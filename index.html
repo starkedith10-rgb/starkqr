@@ -145,29 +145,30 @@
       font-weight:bold;
     }
 
-    /* DASHBOARD */
-
-    .dashboard-section{
-      margin-top:40px;
-    }
+    /* =========================
+       PENDING DASHBOARD (SMALL)
+    ========================= */
 
     .pending-box{
       background:white;
-      border-radius:14px;
+      border-radius:12px;
       overflow:hidden;
-      box-shadow:0 5px 18px rgba(0,0,0,0.12);
+      box-shadow:0 3px 10px rgba(0,0,0,0.1);
+      max-width:900px;
+      margin:20px auto;
     }
 
     .pending-header{
       background:#1f2a3a;
       color:white;
-      padding:20px;
-      font-size:30px;
+      padding:12px;
+      font-size:20px;
       font-weight:bold;
+      text-align:center;
     }
 
     .pending-content{
-      padding:30px;
+      padding:15px;
     }
 
     .metric{
@@ -175,46 +176,45 @@
     }
 
     .metric span{
-      font-size:20px;
+      font-size:14px;
       color:#666;
     }
 
     .metric h1{
-      font-size:80px;
-      margin-top:15px;
+      font-size:50px;
+      margin-top:8px;
       color:#d62828;
+      line-height:1;
     }
 
     .metric-row{
       display:flex;
-      gap:20px;
-      margin-top:30px;
+      gap:12px;
+      margin-top:15px;
     }
 
     .small-box{
       flex:1;
       background:#f5f7fb;
-      padding:25px;
+      padding:12px;
       border-radius:10px;
       text-align:center;
     }
 
     .small-box p{
       color:#666;
-      margin-bottom:10px;
-      font-size:18px;
+      margin-bottom:6px;
+      font-size:13px;
     }
 
     .small-box h2{
-      font-size:40px;
+      font-size:28px;
       color:#2d63d1;
     }
 
-    /* TABLE */
-
     .table-section{
-      margin-top:30px;
-      max-height:350px;
+      margin-top:20px;
+      max-height:250px;
       overflow:auto;
     }
 
@@ -226,15 +226,17 @@
     table th{
       background:#1f2a3a;
       color:white;
-      padding:14px;
+      padding:10px;
       text-align:left;
       position:sticky;
       top:0;
+      font-size:14px;
     }
 
     table td{
-      padding:14px;
+      padding:10px;
       border-bottom:1px solid #ddd;
+      font-size:14px;
     }
 
     table tr:hover{
@@ -366,7 +368,7 @@
 
   </div>
 
-  <!-- PENDING DASHBOARD -->
+  <!-- DASHBOARD -->
 
   <div class="dashboard-section">
 
@@ -378,8 +380,6 @@
 
       <div class="pending-content">
 
-        <!-- TOTAL -->
-
         <div class="metric">
 
           <span>Total Pending Quantity</span>
@@ -387,8 +387,6 @@
           <h1 id="pendingQty">0</h1>
 
         </div>
-
-        <!-- SMALL BOXES -->
 
         <div class="metric-row">
 
@@ -410,8 +408,6 @@
 
         </div>
 
-        <!-- ITEM TABLE -->
-
         <div class="table-section">
 
           <table>
@@ -425,9 +421,7 @@
 
             </thead>
 
-            <tbody id="pendingTable">
-
-            </tbody>
+            <tbody id="pendingTable"></tbody>
 
           </table>
 
@@ -443,10 +437,6 @@
 
 <script>
 
-  // =========================================
-  // LOGIN CHECK
-  // =========================================
-
   let user = sessionStorage.getItem("wms_user");
 
   if(!user){
@@ -456,19 +446,11 @@
   document.getElementById("userBox").innerHTML =
     `<i class="fa fa-user"></i> ${user}`;
 
-  // =========================================
-  // QR CODE
-  // =========================================
-
   new QRCode(document.getElementById("headerQR"), {
     text:"OWNED BY SHARATH",
     width:40,
     height:40
   });
-
-  // =========================================
-  // NAVIGATION
-  // =========================================
 
   function go(page){
     window.location.href = page;
@@ -478,57 +460,34 @@
     window.location.href = "index.html";
   }
 
-  // =========================================
-  // LOGOUT
-  // =========================================
-
   function logout(){
 
     if(confirm("Logout?")){
 
       sessionStorage.removeItem("wms_user");
-
       window.location.replace("login.html");
 
     }
 
   }
 
-  // =========================================
-  // GOOGLE SHEET DASHBOARD
-  // =========================================
-
   async function loadDashboard(){
 
     try{
 
-      // PASTE YOUR APPS SCRIPT URL HERE
-      const url =
-      "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec";
+      const url = "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec";
 
       const res = await fetch(url);
-
       const data = await res.json();
 
-      // TOTAL PENDING
+      document.getElementById("pendingQty").innerText =
+        data.totalPending.toLocaleString();
 
-      document.getElementById("pendingQty")
-      .innerText =
-      data.totalPending.toLocaleString();
+      document.getElementById("itemCount").innerText =
+        data.totalItems;
 
-      // ITEM COUNT
-
-      document.getElementById("itemCount")
-      .innerText =
-      data.totalItems;
-
-      // CRITICAL COUNT
-
-      document.getElementById("criticalCount")
-      .innerText =
-      data.criticalItems;
-
-      // TABLE
+      document.getElementById("criticalCount").innerText =
+        data.criticalItems;
 
       let html = "";
 
@@ -536,54 +495,31 @@
 
         html += `
           <tr class="${row.pending > 1000 ? 'critical' : ''}">
-
             <td>${row.item}</td>
-
             <td>${row.pending}</td>
-
           </tr>
         `;
 
       });
 
-      document.getElementById("pendingTable")
-      .innerHTML = html;
-
-      // COLOR ALERT
+      document.getElementById("pendingTable").innerHTML = html;
 
       if(data.totalPending > 10000){
-
-        document.getElementById("pendingQty")
-        .style.color = "red";
-
+        document.getElementById("pendingQty").style.color = "red";
       }else{
-
-        document.getElementById("pendingQty")
-        .style.color = "green";
-
+        document.getElementById("pendingQty").style.color = "green";
       }
 
     }catch(err){
-
-      console.log(err);
-
-      document.getElementById("pendingQty")
-      .innerText = "ERROR";
-
+      document.getElementById("pendingQty").innerText = "ERROR";
     }
 
   }
 
-  // LOAD FIRST TIME
-
   loadDashboard();
-
-  // AUTO REFRESH EVERY 30 SEC
-
   setInterval(loadDashboard, 30000);
 
 </script>
 
 </body>
-
 </html>
