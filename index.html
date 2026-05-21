@@ -387,7 +387,9 @@ async function loadDashboard(){
 
   try{
 
-    const url = "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec" + new Date().getTime();
+    const url =
+  "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
+  new Date().getTime();
 
     const res = await fetch(url);
     const data = await res.json();
