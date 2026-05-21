@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
   <title>STARK QR DASHBOARD</title>
 
   <!-- FONT AWESOME -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-  <!-- QR LIBRARY -->
+  <!-- QR CODE -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -54,8 +56,8 @@
       display:flex;
       align-items:center;
       gap:15px;
-      color:#2d63d1;
       font-weight:bold;
+      color:#2d63d1;
     }
 
     .logout-btn{
@@ -65,7 +67,6 @@
       padding:8px 14px;
       border-radius:6px;
       cursor:pointer;
-      font-weight:bold;
     }
 
     /* SIDEBAR */
@@ -77,7 +78,6 @@
       position:fixed;
       top:60px;
       left:0;
-      color:white;
       padding-top:20px;
     }
 
@@ -87,12 +87,12 @@
 
     .menu li{
       padding:16px 20px;
+      color:#d7deea;
       display:flex;
       align-items:center;
       gap:14px;
       cursor:pointer;
       transition:0.3s;
-      color:#d7deea;
     }
 
     .menu li:hover{
@@ -116,9 +116,9 @@
     }
 
     .card{
-      background:white;
       width:210px;
       height:120px;
+      background:white;
       border-radius:14px;
       box-shadow:0 4px 12px rgba(0,0,0,0.08);
       display:flex;
@@ -136,24 +136,22 @@
 
     .card i{
       font-size:30px;
-      color:#3467eb;
-      margin-bottom:12px;
+      color:#2d63d1;
+      margin-bottom:10px;
     }
 
     .card div{
-      font-size:22px;
+      font-size:20px;
+      font-weight:bold;
     }
 
-    /* PENDING DASHBOARD */
+    /* DASHBOARD */
 
     .dashboard-section{
       margin-top:40px;
-      display:flex;
-      justify-content:center;
     }
 
     .pending-box{
-      width:600px;
       background:white;
       border-radius:14px;
       overflow:hidden;
@@ -177,20 +175,20 @@
     }
 
     .metric span{
-      color:#666;
       font-size:20px;
+      color:#666;
     }
 
     .metric h1{
       font-size:80px;
-      color:#d62828;
       margin-top:15px;
+      color:#d62828;
     }
 
     .metric-row{
       display:flex;
       gap:20px;
-      margin-top:35px;
+      margin-top:30px;
     }
 
     .small-box{
@@ -202,7 +200,7 @@
     }
 
     .small-box p{
-      color:#555;
+      color:#666;
       margin-bottom:10px;
       font-size:18px;
     }
@@ -210,6 +208,43 @@
     .small-box h2{
       font-size:40px;
       color:#2d63d1;
+    }
+
+    /* TABLE */
+
+    .table-section{
+      margin-top:30px;
+      max-height:350px;
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    table th{
+      background:#1f2a3a;
+      color:white;
+      padding:14px;
+      text-align:left;
+      position:sticky;
+      top:0;
+    }
+
+    table td{
+      padding:14px;
+      border-bottom:1px solid #ddd;
+    }
+
+    table tr:hover{
+      background:#f5f7fb;
+    }
+
+    .critical{
+      background:#ffe5e5;
+      color:red;
+      font-weight:bold;
     }
 
     /* RESPONSIVE */
@@ -235,13 +270,10 @@
         flex-direction:column;
       }
 
-      .pending-box{
-        width:100%;
-      }
-
     }
 
   </style>
+
 </head>
 
 <body>
@@ -308,7 +340,7 @@
 
 <div class="main">
 
-  <!-- TOP CARDS -->
+  <!-- CARDS -->
 
   <div class="cards">
 
@@ -341,10 +373,12 @@
     <div class="pending-box">
 
       <div class="pending-header">
-        W2R Scanning Pending
+        W2R Scanning Pending Dashboard
       </div>
 
       <div class="pending-content">
+
+        <!-- TOTAL -->
 
         <div class="metric">
 
@@ -353,6 +387,8 @@
           <h1 id="pendingQty">0</h1>
 
         </div>
+
+        <!-- SMALL BOXES -->
 
         <div class="metric-row">
 
@@ -374,6 +410,29 @@
 
         </div>
 
+        <!-- ITEM TABLE -->
+
+        <div class="table-section">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Item Code</th>
+                <th>Pending Qty</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="pendingTable">
+
+            </tbody>
+
+          </table>
+
+        </div>
+
       </div>
 
     </div>
@@ -384,7 +443,9 @@
 
 <script>
 
+  // =========================================
   // LOGIN CHECK
+  // =========================================
 
   let user = sessionStorage.getItem("wms_user");
 
@@ -395,9 +456,9 @@
   document.getElementById("userBox").innerHTML =
     `<i class="fa fa-user"></i> ${user}`;
 
+  // =========================================
   // QR CODE
-
-  document.getElementById("headerQR").innerHTML = "";
+  // =========================================
 
   new QRCode(document.getElementById("headerQR"), {
     text:"OWNED BY SHARATH",
@@ -405,7 +466,9 @@
     height:40
   });
 
+  // =========================================
   // NAVIGATION
+  // =========================================
 
   function go(page){
     window.location.href = page;
@@ -415,11 +478,13 @@
     window.location.href = "index.html";
   }
 
+  // =========================================
   // LOGOUT
+  // =========================================
 
   function logout(){
 
-    if(confirm("Are you sure you want to logout?")){
+    if(confirm("Logout?")){
 
       sessionStorage.removeItem("wms_user");
 
@@ -437,37 +502,64 @@
 
     try{
 
-      // REPLACE WITH YOUR APPS SCRIPT URL
+      // PASTE YOUR APPS SCRIPT URL HERE
       const url =
-        "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec";
+      "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec";
 
       const res = await fetch(url);
 
       const data = await res.json();
 
+      // TOTAL PENDING
+
       document.getElementById("pendingQty")
-        .innerText =
-        data.totalPending.toLocaleString();
+      .innerText =
+      data.totalPending.toLocaleString();
+
+      // ITEM COUNT
 
       document.getElementById("itemCount")
-        .innerText =
-        data.totalItems;
+      .innerText =
+      data.totalItems;
+
+      // CRITICAL COUNT
 
       document.getElementById("criticalCount")
-        .innerText =
-        data.criticalItems;
+      .innerText =
+      data.criticalItems;
 
-      // OPTIONAL ALERT COLOR
+      // TABLE
+
+      let html = "";
+
+      data.itemList.forEach(row => {
+
+        html += `
+          <tr class="${row.pending > 1000 ? 'critical' : ''}">
+
+            <td>${row.item}</td>
+
+            <td>${row.pending}</td>
+
+          </tr>
+        `;
+
+      });
+
+      document.getElementById("pendingTable")
+      .innerHTML = html;
+
+      // COLOR ALERT
 
       if(data.totalPending > 10000){
 
         document.getElementById("pendingQty")
-          .style.color = "red";
+        .style.color = "red";
 
       }else{
 
         document.getElementById("pendingQty")
-          .style.color = "green";
+        .style.color = "green";
 
       }
 
@@ -476,19 +568,22 @@
       console.log(err);
 
       document.getElementById("pendingQty")
-        .innerText = "ERROR";
+      .innerText = "ERROR";
 
     }
 
   }
 
   // LOAD FIRST TIME
+
   loadDashboard();
 
-  // AUTO REFRESH EVERY 30 SECONDS
+  // AUTO REFRESH EVERY 30 SEC
+
   setInterval(loadDashboard, 30000);
 
 </script>
 
 </body>
+
 </html>
