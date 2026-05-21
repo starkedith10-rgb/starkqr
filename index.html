@@ -221,7 +221,6 @@
       border-collapse:collapse;
     }
 
-    /* ✅ CENTER ALIGNMENT FIX */
     table th,
     table td{
       text-align:center;
@@ -322,7 +321,7 @@
         </div>
 
         <div class="small-box">
-          <p>Scanned Quantity</p>
+          <p>Today Scanned</p>
           <h2 id="qtyScanned">0</h2>
         </div>
 
@@ -356,85 +355,86 @@
 
 <script>
 
-  let user = sessionStorage.getItem("wms_user");
+let user = sessionStorage.getItem("wms_user");
 
-  if(!user){
-    window.location.href = "login.html";
-  }
+if(!user){
+  window.location.href = "login.html";
+}
 
-  document.getElementById("userBox").innerHTML =
-    `<i class="fa fa-user"></i> ${user}`;
+document.getElementById("userBox").innerHTML =
+  `<i class="fa fa-user"></i> ${user}`;
 
-  new QRCode(document.getElementById("headerQR"), {
-    text:"OWNED BY SHARATH",
-    width:40,
-    height:40
-  });
+new QRCode(document.getElementById("headerQR"), {
+  text:"OWNED BY SHARATH",
+  width:40,
+  height:40
+});
 
-  function go(page){
-    window.location.href = page;
-  }
+function go(page){
+  window.location.href = page;
+}
 
-  function goHome(){
-    window.location.href = "index.html";
-  }
+function goHome(){
+  window.location.href = "index.html";
+}
 
-  function logout(){
-    sessionStorage.removeItem("wms_user");
-    window.location.href = "login.html";
-  }
+function logout(){
+  sessionStorage.removeItem("wms_user");
+  window.location.href = "login.html";
+}
 
-  async function loadDashboard(){
+async function loadDashboard(){
 
-    try{
+  try{
 
-      const url = "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec";
+    const url = "YOUR_APPS_SCRIPT_URL_HERE";
 
-      const res = await fetch(url);
-      const data = await res.json();
+    const res = await fetch(url);
+    const data = await res.json();
 
-      document.getElementById("pendingQty").innerText = data.totalPending ?? 0;
-      document.getElementById("qtyRequired").innerText = data.totalRequired ?? 0;
-      document.getElementById("qtyScanned").innerText = data.totalScanned ?? 0;
-      document.getElementById("pendingQtyBox").innerText = data.totalPending ?? 0;
+    document.getElementById("pendingQty").innerText = data.totalPending ?? 0;
+    document.getElementById("qtyRequired").innerText = data.totalRequired ?? 0;
 
-      let teamHTML = "";
-      const teams = data.teamWise || {};
+    // ✅ TODAY SCANNED (NEW)
+    document.getElementById("qtyScanned").innerText = data.totalTodayScanned ?? 0;
 
-      for(let team in teams){
-        teamHTML += `
-          <div class="team-card">
-            ${team}: ${teams[team]}
-          </div>
-        `;
-      }
+    document.getElementById("pendingQtyBox").innerText = data.totalPending ?? 0;
 
-      document.getElementById("teamBox").innerHTML = teamHTML;
+    let teamHTML = "";
+    const teams = data.teamWise || {};
 
-      let html = "";
-
-      (data.itemList || []).forEach(row => {
-
-        html += `
-          <tr>
-            <td>${row.item}</td>
-            <td>${row.pending}</td>
-            <td>${row.team}</td>
-          </tr>
-        `;
-
-      });
-
-      document.getElementById("pendingTable").innerHTML = html;
-
-    }catch(err){
-      console.log(err);
+    for(let team in teams){
+      teamHTML += `
+        <div class="team-card">
+          ${team}: ${teams[team]}
+        </div>
+      `;
     }
 
-  }
+    document.getElementById("teamBox").innerHTML = teamHTML;
 
-  loadDashboard();
-  setInterval(loadDashboard, 30000);
+    let html = "";
+
+    (data.itemList || []).forEach(row => {
+
+      html += `
+        <tr>
+          <td>${row.item}</td>
+          <td>${row.pending}</td>
+          <td>${row.team || "-"}</td>
+        </tr>
+      `;
+    });
+
+    document.getElementById("pendingTable").innerHTML = html;
+
+  }catch(err){
+    console.log(err);
+  }
+}
+
+loadDashboard();
+setInterval(loadDashboard, 30000);
 
 </script>
 
