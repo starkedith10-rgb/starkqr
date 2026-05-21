@@ -325,9 +325,10 @@
           <h2 id="qtyScanned">0</h2>
         </div>
 
+        <!-- 🔥 UPDATED BOX -->
         <div class="small-box">
-          <p>Pending Quantity</p>
-          <h2 id="pendingQtyBox">0</h2>
+          <p>Total Scanned Quantity</p>
+          <h2 id="totalScannedBox">0</h2>
         </div>
 
       </div>
@@ -388,8 +389,8 @@ async function loadDashboard(){
   try{
 
     const url =
-  "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
-  new Date().getTime();
+      "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
+      new Date().getTime();
 
     const res = await fetch(url);
     const data = await res.json();
@@ -399,12 +400,11 @@ async function loadDashboard(){
     document.getElementById("pendingQty").innerText = data.totalPending ?? 0;
     document.getElementById("qtyRequired").innerText = data.totalRequired ?? 0;
 
-    // ✅ FIXED HERE
     document.getElementById("qtyScanned").innerText =
       data.totalTodayScanned ?? 0;
 
-    document.getElementById("pendingQtyBox").innerText =
-      data.totalPending ?? 0;
+    document.getElementById("totalScannedBox").innerText =
+      data.totalScanned ?? 0;
 
     let teamHTML = "";
     const teams = data.teamWise || {};
