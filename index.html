@@ -212,7 +212,7 @@
 
     .table-section{
       margin-top:20px;
-      max-height:250px;
+      max-height:300px;
       overflow:auto;
     }
 
@@ -244,6 +244,13 @@
 
     table tr:hover{
       background:#f5f7fb;
+    }
+
+    /* 🔥 CRITICAL ROW */
+    .critical-row{
+      background:#ffe5e5 !important;
+      color:#d62828;
+      font-weight:bold;
     }
 
   </style>
@@ -283,19 +290,23 @@
   <div class="cards">
 
     <div class="card" onclick="go('accept.html')">
-      <i class="fa fa-check-circle"></i><div>Accept</div>
+      <i class="fa fa-check-circle"></i>
+      <div>Accept</div>
     </div>
 
     <div class="card" onclick="go('mit.html')">
-      <i class="fa fa-print"></i><div>MIT</div>
+      <i class="fa fa-print"></i>
+      <div>MIT</div>
     </div>
 
     <div class="card" onclick="go('serial.html')">
-      <i class="fa fa-box"></i><div>Serial</div>
+      <i class="fa fa-box"></i>
+      <div>Serial</div>
     </div>
 
     <div class="card" onclick="go('nonserial.html')">
-      <i class="fa fa-cubes"></i><div>Non-Serial</div>
+      <i class="fa fa-cubes"></i>
+      <div>Non-Serial</div>
     </div>
 
   </div>
@@ -325,7 +336,6 @@
           <h2 id="qtyScanned">0</h2>
         </div>
 
-        <!-- 🔥 UPDATED BOX -->
         <div class="small-box">
           <p>Total Scanned Quantity</p>
           <h2 id="totalScannedBox">0</h2>
@@ -336,7 +346,9 @@
       <div class="team-box" id="teamBox"></div>
 
       <div class="table-section">
+
         <table>
+
           <thead>
             <tr>
               <th>Item Code</th>
@@ -344,8 +356,11 @@
               <th>Team</th>
             </tr>
           </thead>
+
           <tbody id="pendingTable"></tbody>
+
         </table>
+
       </div>
 
     </div>
@@ -395,10 +410,11 @@ async function loadDashboard(){
     const res = await fetch(url);
     const data = await res.json();
 
-    console.log(data);
+    document.getElementById("pendingQty").innerText =
+      data.totalPending ?? 0;
 
-    document.getElementById("pendingQty").innerText = data.totalPending ?? 0;
-    document.getElementById("qtyRequired").innerText = data.totalRequired ?? 0;
+    document.getElementById("qtyRequired").innerText =
+      data.totalRequired ?? 0;
 
     document.getElementById("qtyScanned").innerText =
       data.totalTodayScanned ?? 0;
@@ -406,10 +422,13 @@ async function loadDashboard(){
     document.getElementById("totalScannedBox").innerText =
       data.totalScanned ?? 0;
 
+    // TEAM DATA
     let teamHTML = "";
+
     const teams = data.teamWise || {};
 
     for(let team in teams){
+
       teamHTML += `
         <div class="team-card">
           ${team}: ${teams[team]}
@@ -419,14 +438,21 @@ async function loadDashboard(){
 
     document.getElementById("teamBox").innerHTML = teamHTML;
 
+    // TABLE
     let html = "";
 
     (data.itemList || []).forEach(row => {
 
+      // 🔥 CRITICAL CONDITION
+      const critical = row.pending > 1000;
+
       html += `
-        <tr>
+        <tr class="${critical ? 'critical-row' : ''}">
           <td>${row.item}</td>
-          <td>${row.pending}</td>
+          <td>
+            ${row.pending}
+            ${critical ? '⚠️' : ''}
+          </td>
           <td>${row.team || "-"}</td>
         </tr>
       `;
@@ -440,7 +466,10 @@ async function loadDashboard(){
 }
 
 loadDashboard();
-setInterval(loadDashboard, 30000);
+
+setInterval(() => {
+  loadDashboard();
+}, 30000);
 
 </script>
 
