@@ -221,6 +221,13 @@
       border-collapse:collapse;
     }
 
+    /* ✅ CENTER ALIGNMENT FIX */
+    table th,
+    table td{
+      text-align:center;
+      vertical-align:middle;
+    }
+
     table th{
       background:#1f2a3a;
       color:white;
@@ -391,7 +398,6 @@
       document.getElementById("qtyScanned").innerText = data.totalScanned ?? 0;
       document.getElementById("pendingQtyBox").innerText = data.totalPending ?? 0;
 
-      // TEAM DYNAMIC (NO UNKNOWN)
       let teamHTML = "";
       const teams = data.teamWise || {};
 
