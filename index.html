@@ -387,18 +387,22 @@ async function loadDashboard(){
 
   try{
 
-    const url = "YOUR_APPS_SCRIPT_URL_HERE";
+    const url = "YOUR_APPS_SCRIPT_URL_HERE?nocache=" + new Date().getTime();
 
     const res = await fetch(url);
     const data = await res.json();
 
+    console.log(data);
+
     document.getElementById("pendingQty").innerText = data.totalPending ?? 0;
     document.getElementById("qtyRequired").innerText = data.totalRequired ?? 0;
 
-    // ✅ TODAY SCANNED (NEW)
-    document.getElementById("qtyScanned").innerText = data.totalTodayScanned ?? 0;
+    // ✅ FIXED HERE
+    document.getElementById("qtyScanned").innerText =
+      data.totalTodayScanned ?? 0;
 
-    document.getElementById("pendingQtyBox").innerText = data.totalPending ?? 0;
+    document.getElementById("pendingQtyBox").innerText =
+      data.totalPending ?? 0;
 
     let teamHTML = "";
     const teams = data.teamWise || {};
