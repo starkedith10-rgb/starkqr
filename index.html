@@ -193,6 +193,25 @@
       color:#2d63d1;
     }
 
+    /* TEAM BOX */
+    .team-box{
+      margin-top:15px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .team-card{
+      flex:1;
+      min-width:150px;
+      background:#e9f0ff;
+      padding:12px;
+      border-radius:10px;
+      text-align:center;
+      font-weight:bold;
+      color:#1f2a3a;
+    }
+
     .table-section{
       margin-top:20px;
       max-height:250px;
@@ -221,24 +240,6 @@
 
     table tr:hover{
       background:#f5f7fb;
-    }
-
-    .team-box{
-      margin-top:15px;
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .team-card{
-      flex:1;
-      min-width:150px;
-      background:#e9f0ff;
-      padding:12px;
-      border-radius:10px;
-      text-align:center;
-      font-weight:bold;
-      color:#1f2a3a;
     }
 
   </style>
@@ -278,7 +279,6 @@
 <!-- MAIN -->
 <div class="main">
 
-  <!-- CARDS -->
   <div class="cards">
 
     <div class="card" onclick="go('accept.html')">
@@ -313,7 +313,7 @@
         <h1 id="pendingQty">0</h1>
       </div>
 
-      <!-- QUANTITY -->
+      <!-- QUANTITIES -->
       <div class="metric-row">
 
         <div class="small-box">
@@ -333,14 +333,8 @@
 
       </div>
 
-      <!-- TEAM WISE -->
-      <div class="team-box">
-
-        <div class="team-card" id="teamA">Team A: 0</div>
-        <div class="team-card" id="teamB">Team B: 0</div>
-        <div class="team-card" id="teamC">Team C: 0</div>
-
-      </div>
+      <!-- DYNAMIC TEAM WISE -->
+      <div class="team-box" id="teamBox"></div>
 
       <!-- TABLE -->
       <div class="table-section">
@@ -401,27 +395,24 @@
       const res = await fetch(url);
       const data = await res.json();
 
-      document.getElementById("pendingQty").innerText =
-        data.totalPending ?? 0;
+      document.getElementById("pendingQty").innerText = data.totalPending ?? 0;
+      document.getElementById("qtyRequired").innerText = data.totalRequired ?? 0;
+      document.getElementById("qtyScanned").innerText = data.totalScanned ?? 0;
+      document.getElementById("pendingQtyBox").innerText = data.totalPending ?? 0;
 
-      document.getElementById("qtyRequired").innerText =
-        data.totalRequired ?? 0;
+      // TEAM WISE DYNAMIC
+      let teamHTML = "";
+      const teams = data.teamWise || {};
 
-      document.getElementById("qtyScanned").innerText =
-        data.totalScanned ?? 0;
+      for(let team in teams){
+        teamHTML += `
+          <div class="team-card">
+            ${team}: ${teams[team]}
+          </div>
+        `;
+      }
 
-      document.getElementById("pendingQtyBox").innerText =
-        data.totalPending ?? 0;
-
-      // TEAM WISE
-      document.getElementById("teamA").innerText =
-        "Team A: " + (data.teamWise?.["Team A"] ?? 0);
-
-      document.getElementById("teamB").innerText =
-        "Team B: " + (data.teamWise?.["Team B"] ?? 0);
-
-      document.getElementById("teamC").innerText =
-        "Team C: " + (data.teamWise?.["Team C"] ?? 0);
+      document.getElementById("teamBox").innerHTML = teamHTML;
 
       // TABLE
       let html = "";
