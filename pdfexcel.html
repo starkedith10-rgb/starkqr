@@ -2,52 +2,48 @@
 <html>
 
 <head>
-  <title>PDF TO EXCEL - FIXED TABLE PARSER</title>
+  <title>PDF TO CLEAN TABLE EXTRACTOR</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
-    body {
-      font-family: Arial;
-      background: #eef2f7;
-      padding: 20px;
-    }
+    body { font-family: Arial; background:#eef2f7; padding:20px; }
 
     .box {
-      max-width: 1100px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
+      max-width:1000px;
+      margin:auto;
+      background:white;
+      padding:20px;
+      border-radius:10px;
     }
 
     button {
-      padding: 10px;
-      margin: 10px;
-      background: #2d63d1;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
+      background:#2d63d1;
+      color:white;
+      padding:10px;
+      border:none;
+      margin:10px;
+      cursor:pointer;
+      border-radius:6px;
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
     }
 
     th {
-      background: #1f2a3a;
-      color: white;
-      padding: 8px;
+      background:#1f2a3a;
+      color:white;
+      padding:8px;
     }
 
     td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      font-size: 13px;
+      border:1px solid #ddd;
+      padding:6px;
+      font-size:13px;
     }
   </style>
 </head>
@@ -56,11 +52,11 @@
 
 <div class="box">
 
-  <h2>PDF → EXCEL (FIXED COLUMN PARSER)</h2>
+  <h2>PDF → CLEAN EXCEL FORMAT</h2>
 
   <input type="file" id="file">
 
-  <button onclick="convert()">Convert PDF</button>
+  <button onclick="convert()">Convert</button>
   <button onclick="download()">Download Excel</button>
 
   <table>
@@ -94,23 +90,15 @@ async function convert() {
 
     const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
 
-    let words = [];
+    let text = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {
-
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-
-      content.items.forEach(w => {
-        words.push({
-          text: w.str,
-          x: w.transform[4],
-          y: w.transform[5]
-        });
-      });
+      text += content.items.map(x => x.str).join(" ") + " ";
     }
 
-    parse(words);
+    parse(text);
     render();
 
   };
@@ -119,68 +107,66 @@ async function convert() {
 }
 
 
-// GROUP BY ROW (Y AXIS)
-function groupRows(words) {
-
-  let rows = {};
-
-  words.forEach(w => {
-    let y = Math.round(w.y);
-    if (!rows[y]) rows[y] = [];
-    rows[y].push(w);
-  });
-
-  return rows;
-}
-
-
-// COLUMN MAPPER (IMPORTANT PART)
-function parse(words) {
+// CLEAN PARSER (FINAL LOGIC)
+function parse(text) {
 
   finalData = [];
 
-  let rows = groupRows(words);
+  text = text.replace(/\s+/g, ' ').trim();
 
-  let sortedY = Object.keys(rows)
-    .map(Number)
-    .sort((a, b) => b - a);
+  // split by SN pattern
+  let rows = text.split(/(?=\b\d+\s+[A-Z0-9]{5,})/);
 
-  sortedY.forEach(y => {
+  rows.forEach(r => {
 
-    let row = rows[y].sort((a, b) => a.x - b.x);
+    let t = r.trim();
+    if (!t) return;
 
-    let sn = "", item = "", desc = "", qty = "", lpn = "", alloc = "";
+    let p = t.split(" ");
 
-    row.forEach(w => {
+    let sn = p[0];
+    if (!/^\d+$/.test(sn)) return;
 
-      let x = w.x;
+    let item = p[1] || "";
 
-      if (x < 60) sn += w.text + " ";
+    let qty = "";
+    let qtyIndex = -1;
 
-      else if (x < 160) item += w.text + " ";
-
-      else if (x < 450) desc += w.text + " ";
-
-      else if (x < 520) qty += w.text + " ";
-
-      else if (x < 650) lpn += w.text + " ";
-
-      else alloc += w.text + " ";
-
-    });
-
-    if (sn.trim() && item.trim()) {
-
-      finalData.push([
-        sn.trim(),
-        item.trim(),
-        desc.trim(),
-        qty.trim(),
-        lpn.trim(),
-        alloc.trim()
-      ]);
-
+    for (let i = 2; i < p.length; i++) {
+      if (/^\d+$/.test(p[i])) {
+        qty = p[i];
+        qtyIndex = i;
+        break;
+      }
     }
+
+    if (qtyIndex === -1) return;
+
+    // LPN detection (contains / or long string)
+    let lpn = "";
+    let alloc = "";
+
+    for (let i = qtyIndex + 1; i < p.length; i++) {
+
+      if (p[i].includes("/")) {
+        lpn = p[i];
+      }
+
+      if (/^\d+$/.test(p[i])) {
+        alloc = p[i];
+      }
+    }
+
+    let desc = p.slice(2, qtyIndex).join(" ");
+
+    finalData.push([
+      sn,
+      item,
+      desc,
+      qty,
+      lpn,
+      alloc
+    ]);
 
   });
 
@@ -218,7 +204,7 @@ function download() {
   }
 
   const ws = XLSX.utils.aoa_to_sheet([
-    ["SN", "Item Code", "Description", "Qty", "LPN", "Allocated Qty"],
+    ["SN","Item Code","Description","Qty","LPN","Allocated Qty"],
     ...finalData
   ]);
 
