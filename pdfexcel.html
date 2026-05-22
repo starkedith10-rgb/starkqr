@@ -3,7 +3,7 @@
 
 <head>
 
-  <title>PDF TO EXCEL - PICKLIST PARSER</title>
+  <title>PDF TO EXCEL - SMART PARSER</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -13,10 +13,10 @@
     body{
       font-family:Arial;
       background:#eef2f7;
-      padding:25px;
+      padding:20px;
     }
 
-    .container{
+    .box{
       max-width:1400px;
       margin:auto;
       background:white;
@@ -27,24 +27,16 @@
 
     h2{
       text-align:center;
-      margin-bottom:20px;
-    }
-
-    input, button{
-      margin:10px;
-      padding:10px;
     }
 
     button{
       background:#2d63d1;
       color:white;
       border:none;
+      padding:10px 15px;
+      margin:10px;
       border-radius:6px;
       cursor:pointer;
-    }
-
-    button:hover{
-      background:#1e4db1;
     }
 
     table{
@@ -65,11 +57,6 @@
       border:1px solid #ddd;
       padding:8px;
       font-size:13px;
-      vertical-align:top;
-    }
-
-    tr:nth-child(even){
-      background:#f7f9fc;
     }
 
   </style>
@@ -78,13 +65,13 @@
 
 <body>
 
-<div class="container">
+<div class="box">
 
-  <h2>PDF TO EXCEL PICKLIST PARSER</h2>
+  <h2>SMART PDF TO EXCEL CONVERTER</h2>
 
   <input type="file" id="file" accept="application/pdf">
 
-  <button onclick="convertPDF()">Convert PDF</button>
+  <button onclick="convert()">Convert PDF</button>
   <button onclick="downloadExcel()">Download Excel</button>
 
   <table>
@@ -94,14 +81,14 @@
         <th>SN</th>
         <th>Item Code</th>
         <th>Description</th>
-        <th>Ord Qty</th>
+        <th>Qty</th>
         <th>Location</th>
         <th>LPN</th>
         <th>Allocated Qty</th>
       </tr>
     </thead>
 
-    <tbody id="tbody"></tbody>
+    <tbody id="body"></tbody>
 
   </table>
 
@@ -109,15 +96,12 @@
 
 <script>
 
-let finalData = [];
+let rows = [];
 
-async function convertPDF(){
+async function convert(){
 
   const file = document.getElementById("file").files[0];
-  if(!file){
-    alert("Select PDF");
-    return;
-  }
+  if(!file) return alert("Select PDF");
 
   const reader = new FileReader();
 
@@ -133,12 +117,11 @@ async function convertPDF(){
 
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-
       text += content.items.map(x => x.str).join(" ") + " ";
     }
 
-    parseData(text);
-    renderTable();
+    parseSmart(text);
+    render();
 
   };
 
@@ -146,62 +129,89 @@ async function convertPDF(){
 }
 
 
-function parseData(text){
+function cleanTokens(text){
 
-  finalData = [];
+  return text
+    .replace(/Page Nbr \d+/g,'')
+    .replace(/\s+/g,' ')
+    .trim()
+    .split(' ');
+}
 
-  text = text.replace(/\s+/g,' ');
 
-  // Split rows using SN pattern
-  const rows = text.split(/(?=\d+\s+[A-Z0-9]{4,})/);
+// SMART PARSER
+function parseSmart(text){
 
-  rows.forEach(row => {
+  rows = [];
 
-    let p = row.trim().split(" ");
+  const tokens = cleanTokens(text);
 
-    if(!/^\d+$/.test(p[0])) return;
+  let i = 0;
 
-    let sn = p[0];
-    let item = p[1];
+  while(i < tokens.length){
 
-    // find first numeric value = ORD QTY
-    let qtyIndex = -1;
+    // detect SN (number)
+    if(/^\d+$/.test(tokens[i])){
 
-    for(let i=2;i<p.length;i++){
-      if(/^\d+$/.test(p[i])){
-        qtyIndex = i;
-        break;
+      let sn = tokens[i];
+      i++;
+
+      // ITEM CODE (usually alpha numeric)
+      let item = tokens[i] || "";
+      i++;
+
+      // DESCRIPTION until we hit number (Qty)
+      let desc = "";
+
+      while(i < tokens.length && !/^\d+$/.test(tokens[i])){
+
+        desc += tokens[i] + " ";
+        i++;
+
       }
+
+      desc = desc.trim();
+
+      // ORD QTY
+      let qty = tokens[i] || "";
+      i++;
+
+      // LOCATION (may include slash)
+      let location = tokens[i] || "";
+      i++;
+
+      // LPN
+      let lpn = tokens[i] || "";
+      i++;
+
+      // ALLOCATED QTY (optional)
+      let alloc = tokens[i] || "";
+      i++;
+
+      rows.push([
+        sn,
+        item,
+        desc,
+        qty,
+        location,
+        lpn,
+        alloc
+      ]);
+
+    } else {
+      i++;
     }
 
-    if(qtyIndex === -1) return;
-
-    let desc = p.slice(2, qtyIndex).join(" ");
-    let ordQty = p[qtyIndex] || "";
-    let location = p[qtyIndex+1] || "";
-    let lpn = p[qtyIndex+2] || "";
-    let allocQty = p[qtyIndex+3] || "";
-
-    finalData.push([
-      sn,
-      item,
-      desc,
-      ordQty,
-      location,
-      lpn,
-      allocQty
-    ]);
-
-  });
+  }
 
 }
 
 
-function renderTable(){
+function render(){
 
   let html = "";
 
-  finalData.forEach(r => {
+  rows.forEach(r => {
 
     html += `<tr>
       <td>${r[0]}</td>
@@ -215,27 +225,27 @@ function renderTable(){
 
   });
 
-  document.getElementById("tbody").innerHTML = html;
+  document.getElementById("body").innerHTML = html;
 
 }
 
 
 function downloadExcel(){
 
-  if(finalData.length === 0){
+  if(rows.length === 0){
     alert("No data found");
     return;
   }
 
   const ws = XLSX.utils.aoa_to_sheet([
-    ["SN","Item Code","Description","Ord Qty","Location","LPN","Allocated Qty"],
-    ...finalData
+    ["SN","Item Code","Description","Qty","Location","LPN","Allocated Qty"],
+    ...rows
   ]);
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "PICKLIST");
+  XLSX.utils.book_append_sheet(wb, ws, "DATA");
 
-  XLSX.writeFile(wb, "PickList.xlsx");
+  XLSX.writeFile(wb,"PickList.xlsx");
 
 }
 
