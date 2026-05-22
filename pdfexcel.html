@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>PDF TO EXCEL - COPY + TABLE VIEW</title>
+  <title>PDF TO EXCEL - PRO LEVEL</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -15,7 +15,7 @@
     }
 
     .box {
-      max-width: 1200px;
+      max-width: 1250px;
       margin: auto;
       background: white;
       padding: 20px;
@@ -24,44 +24,47 @@
 
     button {
       padding: 10px;
-      margin: 10px;
+      margin: 8px;
       background: #2d63d1;
       color: white;
       border: none;
       cursor: pointer;
+      border-radius: 5px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 15px;
     }
 
     th {
       background: #1f2a3a;
       color: white;
       padding: 8px;
+      font-size: 13px;
     }
 
     td {
       border: 1px solid #ddd;
       padding: 6px;
-      font-size: 13px;
-    }
-
-    pre {
-      background: #111;
-      color: #0f0;
-      padding: 10px;
-      max-height: 250px;
-      overflow: auto;
-      margin-top: 20px;
+      font-size: 12px;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr;
       gap: 15px;
+      margin-top: 15px;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #00ff88;
+      padding: 10px;
+      height: 420px;
+      overflow: auto;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -70,7 +73,7 @@
 
 <div class="box">
 
-  <h2>PDF → EXCEL (TABLE + COPY VIEW)</h2>
+  <h2>📄 PDF → EXCEL (WAREHOUSE GRADE PARSER)</h2>
 
   <input type="file" id="file">
 
@@ -80,7 +83,7 @@
   <div class="grid">
 
     <div>
-      <h3>📋 Structured Table</h3>
+      <h3>📊 Structured Output</h3>
       <table>
         <thead>
           <tr>
@@ -89,15 +92,15 @@
             <th>Description</th>
             <th>Qty</th>
             <th>LPN</th>
-            <th>Allocated Qty</th>
+            <th>Allocated</th>
           </tr>
         </thead>
-        <tbody id="body"></tbody>
+        <tbody id="table"></tbody>
       </table>
     </div>
 
     <div>
-      <h3>📄 Raw Copy-Paste Output</h3>
+      <h3>📋 Raw Copy Output</h3>
       <pre id="raw"></pre>
     </div>
 
@@ -108,7 +111,7 @@
 <script>
 
 let finalData = [];
-let rawRows = [];
+let rawLines = [];
 
 async function convert() {
 
@@ -135,11 +138,11 @@ async function convert() {
           y: Math.round(w.transform[5])
         });
       });
+
     }
 
     buildRows(words);
     buildTable(words);
-
     render();
 
   };
@@ -148,95 +151,111 @@ async function convert() {
 }
 
 
-// RAW COPY STYLE
-function buildRows(words) {
+// ------------------------------
+// 1. SMART ROW GROUPING (FIXED)
+// ------------------------------
+function groupByRow(words) {
 
-  let rows = {};
+  let rows = [];
+  let tolerance = 3;
 
   words.forEach(w => {
 
-    if (!rows[w.y]) rows[w.y] = [];
+    let row = rows.find(r => Math.abs(r.y - w.y) <= tolerance);
 
-    rows[w.y].push(w.text);
+    if (!row) {
+      row = { y: w.y, items: [] };
+      rows.push(row);
+    }
+
+    row.items.push(w);
 
   });
 
-  let sorted = Object.keys(rows)
-    .map(Number)
-    .sort((a, b) => b - a);
-
-  rawRows = sorted.map(y => rows[y].join(" "));
+  return rows;
 }
 
 
-// STRUCTURED TABLE (OLD STYLE FIXED)
+// ------------------------------
+// 2. RAW COPY OUTPUT
+// ------------------------------
+function buildRows(words) {
+
+  let rows = groupByRow(words);
+
+  rows.sort((a, b) => b.y - a.y);
+
+  rawLines = rows.map(r =>
+    r.items
+      .sort((a, b) => a.x - b.x)
+      .map(i => i.text)
+      .join(" ")
+  );
+}
+
+
+// ------------------------------
+// 3. STRUCTURED TABLE PARSER
+// ------------------------------
 function buildTable(words) {
 
   finalData = [];
 
-  let rows = {};
+  let rows = groupByRow(words);
 
-  words.forEach(w => {
+  rows.sort((a, b) => b.y - a.y);
 
-    let key = w.y;
+  rows.forEach(r => {
 
-    if (!rows[key]) rows[key] = [];
+    let line = r.items
+      .sort((a, b) => a.x - b.x)
+      .map(i => i.text)
+      .join(" ");
 
-    rows[key].push(w);
+    let parts = line.split(/\s{2,}/);
+
+    let sn = parts[0] || "";
+    let item = parts[1] || "";
+    let desc = "";
+    let qty = "";
+    let lpn = "";
+    let alloc = "";
+
+    for (let i = 2; i < parts.length; i++) {
+
+      if (parts[i].includes("MNG_BAL")) {
+        lpn = parts[i];
+      }
+
+      else if (!isNaN(parts[i]) && parts[i] !== "") {
+        if (!qty) qty = parts[i];
+        else alloc = parts[i];
+      }
+
+      else {
+        desc += parts[i] + " ";
+      }
+    }
+
+    desc = desc.trim();
+
+    if (sn && item) {
+      finalData.push([sn, item, desc, qty, lpn, alloc]);
+    }
 
   });
-
-  Object.keys(rows)
-    .map(Number)
-    .sort((a, b) => b - a)
-    .forEach(y => {
-
-      let line = rows[y]
-        .sort((a, b) => a.x - b.x)
-        .map(i => i.text)
-        .join(" ");
-
-      let parts = line.split(/\s{2,}/);
-
-      let sn = parts[0] || "";
-      let item = parts[1] || "";
-      let desc = "";
-      let qty = "";
-      let lpn = "";
-      let alloc = "";
-
-      for (let i = 2; i < parts.length; i++) {
-
-        if (parts[i].includes("MNG_BAL")) lpn = parts[i];
-        else if (!isNaN(parts[i])) {
-          if (!qty) qty = parts[i];
-          else alloc = parts[i];
-        }
-        else desc += parts[i] + " ";
-      }
-
-      if (sn && item) {
-        finalData.push([
-          sn.trim(),
-          item.trim(),
-          desc.trim(),
-          qty.trim(),
-          lpn.trim(),
-          alloc.trim()
-        ]);
-      }
-
-    });
 }
 
 
-// RENDER BOTH UI
+// ------------------------------
+// 4. RENDER UI
+// ------------------------------
 function render() {
 
-  // TABLE
   let html = "";
 
   finalData.forEach(r => {
+
     html += `<tr>
       <td>${r[0]}</td>
       <td>${r[1]}</td>
@@ -245,17 +264,19 @@ function render() {
       <td>${r[4]}</td>
       <td>${r[5]}</td>
     </tr>`;
+
   });
 
-  document.getElementById("body").innerHTML = html;
+  document.getElementById("table").innerHTML = html;
 
-  // RAW TEXT
   document.getElementById("raw").textContent =
-    rawRows.join("\n");
+    rawLines.join("\n");
 }
 
 
-// EXCEL DOWNLOAD
+// ------------------------------
+// 5. EXCEL DOWNLOAD
+// ------------------------------
 function download() {
 
   if (!finalData.length) {
@@ -269,7 +290,7 @@ function download() {
   ]);
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "DATA");
+  XLSX.utils.book_append_sheet(wb, ws, "PickList");
 
   XLSX.writeFile(wb, "PickList.xlsx");
 }
