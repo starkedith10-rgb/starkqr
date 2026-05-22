@@ -1,45 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PDF Pick List Parser</title>
+  <meta charset="UTF-8" />
+  <title>PDF to Excel Converter</title>
 
+  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- SheetJS (Excel export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
     body {
       font-family: Arial;
-      margin: 20px;
+      padding: 20px;
     }
-
     table {
       border-collapse: collapse;
       width: 100%;
       margin-top: 20px;
     }
-
     th, td {
       border: 1px solid #ccc;
-      padding: 8px;
-      font-size: 13px;
+      padding: 6px;
+      font-size: 12px;
     }
-
     th {
       background: #f2f2f2;
     }
-
-    input {
-      margin-bottom: 10px;
+    button {
+      padding: 10px;
+      margin: 10px 5px;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-<h2>Pick List PDF Parser</h2>
+<h2>PDF → Clean Table → Excel Export</h2>
 
-<input type="file" id="fileInput" />
+<input type="file" id="pdfFile" accept="application/pdf" />
+<br>
 
-<table id="resultTable">
+<button onclick="processPDF()">Convert PDF</button>
+<button onclick="downloadExcel()">Download Excel</button>
+
+<table id="outputTable">
   <thead>
     <tr>
       <th>SN</th>
@@ -55,119 +62,108 @@
 
 <script>
 
-const fileInput = document.getElementById("fileInput");
+let finalData = [];
 
-fileInput.addEventListener("change", async function (e) {
-  const file = e.target.files[0];
+async function processPDF() {
+  const file = document.getElementById("pdfFile").files[0];
+  if (!file) {
+    alert("Select PDF first");
+    return;
+  }
+
   const reader = new FileReader();
 
   reader.onload = async function () {
     const typedarray = new Uint8Array(this.result);
 
-    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+    const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
 
-    let fullText = "";
+    let allText = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
+      const content = await page.getTextContent();
 
-      const pageText = textContent.items.map(item => item.str).join(" ");
-      fullText += "\n" + pageText;
+      const strings = content.items.map(item => item.str);
+      allText += strings.join(" ") + "\n";
     }
 
-    processText(fullText);
+    parseData(allText);
   };
 
   reader.readAsArrayBuffer(file);
-});
+}
 
-function processText(text) {
+function parseData(text) {
 
-  let lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  finalData = [];
 
-  let rows = [];
+  // split lines
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+
   let current = null;
-
-  const isNewRow = (line) => /^\d+\s+/.test(line);
 
   for (let line of lines) {
 
-    if (line.includes("Pick List Report")) continue;
-    if (line.includes("SN Item Code")) continue;
-    if (line.includes("Ord Qty")) continue;
+    // detect SN line (number + item code)
+    let match = line.match(/^(\d+)\s+([A-Z0-9]+)\s+(.+?)\s+(\d+)\s+(MNG_BAL\/\S*)\s+(\d+)/);
 
-    if (isNewRow(line)) {
-
-      let parts = line.split(" ");
-
+    if (match) {
       current = {
-        sn: parts[0],
-        itemCode: parts[1] || "",
-        description: parts.slice(2).join(" "),
-        qty: "",
-        lpn: "",
-        allocatedQty: ""
+        sn: match[1],
+        item: match[2],
+        desc: match[3],
+        qty: match[4],
+        lpn: match[5],
+        alloc: match[6]
       };
-
-      rows.push(current);
-
-    } else if (current) {
-      current.description += " " + line;
+      finalData.push(current);
     }
   }
 
-  let cleaned = rows.map(r => {
-
-    let desc = r.description;
-
-    let qtyMatch = desc.match(/\b\d+\b/);
-    let qty = qtyMatch ? qtyMatch[0] : "";
-
-    let lpnMatch = desc.match(/MNG_BAL\/?N?\d+/);
-    let lpn = lpnMatch ? lpnMatch[0] : "";
-
-    let nums = desc.match(/\b\d+\b/g);
-    let allocatedQty = nums ? nums[nums.length - 1] : "";
-
-    let cleanDesc = desc
-      .replace(/MNG_BAL\/?N?\d+/g, "")
-      .replace(/\b\d+\b/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    return {
-      sn: r.sn,
-      itemCode: r.itemCode,
-      description: cleanDesc,
-      qty,
-      lpn,
-      allocatedQty
-    };
-  });
-
-  renderTable(cleaned);
+  renderTable();
 }
 
-function renderTable(data) {
-
-  const tbody = document.querySelector("#resultTable tbody");
+function renderTable() {
+  const tbody = document.querySelector("#outputTable tbody");
   tbody.innerHTML = "";
 
-  data.forEach(row => {
+  finalData.forEach(row => {
     let tr = document.createElement("tr");
 
     tr.innerHTML = `
       <td>${row.sn}</td>
-      <td>${row.itemCode}</td>
-      <td>${row.description}</td>
+      <td>${row.item}</td>
+      <td>${row.desc}</td>
       <td>${row.qty}</td>
       <td>${row.lpn}</td>
-      <td>${row.allocatedQty}</td>
+      <td>${row.alloc}</td>
     `;
 
     tbody.appendChild(tr);
   });
+}
+
+function downloadExcel() {
+
+  if (!finalData.length) {
+    alert("No data to export");
+    return;
+  }
+
+  const ws = XLSX.utils.json_to_sheet(finalData.map(r => ({
+    SN: r.sn,
+    "Item Code": r.item,
+    Description: r.desc,
+    Qty: r.qty,
+    LPN: r.lpn,
+    "Allocated Qty": r.alloc
+  })));
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Data");
+
+  XLSX.writeFile(wb, "output.xlsx");
 }
 
 </script>
