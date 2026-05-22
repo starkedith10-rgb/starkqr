@@ -1,217 +1,173 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <title>PDF TO CLEAN TABLE EXTRACTOR</title>
+  <title>PDF Pick List Parser</title>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <style>
-    body { font-family: Arial; background:#eef2f7; padding:20px; }
-
-    .box {
-      max-width:1000px;
-      margin:auto;
-      background:white;
-      padding:20px;
-      border-radius:10px;
-    }
-
-    button {
-      background:#2d63d1;
-      color:white;
-      padding:10px;
-      border:none;
-      margin:10px;
-      cursor:pointer;
-      border-radius:6px;
+    body {
+      font-family: Arial;
+      margin: 20px;
     }
 
     table {
-      width:100%;
-      border-collapse:collapse;
-      margin-top:20px;
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      font-size: 13px;
     }
 
     th {
-      background:#1f2a3a;
-      color:white;
-      padding:8px;
+      background: #f2f2f2;
     }
 
-    td {
-      border:1px solid #ddd;
-      padding:6px;
-      font-size:13px;
+    input {
+      margin-bottom: 10px;
     }
   </style>
 </head>
 
 <body>
 
-<div class="box">
+<h2>Pick List PDF Parser</h2>
 
-  <h2>PDF → CLEAN EXCEL FORMAT</h2>
+<input type="file" id="fileInput" />
 
-  <input type="file" id="file">
-
-  <button onclick="convert()">Convert</button>
-  <button onclick="download()">Download Excel</button>
-
-  <table>
-    <thead>
-      <tr>
-        <th>SN</th>
-        <th>Item Code</th>
-        <th>Description</th>
-        <th>Qty</th>
-        <th>LPN</th>
-        <th>Allocated Qty</th>
-      </tr>
-    </thead>
-    <tbody id="body"></tbody>
-  </table>
-
-</div>
+<table id="resultTable">
+  <thead>
+    <tr>
+      <th>SN</th>
+      <th>Item Code</th>
+      <th>Description</th>
+      <th>Qty</th>
+      <th>LPN</th>
+      <th>Allocated Qty</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
 <script>
 
-let finalData = [];
+const fileInput = document.getElementById("fileInput");
 
-async function convert() {
-
-  const file = document.getElementById("file").files[0];
-  if (!file) return alert("Upload PDF");
-
+fileInput.addEventListener("change", async function (e) {
+  const file = e.target.files[0];
   const reader = new FileReader();
 
   reader.onload = async function () {
+    const typedarray = new Uint8Array(this.result);
 
-    const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+    const pdf = await pdfjsLib.getDocument(typedarray).promise;
 
-    let text = "";
+    let fullText = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      text += content.items.map(x => x.str).join(" ") + " ";
+      const textContent = await page.getTextContent();
+
+      const pageText = textContent.items.map(item => item.str).join(" ");
+      fullText += "\n" + pageText;
     }
 
-    parse(text);
-    render();
-
+    processText(fullText);
   };
 
   reader.readAsArrayBuffer(file);
-}
+});
 
+function processText(text) {
 
-// CLEAN PARSER (FINAL LOGIC)
-function parse(text) {
+  let lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
-  finalData = [];
+  let rows = [];
+  let current = null;
 
-  text = text.replace(/\s+/g, ' ').trim();
+  const isNewRow = (line) => /^\d+\s+/.test(line);
 
-  // split by SN pattern
-  let rows = text.split(/(?=\b\d+\s+[A-Z0-9]{5,})/);
+  for (let line of lines) {
 
-  rows.forEach(r => {
+    if (line.includes("Pick List Report")) continue;
+    if (line.includes("SN Item Code")) continue;
+    if (line.includes("Ord Qty")) continue;
 
-    let t = r.trim();
-    if (!t) return;
+    if (isNewRow(line)) {
 
-    let p = t.split(" ");
+      let parts = line.split(" ");
 
-    let sn = p[0];
-    if (!/^\d+$/.test(sn)) return;
+      current = {
+        sn: parts[0],
+        itemCode: parts[1] || "",
+        description: parts.slice(2).join(" "),
+        qty: "",
+        lpn: "",
+        allocatedQty: ""
+      };
 
-    let item = p[1] || "";
+      rows.push(current);
 
-    let qty = "";
-    let qtyIndex = -1;
-
-    for (let i = 2; i < p.length; i++) {
-      if (/^\d+$/.test(p[i])) {
-        qty = p[i];
-        qtyIndex = i;
-        break;
-      }
+    } else if (current) {
+      current.description += " " + line;
     }
-
-    if (qtyIndex === -1) return;
-
-    // LPN detection (contains / or long string)
-    let lpn = "";
-    let alloc = "";
-
-    for (let i = qtyIndex + 1; i < p.length; i++) {
-
-      if (p[i].includes("/")) {
-        lpn = p[i];
-      }
-
-      if (/^\d+$/.test(p[i])) {
-        alloc = p[i];
-      }
-    }
-
-    let desc = p.slice(2, qtyIndex).join(" ");
-
-    finalData.push([
-      sn,
-      item,
-      desc,
-      qty,
-      lpn,
-      alloc
-    ]);
-
-  });
-
-}
-
-
-// RENDER
-function render() {
-
-  let html = "";
-
-  finalData.forEach(r => {
-
-    html += `<tr>
-      <td>${r[0]}</td>
-      <td>${r[1]}</td>
-      <td>${r[2]}</td>
-      <td>${r[3]}</td>
-      <td>${r[4]}</td>
-      <td>${r[5]}</td>
-    </tr>`;
-
-  });
-
-  document.getElementById("body").innerHTML = html;
-}
-
-
-// DOWNLOAD
-function download() {
-
-  if (finalData.length === 0) {
-    alert("No data found");
-    return;
   }
 
-  const ws = XLSX.utils.aoa_to_sheet([
-    ["SN","Item Code","Description","Qty","LPN","Allocated Qty"],
-    ...finalData
-  ]);
+  let cleaned = rows.map(r => {
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "DATA");
+    let desc = r.description;
 
-  XLSX.writeFile(wb, "PickList.xlsx");
+    let qtyMatch = desc.match(/\b\d+\b/);
+    let qty = qtyMatch ? qtyMatch[0] : "";
+
+    let lpnMatch = desc.match(/MNG_BAL\/?N?\d+/);
+    let lpn = lpnMatch ? lpnMatch[0] : "";
+
+    let nums = desc.match(/\b\d+\b/g);
+    let allocatedQty = nums ? nums[nums.length - 1] : "";
+
+    let cleanDesc = desc
+      .replace(/MNG_BAL\/?N?\d+/g, "")
+      .replace(/\b\d+\b/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return {
+      sn: r.sn,
+      itemCode: r.itemCode,
+      description: cleanDesc,
+      qty,
+      lpn,
+      allocatedQty
+    };
+  });
+
+  renderTable(cleaned);
+}
+
+function renderTable(data) {
+
+  const tbody = document.querySelector("#resultTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(row => {
+    let tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${row.sn}</td>
+      <td>${row.itemCode}</td>
+      <td>${row.description}</td>
+      <td>${row.qty}</td>
+      <td>${row.lpn}</td>
+      <td>${row.allocatedQty}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
 }
 
 </script>
