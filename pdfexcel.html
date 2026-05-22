@@ -2,51 +2,30 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>PDF to Excel Converter</title>
+  <title>PDF Fix Converter</title>
 
-  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-  <!-- SheetJS (Excel export) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
-    body {
-      font-family: Arial;
-      padding: 20px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 6px;
-      font-size: 12px;
-    }
-    th {
-      background: #f2f2f2;
-    }
-    button {
-      padding: 10px;
-      margin: 10px 5px;
-      cursor: pointer;
-    }
+    body { font-family: Arial; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 6px; font-size: 12px; }
+    th { background: #eee; }
+    button { padding: 10px; margin: 5px; }
   </style>
 </head>
 
 <body>
 
-<h2>PDF → Clean Table → Excel Export</h2>
+<h2>PDF FIX → Excel Export (Correct Version)</h2>
 
-<input type="file" id="pdfFile" accept="application/pdf" />
+<input type="file" id="pdfFile" />
 <br>
-
-<button onclick="processPDF()">Convert PDF</button>
+<button onclick="convertPDF()">Convert</button>
 <button onclick="downloadExcel()">Download Excel</button>
 
-<table id="outputTable">
+<table>
   <thead>
     <tr>
       <th>SN</th>
@@ -57,111 +36,131 @@
       <th>Allocated Qty</th>
     </tr>
   </thead>
-  <tbody></tbody>
+  <tbody id="tbl"></tbody>
 </table>
 
 <script>
 
 let finalData = [];
 
-async function processPDF() {
+async function convertPDF() {
+
   const file = document.getElementById("pdfFile").files[0];
-  if (!file) {
-    alert("Select PDF first");
-    return;
-  }
+  if (!file) return alert("Select PDF");
 
   const reader = new FileReader();
 
   reader.onload = async function () {
-    const typedarray = new Uint8Array(this.result);
 
-    const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(this.result) }).promise;
 
-    let allText = "";
+    let rows = [];
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
+    for (let p = 1; p <= pdf.numPages; p++) {
+
+      const page = await pdf.getPage(p);
       const content = await page.getTextContent();
 
-      const strings = content.items.map(item => item.str);
-      allText += strings.join(" ") + "\n";
+      let items = content.items.map(i => ({
+        text: i.str,
+        x: i.transform[4],
+        y: i.transform[5]
+      }));
+
+      // group by Y position (row detection)
+      let map = {};
+
+      items.forEach(it => {
+        let y = Math.round(it.y);
+
+        if (!map[y]) map[y] = [];
+        map[y].push(it);
+      });
+
+      Object.keys(map).forEach(y => {
+
+        let line = map[y]
+          .sort((a, b) => a.x - b.x)
+          .map(i => i.text)
+          .join(" ");
+
+        // clean split logic
+        let parts = line.split(/\s{2,}/);
+
+        let snMatch = line.match(/^(\d+)\s+([A-Z0-9]+)/);
+
+        if (snMatch && parts.length >= 3) {
+
+          let sn = snMatch[1];
+          let item = snMatch[2];
+
+          let qty = "";
+          let lpn = "";
+          let alloc = "";
+
+          parts.forEach(p => {
+            if (p.match(/MNG_BAL/)) lpn = p;
+            if (/^\d+$/.test(p.trim()) && p.length <= 3) {
+              qty = p;
+            }
+            if (/^\d+$/.test(p.trim()) && p.length <= 2) {
+              alloc = p;
+            }
+          });
+
+          let desc = line
+            .replace(sn, "")
+            .replace(item, "")
+            .replace(lpn, "")
+            .replace(qty, "")
+            .replace(alloc, "")
+            .trim();
+
+          rows.push({
+            SN: sn,
+            "Item Code": item,
+            Description: desc,
+            Qty: qty,
+            LPN: lpn,
+            "Allocated Qty": alloc
+          });
+        }
+
+      });
     }
 
-    parseData(allText);
+    finalData = rows;
+    render();
   };
 
   reader.readAsArrayBuffer(file);
 }
 
-function parseData(text) {
-
-  finalData = [];
-
-  // split lines
-  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-
-  let current = null;
-
-  for (let line of lines) {
-
-    // detect SN line (number + item code)
-    let match = line.match(/^(\d+)\s+([A-Z0-9]+)\s+(.+?)\s+(\d+)\s+(MNG_BAL\/\S*)\s+(\d+)/);
-
-    if (match) {
-      current = {
-        sn: match[1],
-        item: match[2],
-        desc: match[3],
-        qty: match[4],
-        lpn: match[5],
-        alloc: match[6]
-      };
-      finalData.push(current);
-    }
-  }
-
-  renderTable();
-}
-
-function renderTable() {
-  const tbody = document.querySelector("#outputTable tbody");
+function render() {
+  let tbody = document.getElementById("tbl");
   tbody.innerHTML = "";
 
-  finalData.forEach(row => {
-    let tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${row.sn}</td>
-      <td>${row.item}</td>
-      <td>${row.desc}</td>
-      <td>${row.qty}</td>
-      <td>${row.lpn}</td>
-      <td>${row.alloc}</td>
-    `;
-
-    tbody.appendChild(tr);
+  finalData.forEach(r => {
+    let tr = `<tr>
+      <td>${r.SN}</td>
+      <td>${r["Item Code"]}</td>
+      <td>${r.Description}</td>
+      <td>${r.Qty}</td>
+      <td>${r.LPN}</td>
+      <td>${r["Allocated Qty"]}</td>
+    </tr>`;
+    tbody.innerHTML += tr;
   });
 }
 
 function downloadExcel() {
 
-  if (!finalData.length) {
-    alert("No data to export");
-    return;
-  }
+  if (!finalData.length) return alert("No data");
 
-  const ws = XLSX.utils.json_to_sheet(finalData.map(r => ({
-    SN: r.sn,
-    "Item Code": r.item,
-    Description: r.desc,
-    Qty: r.qty,
-    LPN: r.lpn,
-    "Allocated Qty": r.alloc
-  })));
+  let ws = XLSX.utils.json_to_sheet(finalData);
+  let wb = XLSX.utils.book_new();
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Data");
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
   XLSX.writeFile(wb, "output.xlsx");
 }
