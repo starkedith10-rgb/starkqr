@@ -3,112 +3,73 @@
 
 <head>
 
-  <title>PDF TO EXCEL CONVERTER</title>
+  <title>PDF TO EXCEL - PICKLIST PARSER</title>
 
-  <!-- PDF JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
-  <!-- XLSX -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
 
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial;
-    }
-
     body{
+      font-family:Arial;
       background:#eef2f7;
-      padding:30px;
+      padding:25px;
     }
 
     .container{
-      max-width:1500px;
+      max-width:1400px;
       margin:auto;
       background:white;
-      border-radius:12px;
-      padding:25px;
+      padding:20px;
+      border-radius:10px;
       box-shadow:0 4px 10px rgba(0,0,0,0.1);
     }
 
-    h1{
+    h2{
       text-align:center;
-      margin-bottom:25px;
-      color:#1f2a3a;
-    }
-
-    .upload-box{
-      border:2px dashed #2d63d1;
-      background:#f5f8ff;
-      border-radius:10px;
-      padding:40px;
-      text-align:center;
-    }
-
-    input[type=file]{
       margin-bottom:20px;
+    }
+
+    input, button{
+      margin:10px;
+      padding:10px;
     }
 
     button{
       background:#2d63d1;
       color:white;
       border:none;
-      padding:12px 20px;
       border-radius:6px;
       cursor:pointer;
-      font-weight:bold;
-      margin:10px;
     }
 
     button:hover{
-      background:#1f4fb7;
-    }
-
-    .status{
-      margin-top:15px;
-      color:#2d63d1;
-      font-weight:bold;
-    }
-
-    .table-box{
-      margin-top:30px;
-      overflow:auto;
-      border:1px solid #ddd;
-      border-radius:10px;
-      max-height:650px;
+      background:#1e4db1;
     }
 
     table{
       width:100%;
       border-collapse:collapse;
+      margin-top:20px;
     }
 
     th{
       background:#1f2a3a;
       color:white;
-      padding:12px;
+      padding:10px;
       position:sticky;
       top:0;
-      font-size:14px;
-      text-align:left;
     }
 
     td{
-      border-bottom:1px solid #ddd;
-      padding:10px;
+      border:1px solid #ddd;
+      padding:8px;
       font-size:13px;
       vertical-align:top;
     }
 
     tr:nth-child(even){
-      background:#f9fafc;
-    }
-
-    tr:hover{
-      background:#eef4ff;
+      background:#f7f9fc;
     }
 
   </style>
@@ -119,126 +80,65 @@
 
 <div class="container">
 
-  <h1>PDF TO EXCEL CONVERTER</h1>
+  <h2>PDF TO EXCEL PICKLIST PARSER</h2>
 
-  <div class="upload-box">
+  <input type="file" id="file" accept="application/pdf">
 
-    <input
-      type="file"
-      id="pdfFile"
-      accept="application/pdf"
-    >
+  <button onclick="convertPDF()">Convert PDF</button>
+  <button onclick="downloadExcel()">Download Excel</button>
 
-    <br>
+  <table>
 
-    <button onclick="processPDF()">
-      Convert PDF
-    </button>
+    <thead>
+      <tr>
+        <th>SN</th>
+        <th>Item Code</th>
+        <th>Description</th>
+        <th>Ord Qty</th>
+        <th>Location</th>
+        <th>LPN</th>
+        <th>Allocated Qty</th>
+      </tr>
+    </thead>
 
-    <button onclick="downloadExcel()">
-      Download Excel
-    </button>
+    <tbody id="tbody"></tbody>
 
-    <div class="status" id="status"></div>
-
-  </div>
-
-  <div class="table-box">
-
-    <table>
-
-      <thead>
-
-        <tr>
-          <th>SN</th>
-          <th>Item Code</th>
-          <th>Description</th>
-          <th>Qty</th>
-          <th>Location</th>
-          <th>LPN</th>
-          <th>Lot</th>
-        </tr>
-
-      </thead>
-
-      <tbody id="tableBody"></tbody>
-
-    </table>
-
-  </div>
+  </table>
 
 </div>
 
 <script>
 
-let extractedRows = [];
+let finalData = [];
 
-async function processPDF(){
+async function convertPDF(){
 
-  const file =
-    document.getElementById("pdfFile").files[0];
-
+  const file = document.getElementById("file").files[0];
   if(!file){
-
-    alert("Please select PDF");
-
+    alert("Select PDF");
     return;
   }
-
-  document.getElementById("status").innerText =
-    "Reading PDF...";
-
-  extractedRows = [];
 
   const reader = new FileReader();
 
   reader.onload = async function(){
 
-    try{
+    const pdf = await pdfjsLib.getDocument(
+      new Uint8Array(this.result)
+    ).promise;
 
-      const typedarray =
-        new Uint8Array(this.result);
+    let text = "";
 
-      const pdf =
-        await pdfjsLib.getDocument({
-          data: typedarray
-        }).promise;
+    for(let i=1;i<=pdf.numPages;i++){
 
-      let fullText = "";
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
 
-      // READ ALL PAGES
-      for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
-
-        const page =
-          await pdf.getPage(pageNum);
-
-        const textContent =
-          await page.getTextContent();
-
-        const pageText =
-          textContent.items
-            .map(item => item.str)
-            .join(" ");
-
-        fullText += pageText + " ";
-      }
-
-      console.log(fullText);
-
-      parseData(fullText);
-
-      renderTable();
-
-      document.getElementById("status").innerText =
-        "PDF Converted Successfully";
-
-    }catch(err){
-
-      console.log(err);
-
-      document.getElementById("status").innerText =
-        "Error Reading PDF";
+      text += content.items.map(x => x.str).join(" ") + " ";
     }
+
+    parseData(text);
+    renderTable();
 
   };
 
@@ -248,87 +148,52 @@ async function processPDF(){
 
 function parseData(text){
 
-  extractedRows = [];
+  finalData = [];
 
-  // REMOVE EXTRA SPACES
-  text = text.replace(/\s+/g, " ");
+  text = text.replace(/\s+/g,' ');
 
-  /*
-    SPLIT USING:
-    1 ITEMCODE
-    2 ITEMCODE
-  */
-
-  const rows =
-    text.split(/(?=\d+\s+[A-Z0-9]{5,})/);
+  // Split rows using SN pattern
+  const rows = text.split(/(?=\d+\s+[A-Z0-9]{4,})/);
 
   rows.forEach(row => {
 
-    row = row.trim();
+    let p = row.trim().split(" ");
 
-    if(row.length < 10) return;
+    if(!/^\d+$/.test(p[0])) return;
 
-    const parts = row.split(" ");
+    let sn = p[0];
+    let item = p[1];
 
-    const sn =
-      parts[0];
-
-    const itemCode =
-      parts[1];
-
-    // VALIDATE SERIAL NUMBER
-    if(!/^\d+$/.test(sn)){
-      return;
-    }
-
-    // FIND FIRST QTY
+    // find first numeric value = ORD QTY
     let qtyIndex = -1;
 
-    for(let i=2; i<parts.length; i++){
-
-      if(/^\d+$/.test(parts[i])){
-
+    for(let i=2;i<p.length;i++){
+      if(/^\d+$/.test(p[i])){
         qtyIndex = i;
-
         break;
       }
     }
 
     if(qtyIndex === -1) return;
 
-    // DESCRIPTION
-    const description =
-      parts.slice(2, qtyIndex).join(" ");
+    let desc = p.slice(2, qtyIndex).join(" ");
+    let ordQty = p[qtyIndex] || "";
+    let location = p[qtyIndex+1] || "";
+    let lpn = p[qtyIndex+2] || "";
+    let allocQty = p[qtyIndex+3] || "";
 
-    // QTY
-    const qty =
-      parts[qtyIndex] || "";
-
-    // LOCATION
-    const location =
-      parts[qtyIndex + 1] || "";
-
-    // LPN
-    const lpn =
-      parts[qtyIndex + 2] || "";
-
-    // LOT
-    const lot =
-      parts.find(x => x.includes("SRNLOT")) || "";
-
-    extractedRows.push([
+    finalData.push([
       sn,
-      itemCode,
-      description,
-      qty,
+      item,
+      desc,
+      ordQty,
       location,
       lpn,
-      lot
+      allocQty
     ]);
 
   });
 
-  console.log(extractedRows);
 }
 
 
@@ -336,66 +201,42 @@ function renderTable(){
 
   let html = "";
 
-  extractedRows.forEach(row => {
+  finalData.forEach(r => {
 
-    html += `
-      <tr>
-        <td>${row[0]}</td>
-        <td>${row[1]}</td>
-        <td>${row[2]}</td>
-        <td>${row[3]}</td>
-        <td>${row[4]}</td>
-        <td>${row[5]}</td>
-        <td>${row[6]}</td>
-      </tr>
-    `;
+    html += `<tr>
+      <td>${r[0]}</td>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+      <td>${r[6]}</td>
+    </tr>`;
+
   });
 
-  document.getElementById("tableBody").innerHTML =
-    html;
+  document.getElementById("tbody").innerHTML = html;
+
 }
 
 
 function downloadExcel(){
 
-  if(extractedRows.length === 0){
-
+  if(finalData.length === 0){
     alert("No data found");
-
     return;
   }
 
-  const excelData = [
+  const ws = XLSX.utils.aoa_to_sheet([
+    ["SN","Item Code","Description","Ord Qty","Location","LPN","Allocated Qty"],
+    ...finalData
+  ]);
 
-    [
-      "SN",
-      "Item Code",
-      "Description",
-      "Qty",
-      "Location",
-      "LPN",
-      "Lot"
-    ],
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "PICKLIST");
 
-    ...extractedRows
-  ];
+  XLSX.writeFile(wb, "PickList.xlsx");
 
-  const worksheet =
-    XLSX.utils.aoa_to_sheet(excelData);
-
-  const workbook =
-    XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "PDF DATA"
-  );
-
-  XLSX.writeFile(
-    workbook,
-    "PickList.xlsx"
-  );
 }
 
 </script>
