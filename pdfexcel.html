@@ -3,7 +3,7 @@
 
 <head>
 
-  <title>PDF TO EXCEL - SMART PARSER</title>
+  <title>PDF → EXCEL CLEAN PICKLIST</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -17,16 +17,12 @@
     }
 
     .box{
-      max-width:1400px;
+      max-width:1200px;
       margin:auto;
       background:white;
       padding:20px;
       border-radius:10px;
       box-shadow:0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    h2{
-      text-align:center;
     }
 
     button{
@@ -67,12 +63,12 @@
 
 <div class="box">
 
-  <h2>SMART PDF TO EXCEL CONVERTER</h2>
+  <h2>PDF → EXCEL CLEAN PARSER (NO LOCATION)</h2>
 
   <input type="file" id="file" accept="application/pdf">
 
   <button onclick="convert()">Convert PDF</button>
-  <button onclick="downloadExcel()">Download Excel</button>
+  <button onclick="download()">Download Excel</button>
 
   <table>
 
@@ -82,7 +78,6 @@
         <th>Item Code</th>
         <th>Description</th>
         <th>Qty</th>
-        <th>Location</th>
         <th>LPN</th>
         <th>Allocated Qty</th>
       </tr>
@@ -96,7 +91,7 @@
 
 <script>
 
-let rows = [];
+let finalData = [];
 
 async function convert(){
 
@@ -120,7 +115,7 @@ async function convert(){
       text += content.items.map(x => x.str).join(" ") + " ";
     }
 
-    parseSmart(text);
+    parse(text);
     render();
 
   };
@@ -129,89 +124,74 @@ async function convert(){
 }
 
 
-function cleanTokens(text){
+// CLEAN NOISE
+function clean(text){
 
   return text
+    .replace(/Pick List Report.*?FIFO/g,'')
     .replace(/Page Nbr \d+/g,'')
     .replace(/\s+/g,' ')
-    .trim()
-    .split(' ');
+    .trim();
 }
 
 
-// SMART PARSER
-function parseSmart(text){
+// PARSER (NO LOCATION)
+function parse(text){
 
-  rows = [];
+  finalData = [];
 
-  const tokens = cleanTokens(text);
+  text = clean(text);
 
-  let i = 0;
+  const rows = text.split(/(?=\d+\s+[A-Z0-9]{5,})/);
 
-  while(i < tokens.length){
+  rows.forEach(r => {
 
-    // detect SN (number)
-    if(/^\d+$/.test(tokens[i])){
+    let p = r.trim().split(" ");
 
-      let sn = tokens[i];
-      i++;
+    if(!/^\d+$/.test(p[0])) return;
 
-      // ITEM CODE (usually alpha numeric)
-      let item = tokens[i] || "";
-      i++;
+    let sn = p[0];
+    let item = p[1];
 
-      // DESCRIPTION until we hit number (Qty)
-      let desc = "";
+    // find qty index
+    let qtyIndex = -1;
 
-      while(i < tokens.length && !/^\d+$/.test(tokens[i])){
-
-        desc += tokens[i] + " ";
-        i++;
-
+    for(let i=2;i<p.length;i++){
+      if(/^\d+$/.test(p[i])){
+        qtyIndex = i;
+        break;
       }
-
-      desc = desc.trim();
-
-      // ORD QTY
-      let qty = tokens[i] || "";
-      i++;
-
-      // LOCATION (may include slash)
-      let location = tokens[i] || "";
-      i++;
-
-      // LPN
-      let lpn = tokens[i] || "";
-      i++;
-
-      // ALLOCATED QTY (optional)
-      let alloc = tokens[i] || "";
-      i++;
-
-      rows.push([
-        sn,
-        item,
-        desc,
-        qty,
-        location,
-        lpn,
-        alloc
-      ]);
-
-    } else {
-      i++;
     }
 
-  }
+    if(qtyIndex === -1) return;
+
+    let desc = p.slice(2, qtyIndex).join(" ");
+    let qty = p[qtyIndex] || "";
+
+    // AFTER QTY:
+    let lpn = p[qtyIndex+1] || "";
+    let alloc = p[qtyIndex+2] || "";
+
+    finalData.push([
+      sn,
+      item,
+      desc,
+      qty,
+      lpn,
+      alloc
+    ]);
+
+  });
 
 }
 
 
+// RENDER TABLE
 function render(){
 
   let html = "";
 
-  rows.forEach(r => {
+  finalData.forEach(r => {
 
     html += `<tr>
       <td>${r[0]}</td>
@@ -220,7 +200,6 @@ function render(){
       <td>${r[3]}</td>
       <td>${r[4]}</td>
       <td>${r[5]}</td>
-      <td>${r[6]}</td>
     </tr>`;
 
   });
@@ -230,16 +209,17 @@ function render(){
 }
 
 
-function downloadExcel(){
+// DOWNLOAD EXCEL
+function download(){
 
-  if(rows.length === 0){
+  if(finalData.length === 0){
     alert("No data found");
     return;
   }
 
   const ws = XLSX.utils.aoa_to_sheet([
-    ["SN","Item Code","Description","Qty","Location","LPN","Allocated Qty"],
-    ...rows
+    ["SN","Item Code","Description","Qty","LPN","Allocated Qty"],
+    ...finalData
   ]);
 
   const wb = XLSX.utils.book_new();
