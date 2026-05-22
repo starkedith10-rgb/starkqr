@@ -2,76 +2,68 @@
 <html>
 
 <head>
-
-  <title>PDF → EXCEL CLEAN PICKLIST</title>
+  <title>PDF TO EXCEL - FIXED TABLE PARSER</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
-
-    body{
-      font-family:Arial;
-      background:#eef2f7;
-      padding:20px;
+    body {
+      font-family: Arial;
+      background: #eef2f7;
+      padding: 20px;
     }
 
-    .box{
-      max-width:1200px;
-      margin:auto;
-      background:white;
-      padding:20px;
-      border-radius:10px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    .box {
+      max-width: 1100px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
     }
 
-    button{
-      background:#2d63d1;
-      color:white;
-      border:none;
-      padding:10px 15px;
-      margin:10px;
-      border-radius:6px;
-      cursor:pointer;
+    button {
+      padding: 10px;
+      margin: 10px;
+      background: #2d63d1;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:20px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
 
-    th{
-      background:#1f2a3a;
-      color:white;
-      padding:10px;
-      position:sticky;
-      top:0;
+    th {
+      background: #1f2a3a;
+      color: white;
+      padding: 8px;
     }
 
-    td{
-      border:1px solid #ddd;
-      padding:8px;
-      font-size:13px;
+    td {
+      border: 1px solid #ddd;
+      padding: 6px;
+      font-size: 13px;
     }
-
   </style>
-
 </head>
 
 <body>
 
 <div class="box">
 
-  <h2>PDF → EXCEL CLEAN PARSER (NO LOCATION)</h2>
+  <h2>PDF → EXCEL (FIXED COLUMN PARSER)</h2>
 
-  <input type="file" id="file" accept="application/pdf">
+  <input type="file" id="file">
 
   <button onclick="convert()">Convert PDF</button>
   <button onclick="download()">Download Excel</button>
 
   <table>
-
     <thead>
       <tr>
         <th>SN</th>
@@ -82,9 +74,7 @@
         <th>Allocated Qty</th>
       </tr>
     </thead>
-
     <tbody id="body"></tbody>
-
   </table>
 
 </div>
@@ -93,29 +83,34 @@
 
 let finalData = [];
 
-async function convert(){
+async function convert() {
 
   const file = document.getElementById("file").files[0];
-  if(!file) return alert("Select PDF");
+  if (!file) return alert("Upload PDF");
 
   const reader = new FileReader();
 
-  reader.onload = async function(){
+  reader.onload = async function () {
 
-    const pdf = await pdfjsLib.getDocument(
-      new Uint8Array(this.result)
-    ).promise;
+    const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
 
-    let text = "";
+    let words = [];
 
-    for(let i=1;i<=pdf.numPages;i++){
+    for (let i = 1; i <= pdf.numPages; i++) {
 
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      text += content.items.map(x => x.str).join(" ") + " ";
+
+      content.items.forEach(w => {
+        words.push({
+          text: w.str,
+          x: w.transform[4],
+          y: w.transform[5]
+        });
+      });
     }
 
-    parse(text);
+    parse(words);
     render();
 
   };
@@ -124,70 +119,76 @@ async function convert(){
 }
 
 
-// CLEAN NOISE
-function clean(text){
+// GROUP BY ROW (Y AXIS)
+function groupRows(words) {
 
-  return text
-    .replace(/Pick List Report.*?FIFO/g,'')
-    .replace(/Page Nbr \d+/g,'')
-    .replace(/\s+/g,' ')
-    .trim();
+  let rows = {};
+
+  words.forEach(w => {
+    let y = Math.round(w.y);
+    if (!rows[y]) rows[y] = [];
+    rows[y].push(w);
+  });
+
+  return rows;
 }
 
 
-// PARSER (NO LOCATION)
-function parse(text){
+// COLUMN MAPPER (IMPORTANT PART)
+function parse(words) {
 
   finalData = [];
 
-  text = clean(text);
+  let rows = groupRows(words);
 
-  const rows = text.split(/(?=\d+\s+[A-Z0-9]{5,})/);
+  let sortedY = Object.keys(rows)
+    .map(Number)
+    .sort((a, b) => b - a);
 
-  rows.forEach(r => {
+  sortedY.forEach(y => {
 
-    let p = r.trim().split(" ");
+    let row = rows[y].sort((a, b) => a.x - b.x);
 
-    if(!/^\d+$/.test(p[0])) return;
+    let sn = "", item = "", desc = "", qty = "", lpn = "", alloc = "";
 
-    let sn = p[0];
-    let item = p[1];
+    row.forEach(w => {
 
-    // find qty index
-    let qtyIndex = -1;
+      let x = w.x;
 
-    for(let i=2;i<p.length;i++){
-      if(/^\d+$/.test(p[i])){
-        qtyIndex = i;
-        break;
-      }
+      if (x < 60) sn += w.text + " ";
+
+      else if (x < 160) item += w.text + " ";
+
+      else if (x < 450) desc += w.text + " ";
+
+      else if (x < 520) qty += w.text + " ";
+
+      else if (x < 650) lpn += w.text + " ";
+
+      else alloc += w.text + " ";
+
+    });
+
+    if (sn.trim() && item.trim()) {
+
+      finalData.push([
+        sn.trim(),
+        item.trim(),
+        desc.trim(),
+        qty.trim(),
+        lpn.trim(),
+        alloc.trim()
+      ]);
+
     }
-
-    if(qtyIndex === -1) return;
-
-    let desc = p.slice(2, qtyIndex).join(" ");
-    let qty = p[qtyIndex] || "";
-
-    // AFTER QTY:
-    let lpn = p[qtyIndex+1] || "";
-    let alloc = p[qtyIndex+2] || "";
-
-    finalData.push([
-      sn,
-      item,
-      desc,
-      qty,
-      lpn,
-      alloc
-    ]);
 
   });
 
 }
 
 
-// RENDER TABLE
-function render(){
+// RENDER
+function render() {
 
   let html = "";
 
@@ -205,28 +206,26 @@ function render(){
   });
 
   document.getElementById("body").innerHTML = html;
-
 }
 
 
-// DOWNLOAD EXCEL
-function download(){
+// DOWNLOAD
+function download() {
 
-  if(finalData.length === 0){
+  if (finalData.length === 0) {
     alert("No data found");
     return;
   }
 
   const ws = XLSX.utils.aoa_to_sheet([
-    ["SN","Item Code","Description","Qty","LPN","Allocated Qty"],
+    ["SN", "Item Code", "Description", "Qty", "LPN", "Allocated Qty"],
     ...finalData
   ]);
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "DATA");
 
-  XLSX.writeFile(wb,"PickList.xlsx");
-
+  XLSX.writeFile(wb, "PickList.xlsx");
 }
 
 </script>
