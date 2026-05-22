@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>PDF TO EXCEL</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+  <style>
+
+    body{
+      font-family:Arial;
+      background:#eef2f7;
+      padding:30px;
+    }
+
+    .container{
+      max-width:900px;
+      margin:auto;
+      background:white;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    h1{
+      text-align:center;
+      color:#1f2a3a;
+      margin-bottom:20px;
+    }
+
+    .upload-box{
+      border:2px dashed #2d63d1;
+      padding:40px;
+      text-align:center;
+      border-radius:10px;
+      background:#f5f8ff;
+    }
+
+    button{
+      background:#2d63d1;
+      color:white;
+      border:none;
+      padding:12px 20px;
+      border-radius:6px;
+      cursor:pointer;
+      margin-top:20px;
+      font-weight:bold;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+
+    th,td{
+      border:1px solid #ddd;
+      padding:10px;
+      text-align:left;
+    }
+
+    th{
+      background:#1f2a3a;
+      color:white;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>PDF TO EXCEL CONVERTER</h1>
+
+  <div class="upload-box">
+
+    <input type="file" id="pdfFile" accept="application/pdf">
+
+    <br>
+
+    <button onclick="processPDF()">
+      Convert PDF
+    </button>
+
+    <br>
+
+    <button onclick="downloadExcel()">
+      Download Excel
+    </button>
+
+  </div>
+
+  <table id="previewTable">
+
+    <thead>
+      <tr>
+        <th>Extracted Data</th>
+      </tr>
+    </thead>
+
+    <tbody id="tableBody"></tbody>
+
+  </table>
+
+</div>
+
+<script>
+
+let extractedRows = [];
+
+async function processPDF(){
+
+  const file = document.getElementById("pdfFile").files[0];
+
+  if(!file){
+    alert("Select PDF file");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = async function(){
+
+    const typedarray = new Uint8Array(this.result);
+
+    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+
+    extractedRows = [];
+
+    for(let i=1;i<=pdf.numPages;i++){
+
+      const page = await pdf.getPage(i);
+
+      const textContent = await page.getTextContent();
+
+      const text = textContent.items.map(item => item.str).join(" ");
+
+      extractedRows.push([text]);
+    }
+
+    renderTable();
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+function renderTable(){
+
+  let html = "";
+
+  extractedRows.forEach(row => {
+
+    html += `
+      <tr>
+        <td>${row[0]}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("tableBody").innerHTML = html;
+}
+
+function downloadExcel(){
+
+  if(extractedRows.length === 0){
+    alert("No data");
+    return;
+  }
+
+  const worksheet =
+    XLSX.utils.aoa_to_sheet(extractedRows);
+
+  const workbook =
+    XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "PDF DATA"
+  );
+
+  XLSX.writeFile(
+    workbook,
+    "pdf_data.xlsx"
+  );
+}
+
+</script>
+
+</body>
+</html>
