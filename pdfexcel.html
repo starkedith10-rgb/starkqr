@@ -5,11 +5,11 @@
 
   <title>PDF TO EXCEL CONVERTER</title>
 
-  <!-- XLSX -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
   <!-- PDF JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+  <!-- XLSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
 
@@ -26,12 +26,12 @@
     }
 
     .container{
-      max-width:1400px;
+      max-width:1500px;
       margin:auto;
       background:white;
-      border-radius:14px;
+      border-radius:12px;
       padding:25px;
-      box-shadow:0 4px 14px rgba(0,0,0,0.1);
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
     }
 
     h1{
@@ -42,10 +42,10 @@
 
     .upload-box{
       border:2px dashed #2d63d1;
-      border-radius:12px;
+      background:#f5f8ff;
+      border-radius:10px;
       padding:40px;
       text-align:center;
-      background:#f5f8ff;
     }
 
     input[type=file]{
@@ -56,23 +56,29 @@
       background:#2d63d1;
       color:white;
       border:none;
-      padding:12px 22px;
-      border-radius:8px;
+      padding:12px 20px;
+      border-radius:6px;
       cursor:pointer;
       font-weight:bold;
       margin:10px;
     }
 
     button:hover{
-      background:#1e4db1;
+      background:#1f4fb7;
     }
 
-    .table-container{
+    .status{
+      margin-top:15px;
+      color:#2d63d1;
+      font-weight:bold;
+    }
+
+    .table-box{
       margin-top:30px;
       overflow:auto;
-      max-height:600px;
       border:1px solid #ddd;
       border-radius:10px;
+      max-height:650px;
     }
 
     table{
@@ -87,6 +93,7 @@
       position:sticky;
       top:0;
       font-size:14px;
+      text-align:left;
     }
 
     td{
@@ -102,13 +109,6 @@
 
     tr:hover{
       background:#eef4ff;
-    }
-
-    .loading{
-      text-align:center;
-      margin-top:20px;
-      color:#2d63d1;
-      font-weight:bold;
     }
 
   </style>
@@ -139,11 +139,11 @@
       Download Excel
     </button>
 
-    <div class="loading" id="loading"></div>
+    <div class="status" id="status"></div>
 
   </div>
 
-  <div class="table-container">
+  <div class="table-box">
 
     <table>
 
@@ -179,12 +179,14 @@ async function processPDF(){
     document.getElementById("pdfFile").files[0];
 
   if(!file){
+
     alert("Please select PDF");
+
     return;
   }
 
-  document.getElementById("loading").innerText =
-    "Processing PDF...";
+  document.getElementById("status").innerText =
+    "Reading PDF...";
 
   extractedRows = [];
 
@@ -204,6 +206,7 @@ async function processPDF(){
 
       let fullText = "";
 
+      // READ ALL PAGES
       for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
 
         const page =
@@ -217,23 +220,24 @@ async function processPDF(){
             .map(item => item.str)
             .join(" ");
 
-        fullText += pageText + "\n";
+        fullText += pageText + " ";
       }
 
-      parsePDFData(fullText);
+      console.log(fullText);
+
+      parseData(fullText);
 
       renderTable();
 
-      document.getElementById("loading").innerText =
+      document.getElementById("status").innerText =
         "PDF Converted Successfully";
 
     }catch(err){
 
       console.log(err);
 
-      document.getElementById("loading").innerText =
-        "Error reading PDF";
-
+      document.getElementById("status").innerText =
+        "Error Reading PDF";
     }
 
   };
@@ -242,31 +246,89 @@ async function processPDF(){
 }
 
 
-function parsePDFData(text){
+function parseData(text){
+
+  extractedRows = [];
+
+  // REMOVE EXTRA SPACES
+  text = text.replace(/\s+/g, " ");
 
   /*
-    Detect rows starting with:
-    1 B0HODUNE9 ...
-    2 ELE000795 ...
+    SPLIT USING:
+    1 ITEMCODE
+    2 ITEMCODE
   */
 
-  const regex =
-    /(\d+)\s+([A-Z0-9]+)\s+(.*?)\s+(\d+)\s+([A-Z0-9_\/\-]+)\s+(\d+)\s+(SRNLOT[0-9]+)/g;
+  const rows =
+    text.split(/(?=\d+\s+[A-Z0-9]{5,})/);
 
-  let match;
+  rows.forEach(row => {
 
-  while((match = regex.exec(text)) !== null){
+    row = row.trim();
+
+    if(row.length < 10) return;
+
+    const parts = row.split(" ");
+
+    const sn =
+      parts[0];
+
+    const itemCode =
+      parts[1];
+
+    // VALIDATE SERIAL NUMBER
+    if(!/^\d+$/.test(sn)){
+      return;
+    }
+
+    // FIND FIRST QTY
+    let qtyIndex = -1;
+
+    for(let i=2; i<parts.length; i++){
+
+      if(/^\d+$/.test(parts[i])){
+
+        qtyIndex = i;
+
+        break;
+      }
+    }
+
+    if(qtyIndex === -1) return;
+
+    // DESCRIPTION
+    const description =
+      parts.slice(2, qtyIndex).join(" ");
+
+    // QTY
+    const qty =
+      parts[qtyIndex] || "";
+
+    // LOCATION
+    const location =
+      parts[qtyIndex + 1] || "";
+
+    // LPN
+    const lpn =
+      parts[qtyIndex + 2] || "";
+
+    // LOT
+    const lot =
+      parts.find(x => x.includes("SRNLOT")) || "";
 
     extractedRows.push([
-      match[1], // SN
-      match[2], // Item Code
-      match[3], // Description
-      match[4], // Qty
-      match[5], // Location
-      match[6], // LPN
-      match[7]  // LOT
+      sn,
+      itemCode,
+      description,
+      qty,
+      location,
+      lpn,
+      lot
     ]);
-  }
+
+  });
+
+  console.log(extractedRows);
 }
 
 
@@ -276,16 +338,17 @@ function renderTable(){
 
   extractedRows.forEach(row => {
 
-    html += "<tr>";
-
-    row.forEach(col => {
-
-      html += `
-        <td>${col}</td>
-      `;
-    });
-
-    html += "</tr>";
+    html += `
+      <tr>
+        <td>${row[0]}</td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td>${row[3]}</td>
+        <td>${row[4]}</td>
+        <td>${row[5]}</td>
+        <td>${row[6]}</td>
+      </tr>
+    `;
   });
 
   document.getElementById("tableBody").innerHTML =
@@ -296,11 +359,14 @@ function renderTable(){
 function downloadExcel(){
 
   if(extractedRows.length === 0){
+
     alert("No data found");
+
     return;
   }
 
   const excelData = [
+
     [
       "SN",
       "Item Code",
@@ -310,6 +376,7 @@ function downloadExcel(){
       "LPN",
       "Lot"
     ],
+
     ...extractedRows
   ];
 
@@ -322,12 +389,12 @@ function downloadExcel(){
   XLSX.utils.book_append_sheet(
     workbook,
     worksheet,
-    "PICKLIST"
+    "PDF DATA"
   );
 
   XLSX.writeFile(
     workbook,
-    "PickList_Report.xlsx"
+    "PickList.xlsx"
   );
 }
 
