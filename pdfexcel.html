@@ -1,56 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Smart PDF Extractor</title>
+  <meta charset="UTF-8">
+  <title>FINAL PDF FIX</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
     body { font-family: Arial; padding: 20px; }
-    button { padding: 10px; margin: 5px; cursor: pointer; }
     table { border-collapse: collapse; width: 100%; margin-top: 20px; }
     th, td { border: 1px solid #ccc; font-size: 12px; padding: 5px; }
-    th { background: #f2f2f2; }
   </style>
 </head>
 
 <body>
 
-<h2>Smart PDF → Excel Converter</h2>
+<h2>FINAL PDF → EXCEL FIX</h2>
 
-<input type="file" id="file" />
-<button onclick="run()">Convert PDF</button>
+<input type="file" id="pdf" />
+<button onclick="convert()">Convert</button>
 <button onclick="download()">Download Excel</button>
 
 <table>
-  <thead>
-    <tr>
-      <th>SN</th>
-      <th>Item Code</th>
-      <th>Description</th>
-      <th>Qty</th>
-      <th>LPN</th>
-      <th>Allocated Qty</th>
-    </tr>
-  </thead>
-  <tbody id="body"></tbody>
+<thead>
+<tr>
+  <th>SN</th>
+  <th>Item</th>
+  <th>Description</th>
+  <th>Qty</th>
+  <th>LPN</th>
+  <th>Allocated</th>
+</tr>
+</thead>
+<tbody id="t"></tbody>
 </table>
 
 <script>
 
-let result = [];
+let data = [];
 
-async function run() {
+async function convert() {
 
-  const file = document.getElementById("file").files[0];
+  const file = document.getElementById("pdf").files[0];
   if (!file) return alert("Upload PDF");
 
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise;
 
-  let allRows = [];
+  let rows = [];
 
   for (let p = 1; p <= pdf.numPages; p++) {
 
@@ -60,96 +57,83 @@ async function run() {
     let items = content.items.map(i => ({
       text: i.str,
       x: i.transform[4],
-      y: i.transform[5]
+      y: Math.round(i.transform[5])
     }));
 
-    // group by Y (row detection)
-    let rowsMap = {};
+    // group by Y
+    let map = {};
 
-    items.forEach(it => {
-      let y = Math.round(it.y);
-      if (!rowsMap[y]) rowsMap[y] = [];
-      rowsMap[y].push(it);
-    });
+    for (let i of items) {
+      if (!map[i.y]) map[i.y] = [];
+      map[i.y].push(i);
+    }
 
-    for (let y in rowsMap) {
+    for (let y in map) {
 
-      let row = rowsMap[y].sort((a,b)=>a.x-b.x);
+      let line = map[y].sort((a,b)=>a.x-b.x).map(i=>i.text);
 
-      let line = row.map(r=>r.text).join(" ");
+      if (line.length < 4) continue;
 
-      // fix broken LPN (MNG_BAL / split fix)
-      line = line.replace("MNG_BAL /", "MNG_BAL/");
+      let sn = line[0];
+      let item = line[1];
 
-      let sn = line.match(/^\d+/)?.[0] || "";
+      // find LPN
+      let lpnIndex = line.findIndex(x => x.includes("MNG_BAL"));
+      let lpn = lpnIndex !== -1 ? line[lpnIndex] : "";
 
-      let item = line.match(/\b[A-Z0-9]{6,}\b/)?.[0] || "";
+      // qty (number after item usually)
+      let qty = line.find(x => /^\d+$/.test(x) && x.length <= 3) || "";
 
-      let qty = "";
-      let alloc = "";
+      // allocated (last number)
+      let alloc = line[line.length - 1];
 
-      let qtyMatch = line.match(/\b\d+\b/g);
-      if (qtyMatch && qtyMatch.length > 0) {
-        qty = qtyMatch[1] || qtyMatch[0];
-        alloc = qtyMatch[qtyMatch.length - 1] || "";
-      }
+      // description = everything between item and LPN
+      let descArr = line.slice(2, lpnIndex === -1 ? line.length : lpnIndex);
+      let desc = descArr.join(" ");
 
-      let lpnMatch = line.match(/MNG_BAL\/\S*/);
-      let lpn = lpnMatch ? lpnMatch[0] : "";
-
-      let desc = line
-        .replace(sn, "")
-        .replace(item, "")
-        .replace(lpn, "")
-        .replace(qty, "")
-        .replace(alloc, "")
-        .trim();
-
-      // VALID ROW CHECK
       if (sn && item && lpn) {
-        allRows.push({
+        rows.push({
           SN: sn,
-          "Item Code": item,
+          Item: item,
           Description: desc,
           Qty: qty,
           LPN: lpn,
-          "Allocated Qty": alloc
+          Allocated: alloc
         });
       }
     }
   }
 
-  result = allRows;
-  draw();
+  data = rows;
+  render();
 }
 
-function draw() {
-  let body = document.getElementById("body");
-  body.innerHTML = "";
+function render() {
+  let t = document.getElementById("t");
+  t.innerHTML = "";
 
-  result.forEach(r => {
-    body.innerHTML += `
+  data.forEach(r => {
+    t.innerHTML += `
       <tr>
         <td>${r.SN}</td>
-        <td>${r["Item Code"]}</td>
+        <td>${r.Item}</td>
         <td>${r.Description}</td>
         <td>${r.Qty}</td>
         <td>${r.LPN}</td>
-        <td>${r["Allocated Qty"]}</td>
+        <td>${r.Allocated}</td>
       </tr>
     `;
   });
 }
 
 function download() {
+  if (!data.length) return alert("No data");
 
-  if (!result.length) return alert("No data found");
-
-  const ws = XLSX.utils.json_to_sheet(result);
-  const wb = XLSX.utils.book_new();
+  let ws = XLSX.utils.json_to_sheet(data);
+  let wb = XLSX.utils.book_new();
 
   XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-  XLSX.writeFile(wb, "picklist.xlsx");
+  XLSX.writeFile(wb, "output.xlsx");
 }
 
 </script>
