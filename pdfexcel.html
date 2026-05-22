@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>PDF TO EXCEL - FIXED PARSER</title>
+  <title>PDF TO EXCEL - COPY + TABLE VIEW</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -48,6 +48,21 @@
       padding: 6px;
       font-size: 13px;
     }
+
+    pre {
+      background: #111;
+      color: #0f0;
+      padding: 10px;
+      max-height: 250px;
+      overflow: auto;
+      margin-top: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
   </style>
 </head>
 
@@ -55,32 +70,45 @@
 
 <div class="box">
 
-  <h2>PDF → EXCEL (FIXED ROBUST PARSER)</h2>
+  <h2>PDF → EXCEL (TABLE + COPY VIEW)</h2>
 
   <input type="file" id="file">
 
   <button onclick="convert()">Convert PDF</button>
   <button onclick="download()">Download Excel</button>
 
-  <table>
-    <thead>
-      <tr>
-        <th>SN</th>
-        <th>Item Code</th>
-        <th>Description</th>
-        <th>Qty</th>
-        <th>LPN</th>
-        <th>Allocated Qty</th>
-      </tr>
-    </thead>
-    <tbody id="body"></tbody>
-  </table>
+  <div class="grid">
+
+    <div>
+      <h3>📋 Structured Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Item Code</th>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>LPN</th>
+            <th>Allocated Qty</th>
+          </tr>
+        </thead>
+        <tbody id="body"></tbody>
+      </table>
+    </div>
+
+    <div>
+      <h3>📄 Raw Copy-Paste Output</h3>
+      <pre id="raw"></pre>
+    </div>
+
+  </div>
 
 </div>
 
 <script>
 
 let finalData = [];
+let rawRows = [];
 
 async function convert() {
 
@@ -104,103 +132,111 @@ async function convert() {
         words.push({
           text: w.str,
           x: w.transform[4],
-          y: w.transform[5]
+          y: Math.round(w.transform[5])
         });
       });
     }
 
-    parse(words);
+    buildRows(words);
+    buildTable(words);
+
     render();
+
   };
 
   reader.readAsArrayBuffer(file);
 }
 
 
-// FIX 1: better row grouping (VERY IMPORTANT)
-function groupRows(words) {
+// RAW COPY STYLE
+function buildRows(words) {
 
-  let rows = [];
-  let tolerance = 3;
+  let rows = {};
 
   words.forEach(w => {
 
-    let row = rows.find(r => Math.abs(r.y - w.y) < tolerance);
+    if (!rows[w.y]) rows[w.y] = [];
 
-    if (!row) {
-      row = { y: w.y, items: [] };
-      rows.push(row);
-    }
+    rows[w.y].push(w.text);
 
-    row.items.push(w);
   });
 
-  return rows;
+  let sorted = Object.keys(rows)
+    .map(Number)
+    .sort((a, b) => b - a);
+
+  rawRows = sorted.map(y => rows[y].join(" "));
 }
 
 
-// FIX 2: smarter parsing (NO fixed X columns)
-function parse(words) {
+// STRUCTURED TABLE (OLD STYLE FIXED)
+function buildTable(words) {
 
   finalData = [];
 
-  let rows = groupRows(words);
+  let rows = {};
 
-  rows.sort((a, b) => b.y - a.y);
+  words.forEach(w => {
 
-  rows.forEach(r => {
+    let key = w.y;
 
-    let items = r.items.sort((a, b) => a.x - b.x);
+    if (!rows[key]) rows[key] = [];
 
-    let line = items.map(i => i.text).join(" ");
-
-    let parts = line.split(/\s{2,}/); // split multiple spaces
-
-    // fallback safe split
-    let sn = parts[0] || "";
-    let item = parts[1] || "";
-    let desc = "";
-    let qty = "";
-    let lpn = "";
-    let alloc = "";
-
-    // rebuild smarter (important fix)
-    for (let i = 2; i < parts.length; i++) {
-      if (parts[i].includes("MNG_BAL")) {
-        lpn = parts[i];
-      } else if (!isNaN(parts[i])) {
-        if (!qty) qty = parts[i];
-        else alloc = parts[i];
-      } else {
-        desc += parts[i] + " ";
-      }
-    }
-
-    desc = desc.trim();
-
-    // REMOVE empty / junk rows
-    if (item && sn) {
-      finalData.push([
-        sn.trim(),
-        item.trim(),
-        desc,
-        qty.trim(),
-        lpn.trim(),
-        alloc.trim()
-      ]);
-    }
+    rows[key].push(w);
 
   });
+
+  Object.keys(rows)
+    .map(Number)
+    .sort((a, b) => b - a)
+    .forEach(y => {
+
+      let line = rows[y]
+        .sort((a, b) => a.x - b.x)
+        .map(i => i.text)
+        .join(" ");
+
+      let parts = line.split(/\s{2,}/);
+
+      let sn = parts[0] || "";
+      let item = parts[1] || "";
+      let desc = "";
+      let qty = "";
+      let lpn = "";
+      let alloc = "";
+
+      for (let i = 2; i < parts.length; i++) {
+
+        if (parts[i].includes("MNG_BAL")) lpn = parts[i];
+        else if (!isNaN(parts[i])) {
+          if (!qty) qty = parts[i];
+          else alloc = parts[i];
+        }
+        else desc += parts[i] + " ";
+      }
+
+      if (sn && item) {
+        finalData.push([
+          sn.trim(),
+          item.trim(),
+          desc.trim(),
+          qty.trim(),
+          lpn.trim(),
+          alloc.trim()
+        ]);
+      }
+
+    });
 }
 
 
-// RENDER
+// RENDER BOTH UI
 function render() {
 
+  // TABLE
   let html = "";
 
   finalData.forEach(r => {
-
     html += `<tr>
       <td>${r[0]}</td>
       <td>${r[1]}</td>
@@ -209,14 +245,17 @@ function render() {
       <td>${r[4]}</td>
       <td>${r[5]}</td>
     </tr>`;
-
   });
 
   document.getElementById("body").innerHTML = html;
+
+  // RAW TEXT
+  document.getElementById("raw").textContent =
+    rawRows.join("\n");
 }
 
 
-// DOWNLOAD EXCEL
+// EXCEL DOWNLOAD
 function download() {
 
   if (!finalData.length) {
