@@ -2,28 +2,27 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>PDF Fix Converter</title>
+  <title>Smart PDF Extractor</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
     body { font-family: Arial; padding: 20px; }
+    button { padding: 10px; margin: 5px; cursor: pointer; }
     table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 6px; font-size: 12px; }
-    th { background: #eee; }
-    button { padding: 10px; margin: 5px; }
+    th, td { border: 1px solid #ccc; font-size: 12px; padding: 5px; }
+    th { background: #f2f2f2; }
   </style>
 </head>
 
 <body>
 
-<h2>PDF FIX → Excel Export (Correct Version)</h2>
+<h2>Smart PDF → Excel Converter</h2>
 
-<input type="file" id="pdfFile" />
-<br>
-<button onclick="convertPDF()">Convert</button>
-<button onclick="downloadExcel()">Download Excel</button>
+<input type="file" id="file" />
+<button onclick="run()">Convert PDF</button>
+<button onclick="download()">Download Excel</button>
 
 <table>
   <thead>
@@ -36,133 +35,121 @@
       <th>Allocated Qty</th>
     </tr>
   </thead>
-  <tbody id="tbl"></tbody>
+  <tbody id="body"></tbody>
 </table>
 
 <script>
 
-let finalData = [];
+let result = [];
 
-async function convertPDF() {
+async function run() {
 
-  const file = document.getElementById("pdfFile").files[0];
-  if (!file) return alert("Select PDF");
+  const file = document.getElementById("file").files[0];
+  if (!file) return alert("Upload PDF");
 
-  const reader = new FileReader();
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
 
-  reader.onload = async function () {
+  let allRows = [];
 
-    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(this.result) }).promise;
+  for (let p = 1; p <= pdf.numPages; p++) {
 
-    let rows = [];
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
 
-    for (let p = 1; p <= pdf.numPages; p++) {
+    let items = content.items.map(i => ({
+      text: i.str,
+      x: i.transform[4],
+      y: i.transform[5]
+    }));
 
-      const page = await pdf.getPage(p);
-      const content = await page.getTextContent();
+    // group by Y (row detection)
+    let rowsMap = {};
 
-      let items = content.items.map(i => ({
-        text: i.str,
-        x: i.transform[4],
-        y: i.transform[5]
-      }));
+    items.forEach(it => {
+      let y = Math.round(it.y);
+      if (!rowsMap[y]) rowsMap[y] = [];
+      rowsMap[y].push(it);
+    });
 
-      // group by Y position (row detection)
-      let map = {};
+    for (let y in rowsMap) {
 
-      items.forEach(it => {
-        let y = Math.round(it.y);
+      let row = rowsMap[y].sort((a,b)=>a.x-b.x);
 
-        if (!map[y]) map[y] = [];
-        map[y].push(it);
-      });
+      let line = row.map(r=>r.text).join(" ");
 
-      Object.keys(map).forEach(y => {
+      // fix broken LPN (MNG_BAL / split fix)
+      line = line.replace("MNG_BAL /", "MNG_BAL/");
 
-        let line = map[y]
-          .sort((a, b) => a.x - b.x)
-          .map(i => i.text)
-          .join(" ");
+      let sn = line.match(/^\d+/)?.[0] || "";
 
-        // clean split logic
-        let parts = line.split(/\s{2,}/);
+      let item = line.match(/\b[A-Z0-9]{6,}\b/)?.[0] || "";
 
-        let snMatch = line.match(/^(\d+)\s+([A-Z0-9]+)/);
+      let qty = "";
+      let alloc = "";
 
-        if (snMatch && parts.length >= 3) {
+      let qtyMatch = line.match(/\b\d+\b/g);
+      if (qtyMatch && qtyMatch.length > 0) {
+        qty = qtyMatch[1] || qtyMatch[0];
+        alloc = qtyMatch[qtyMatch.length - 1] || "";
+      }
 
-          let sn = snMatch[1];
-          let item = snMatch[2];
+      let lpnMatch = line.match(/MNG_BAL\/\S*/);
+      let lpn = lpnMatch ? lpnMatch[0] : "";
 
-          let qty = "";
-          let lpn = "";
-          let alloc = "";
+      let desc = line
+        .replace(sn, "")
+        .replace(item, "")
+        .replace(lpn, "")
+        .replace(qty, "")
+        .replace(alloc, "")
+        .trim();
 
-          parts.forEach(p => {
-            if (p.match(/MNG_BAL/)) lpn = p;
-            if (/^\d+$/.test(p.trim()) && p.length <= 3) {
-              qty = p;
-            }
-            if (/^\d+$/.test(p.trim()) && p.length <= 2) {
-              alloc = p;
-            }
-          });
-
-          let desc = line
-            .replace(sn, "")
-            .replace(item, "")
-            .replace(lpn, "")
-            .replace(qty, "")
-            .replace(alloc, "")
-            .trim();
-
-          rows.push({
-            SN: sn,
-            "Item Code": item,
-            Description: desc,
-            Qty: qty,
-            LPN: lpn,
-            "Allocated Qty": alloc
-          });
-        }
-
-      });
+      // VALID ROW CHECK
+      if (sn && item && lpn) {
+        allRows.push({
+          SN: sn,
+          "Item Code": item,
+          Description: desc,
+          Qty: qty,
+          LPN: lpn,
+          "Allocated Qty": alloc
+        });
+      }
     }
+  }
 
-    finalData = rows;
-    render();
-  };
-
-  reader.readAsArrayBuffer(file);
+  result = allRows;
+  draw();
 }
 
-function render() {
-  let tbody = document.getElementById("tbl");
-  tbody.innerHTML = "";
+function draw() {
+  let body = document.getElementById("body");
+  body.innerHTML = "";
 
-  finalData.forEach(r => {
-    let tr = `<tr>
-      <td>${r.SN}</td>
-      <td>${r["Item Code"]}</td>
-      <td>${r.Description}</td>
-      <td>${r.Qty}</td>
-      <td>${r.LPN}</td>
-      <td>${r["Allocated Qty"]}</td>
-    </tr>`;
-    tbody.innerHTML += tr;
+  result.forEach(r => {
+    body.innerHTML += `
+      <tr>
+        <td>${r.SN}</td>
+        <td>${r["Item Code"]}</td>
+        <td>${r.Description}</td>
+        <td>${r.Qty}</td>
+        <td>${r.LPN}</td>
+        <td>${r["Allocated Qty"]}</td>
+      </tr>
+    `;
   });
 }
 
-function downloadExcel() {
+function download() {
 
-  if (!finalData.length) return alert("No data");
+  if (!result.length) return alert("No data found");
 
-  let ws = XLSX.utils.json_to_sheet(finalData);
-  let wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(result);
+  const wb = XLSX.utils.book_new();
 
   XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
-  XLSX.writeFile(wb, "output.xlsx");
+  XLSX.writeFile(wb, "picklist.xlsx");
 }
 
 </script>
