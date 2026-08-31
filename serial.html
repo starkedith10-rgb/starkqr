@@ -1,278 +1,1785 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>JARVIS QR Generator - 3D Text</title>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      font-family: 'Orbitron', sans-serif;
-      background: #cce6ff;
-      color: #003366;
-      overflow: hidden;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    body { display: flex; flex-direction: column; }
-    .container { display: flex; flex: 1; width: 100%; height: 100%; }
+<title>W2R - Serial QR Station</title>
 
-    /* Left panel */
-    .left-panel {
-      background: rgba(0, 51, 102, 0.85);
-      border-right: 2px solid #66b2ff;
-      border-radius: 0 15px 15px 0;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      overflow-y: auto;
-      width: 280px;
-      box-shadow: inset 0 0 20px rgba(102, 178, 255, 0.2);
-    }
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
-    /* 3D Heading */
-    .left-panel h2 {
-      margin-bottom: 12px;
-      font-size: 20px;
-      font-weight: 700;
-      color: #66b2ff;
-      text-shadow: 1px 1px #004080, 2px 2px #003366;
-      text-align: center;
-    }
+<style>
 
-    input[type="file"], .qr-options select, .qr-options input, .qr-options button {
-      font-size: 13px;
-      padding: 5px 8px;
-      margin-bottom: 8px;
-      border-radius: 6px;
-      border: 1px solid #66b2ff;
-      background: rgba(0, 102, 204, 0.2);
-      color: #e0f0ff;
-    }
+/* =========================================================
+   W2R SERIAL QR STATION
+   DARK NAVY + CYAN PROFESSIONAL THEME
+========================================================= */
 
-    .qr-options label { display: block; margin: 4px 0 2px; font-weight: bold; color: #99ccff; }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-    /* 3D Quote */
-    .quote {
-      margin-top: auto;
-      font-size: 12px;
-      color: #99ccff;
-      font-style: italic;
-      text-align: center;
-      padding: 8px;
-      border-top: 1px solid #66b2ff;
-      text-shadow: 1px 1px #004080, 2px 2px #003366;
-    }
+html,
+body{
+  width:100%;
+  height:100%;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#07111f;
+  color:#eaf7ff;
+  overflow:hidden;
+}
 
-    /* Right panel */
-    .right-panel {
-      flex: 1;
-      text-align: center;
-      background: #e0f0ff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 10px;
-    }
+/* =========================
+   MAIN APP
+========================= */
 
-    #qrCanvas {
-      border: 2px solid #0066cc;
-      background: rgba(0, 51, 102, 0.2);
-      margin-bottom: 10px;
-      max-width: 90%;
-      max-height: 90%;
-    }
+.app{
+  width:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
 
-    .navigation button, .download-btn {
-      background: #66b2ff;
-      color: #003366;
-      border: 1px solid #004080;
-      border-radius: 4px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 2px;
-    }
+/* =========================
+   TOP BAR
+========================= */
 
-    .navigation button:hover, .download-btn:hover {
-      background: #003366;
-      color: #66b2ff;
-    }
+.topbar{
+  height:64px;
+  background:#0b1728;
+  border-bottom:1px solid #173452;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  box-shadow:0 4px 20px rgba(0,0,0,.35);
+  z-index:10;
+}
 
-    #counter, #info { font-size: 12px; margin: 2px 0; font-weight: bold; color: #99ccff; }
-  </style>
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand-icon{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  background:linear-gradient(135deg,#00d9ff,#0077ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  box-shadow:0 0 18px rgba(0,217,255,.35);
+}
+
+.brand-text h1{
+  font-size:18px;
+  letter-spacing:1px;
+  color:white;
+}
+
+.brand-text span{
+  font-size:11px;
+  color:#6f9ab8;
+  letter-spacing:1px;
+}
+
+.top-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.page-badge{
+  padding:7px 13px;
+  border:1px solid #16415f;
+  border-radius:20px;
+  color:#4fdfff;
+  background:#0a2031;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:.8px;
+}
+
+.user-badge{
+  padding:7px 13px;
+  border-radius:20px;
+  background:#101f32;
+  border:1px solid #203c56;
+  color:#b9d9eb;
+  font-size:11px;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content{
+  flex:1;
+  display:flex;
+  min-height:0;
+}
+
+/* =========================
+   LEFT CONTROL PANEL
+========================= */
+
+.sidebar{
+  width:310px;
+  background:#0a1626;
+  border-right:1px solid #173452;
+  padding:18px;
+  overflow-y:auto;
+}
+
+.section-title{
+  color:#5ee7ff;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:1.5px;
+  margin-bottom:10px;
+  text-transform:uppercase;
+}
+
+.upload-box{
+  background:#0d1e31;
+  border:1px dashed #24506d;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:18px;
+}
+
+.upload-box:hover{
+  border-color:#00cfff;
+  background:#0e2439;
+}
+
+.upload-label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#bfefff;
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.upload-icon{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  background:#102f48;
+  color:#41dcff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+input[type="file"]{
+  width:100%;
+  color:#9fc1d6;
+  font-size:11px;
+}
+
+/* =========================
+   QR STATUS
+========================= */
+
+.status-card{
+  background:linear-gradient(145deg,#0d2034,#0b1728);
+  border:1px solid #1b3d58;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:18px;
+}
+
+.status-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.status-title{
+  font-size:10px;
+  color:#6e9bb7;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.status-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#27e07f;
+  box-shadow:0 0 10px rgba(39,224,127,.8);
+}
+
+.qr-counter{
+  font-size:28px;
+  font-weight:bold;
+  color:white;
+}
+
+.qr-counter span{
+  font-size:14px;
+  color:#5b88a5;
+}
+
+.rows-info{
+  margin-top:5px;
+  color:#6f9ab8;
+  font-size:11px;
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settings{
+  margin-top:5px;
+}
+
+.setting{
+  margin-bottom:13px;
+}
+
+.setting label{
+  display:block;
+  color:#7fa7bf;
+  font-size:10px;
+  font-weight:bold;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:5px;
+}
+
+.setting input,
+.setting select{
+  width:100%;
+  height:34px;
+  border:1px solid #21435d;
+  border-radius:7px;
+  background:#081522;
+  color:#dff7ff;
+  padding:0 9px;
+  outline:none;
+  font-size:12px;
+}
+
+.setting input:focus,
+.setting select:focus{
+  border-color:#00cfff;
+  box-shadow:0 0 0 2px rgba(0,207,255,.1);
+}
+
+.refresh-qr{
+  width:100%;
+  height:36px;
+  border:0;
+  border-radius:7px;
+  background:linear-gradient(90deg,#0077ff,#00cfff);
+  color:white;
+  font-size:11px;
+  font-weight:bold;
+  cursor:pointer;
+  letter-spacing:.5px;
+  margin-top:3px;
+  box-shadow:0 4px 15px rgba(0,145,255,.25);
+}
+
+.refresh-qr:hover{
+  filter:brightness(1.15);
+}
+
+/* =========================
+   SIDE FOOTER
+========================= */
+
+.side-footer{
+  margin-top:20px;
+  padding-top:15px;
+  border-top:1px solid #183249;
+  color:#486b82;
+  font-size:10px;
+  line-height:1.6;
+  text-align:center;
+}
+
+/* =========================
+   MAIN WORKSPACE
+========================= */
+
+.workspace{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  padding:18px;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(0,174,255,.08),transparent 35%),
+    #07111f;
+}
+
+/* =========================
+   WORKSPACE HEADER
+========================= */
+
+.workspace-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.workspace-title h2{
+  font-size:17px;
+  color:white;
+}
+
+.workspace-title p{
+  margin-top:3px;
+  color:#5f839b;
+  font-size:10px;
+}
+
+.live-status{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#63dfff;
+  font-size:10px;
+  font-weight:bold;
+}
+
+.live-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#00e5ff;
+  box-shadow:0 0 10px #00e5ff;
+}
+
+/* =========================
+   QR DISPLAY
+========================= */
+
+.qr-card{
+  flex:1;
+  min-height:0;
+  border:1px solid #183b55;
+  border-radius:15px;
+  background:
+    linear-gradient(rgba(255,255,255,.01),rgba(255,255,255,.01)),
+    #091827;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  box-shadow:
+    inset 0 0 60px rgba(0,132,255,.04),
+    0 8px 30px rgba(0,0,0,.25);
+}
+
+/* Corner decorations */
+
+.qr-card::before,
+.qr-card::after{
+  content:"";
+  position:absolute;
+  width:35px;
+  height:35px;
+  border-color:#00cfff;
+  opacity:.65;
+}
+
+.qr-card::before{
+  top:14px;
+  left:14px;
+  border-top:2px solid;
+  border-left:2px solid;
+}
+
+.qr-card::after{
+  bottom:14px;
+  right:14px;
+  border-bottom:2px solid;
+  border-right:2px solid;
+}
+
+.qr-wrapper{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  padding:15px;
+}
+
+#qrCanvas{
+  display:block;
+  background:white;
+  border:8px solid white;
+  border-radius:4px;
+  box-shadow:
+    0 0 0 1px #31566d,
+    0 0 35px rgba(0,204,255,.18);
+  max-width:90%;
+  max-height:90%;
+}
+
+/* Empty state */
+
+.empty-state{
+  position:absolute;
+  text-align:center;
+  color:#527187;
+  pointer-events:none;
+}
+
+.empty-icon{
+  width:65px;
+  height:65px;
+  border:1px solid #24465d;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 12px;
+  font-size:28px;
+  color:#32627e;
+}
+
+.empty-state h3{
+  color:#6e91a5;
+  font-size:13px;
+}
+
+.empty-state p{
+  margin-top:5px;
+  font-size:10px;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.navigation{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.nav-btn{
+  min-width:105px;
+  height:38px;
+  border-radius:8px;
+  border:1px solid #21455f;
+  background:#0c1d2e;
+  color:#a9d0e2;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:bold;
+  transition:.2s;
+}
+
+.nav-btn:hover{
+  background:#102c43;
+  border-color:#00bfe8;
+  color:#5de4ff;
+}
+
+.primary-btn{
+  background:linear-gradient(90deg,#0077ff,#00cfff);
+  color:white;
+  border:0;
+  box-shadow:0 4px 15px rgba(0,153,255,.22);
+}
+
+.primary-btn:hover{
+  color:white;
+  filter:brightness(1.12);
+}
+
+.download-btn{
+  background:#0d3029;
+  border-color:#1d6d5b;
+  color:#4dedae;
+}
+
+.download-btn:hover{
+  background:#104236;
+  border-color:#27e0a0;
+  color:#67ffc5;
+}
+
+/* =========================
+   BOTTOM INFO
+========================= */
+
+.bottom-info{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  margin-top:8px;
+  color:#466b82;
+  font-size:9px;
+}
+
+.bottom-info span{
+  color:#6592aa;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:800px){
+
+  .sidebar{
+    width:240px;
+  }
+
+  .brand-text h1{
+    font-size:15px;
+  }
+
+  .page-badge{
+    display:none;
+  }
+
+}
+
+@media(max-width:600px){
+
+  body{
+    overflow:auto;
+  }
+
+  .app{
+    height:auto;
+    min-height:100vh;
+  }
+
+  .content{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+    border-right:0;
+    border-bottom:1px solid #173452;
+  }
+
+  .workspace{
+    min-height:600px;
+  }
+
+  .topbar{
+    padding:0 12px;
+  }
+
+  .user-badge{
+    display:none;
+  }
+
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+  width:5px;
+}
+
+::-webkit-scrollbar-track{
+  background:#08121f;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#1d4159;
+  border-radius:10px;
+}
+
+</style>
+
 </head>
+
 <body>
-  <div class="container">
-    <div class="left-panel">
-      <h2>Stark QR</h2>
-      <input type="file" id="fileInput" accept=".xlsx,.xls">
 
-      <div id="counter">QR 0 / 0</div>
-      <div id="info">Rows in this QR: 0</div>
+<div class="app">
 
-      <div class="qr-options">
-        <label for="moduleWidthUnit">Module Width Unit</label>
-        <select id="moduleWidthUnit">
-          <option value="default" selected>Fit (Default)</option>
-          <option value="px">Pixels</option>
-          <option value="mm">Millimeters</option>
-          <option value="in">Inches</option>
-        </select>
+  <!-- =====================================================
+       TOP BAR
+  ====================================================== -->
 
-        <label for="moduleWidth">Module Width</label>
-        <input type="number" id="moduleWidth" value="4" min="1" max="20">
+  <div class="topbar">
 
-        <label for="dpi">Image Resolution (DPI)</label>
-        <input type="number" id="dpi" value="96" min="72" max="300">
+    <div class="brand">
 
-        <label for="imageFormat">Image Format</label>
-        <select id="imageFormat">
-          <option value="png" selected>PNG</option>
-          <option value="jpeg">JPEG</option>
-          <option value="webp">WEBP</option>
-        </select>
-
-        <button id="refreshQRBtn">Refresh QR</button>
+      <div class="brand-icon">
+        QR
       </div>
 
-      <div class="quote">
-        "No amount of money ever bought a single second of time." – Tony Stark
+      <div class="brand-text">
+        <h1>W2R SERIAL STATION</h1>
+        <span>WAREHOUSE QR MANAGEMENT SYSTEM</span>
       </div>
+
     </div>
 
-    <div class="right-panel">
-      <canvas id="qrCanvas"></canvas>
-      <div class="navigation">
-        <button id="prevBtn">← Previous</button>
-        <button id="nextBtn">Next →</button>
-        <button id="refreshBtn">Refresh / Upload</button>
-        <button id="downloadBtn" class="download-btn">Download QR</button>
+    <div class="top-right">
+
+      <div class="page-badge">
+        SERIAL QR
       </div>
+
+      <div class="user-badge" id="userBadge">
+        USER
+      </div>
+
     </div>
+
   </div>
+
+
+  <!-- =====================================================
+       CONTENT
+  ====================================================== -->
+
+  <div class="content">
+
+
+    <!-- ===================================================
+         SIDEBAR
+    ==================================================== -->
+
+    <aside class="sidebar">
+
+      <div class="section-title">
+        Data Input
+      </div>
+
+      <div class="upload-box">
+
+        <div class="upload-label">
+
+          <div class="upload-icon">
+            ↑
+          </div>
+
+          <div>
+            Upload Serial Excel
+          </div>
+
+        </div>
+
+        <input
+          type="file"
+          id="fileInput"
+          accept=".xlsx,.xls"
+        >
+
+      </div>
+
+
+      <!-- QR STATUS -->
+
+      <div class="section-title">
+        QR Status
+      </div>
+
+      <div class="status-card">
+
+        <div class="status-top">
+
+          <div class="status-title">
+            Current Batch
+          </div>
+
+          <div class="status-dot"></div>
+
+        </div>
+
+        <div class="qr-counter" id="counter">
+          0 <span>/ 0</span>
+        </div>
+
+        <div class="rows-info" id="info">
+          Rows in this QR: 0
+        </div>
+
+      </div>
+
+
+      <!-- SETTINGS -->
+
+      <div class="section-title">
+        QR Settings
+      </div>
+
+      <div class="settings">
+
+        <div class="setting">
+
+          <label for="moduleWidthUnit">
+            Module Width Unit
+          </label>
+
+          <select id="moduleWidthUnit">
+
+            <option value="default" selected>
+              Fit / Default
+            </option>
+
+            <option value="px">
+              Pixels
+            </option>
+
+            <option value="mm">
+              Millimeters
+            </option>
+
+            <option value="in">
+              Inches
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="setting">
+
+          <label for="moduleWidth">
+            Module Width
+          </label>
+
+          <input
+            type="number"
+            id="moduleWidth"
+            value="4"
+            min="1"
+            max="20"
+          >
+
+        </div>
+
+
+        <div class="setting">
+
+          <label for="dpi">
+            Image Resolution DPI
+          </label>
+
+          <input
+            type="number"
+            id="dpi"
+            value="96"
+            min="72"
+            max="300"
+          >
+
+        </div>
+
+
+        <div class="setting">
+
+          <label for="imageFormat">
+            Image Format
+          </label>
+
+          <select id="imageFormat">
+
+            <option value="png" selected>
+              PNG
+            </option>
+
+            <option value="jpeg">
+              JPEG
+            </option>
+
+            <option value="webp">
+              WEBP
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <button
+          class="refresh-qr"
+          id="refreshQRBtn"
+        >
+          ↻ REFRESH QR
+        </button>
+
+      </div>
+
+
+      <div class="side-footer">
+
+        SERIAL DATA PROCESSING<br>
+
+        MAX QR PAYLOAD:
+        <strong>2200 CHARACTERS</strong>
+
+      </div>
+
+    </aside>
+
+
+    <!-- ===================================================
+         WORKSPACE
+    ==================================================== -->
+
+    <main class="workspace">
+
+
+      <div class="workspace-header">
+
+        <div class="workspace-title">
+
+          <h2>Serial QR Preview</h2>
+
+          <p>
+            Scan-ready QR generated from uploaded serial data
+          </p>
+
+        </div>
+
+        <div class="live-status">
+
+          <div class="live-dot"></div>
+
+          READY
+
+        </div>
+
+      </div>
+
+
+      <!-- QR DISPLAY -->
+
+      <div class="qr-card">
+
+        <div
+          class="empty-state"
+          id="emptyState"
+        >
+
+          <div class="empty-icon">
+            ▦
+          </div>
+
+          <h3>
+            No Serial File Loaded
+          </h3>
+
+          <p>
+            Upload an Excel file to generate QR batches
+          </p>
+
+        </div>
+
+
+        <div class="qr-wrapper">
+
+          <canvas id="qrCanvas"></canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- NAVIGATION -->
+
+      <div class="navigation">
+
+        <button
+          class="nav-btn"
+          id="prevBtn"
+        >
+          ← PREVIOUS
+        </button>
+
+        <button
+          class="nav-btn primary-btn"
+          id="nextBtn"
+        >
+          NEXT →
+        </button>
+
+        <button
+          class="nav-btn"
+          id="refreshBtn"
+        >
+          ↻ RESET
+        </button>
+
+        <button
+          class="nav-btn download-btn"
+          id="downloadBtn"
+        >
+          ↓ DOWNLOAD QR
+        </button>
+
+      </div>
+
+
+      <div class="bottom-info">
+
+        <div>
+          Format:
+          <span id="formatInfo">PNG</span>
+        </div>
+
+        <div>
+          DPI:
+          <span id="dpiInfo">96</span>
+        </div>
+
+        <div>
+          Module:
+          <span id="moduleInfo">4</span>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     LOGGER
+====================================================== -->
 
 <script src="logger.js"></script>
 
-<script>
-trackPage("SERIAL PAGE OPEN");
-</script>
 
 <script>
+
+/* =========================================================
+   LOGIN CHECK
+========================================================= */
+
 let user = sessionStorage.getItem("wms_user");
-if(!user) window.location.href = "login.html";
 
-sendLog(`📦 SERIAL PAGE\n👤 ${user}\n⏰ ${getTime()}`);
-</script>
-<script>
-let qrBatches=[], batchRowCounts=[], currentIndex=0;
-const MAX_QR_LENGTH=2200;
+if(!user){
 
-const fileInput=document.getElementById('fileInput');
-const qrCanvas=document.getElementById('qrCanvas');
-const counter=document.getElementById('counter');
-const info=document.getElementById('info');
-const prevBtn=document.getElementById('prevBtn');
-const nextBtn=document.getElementById('nextBtn');
-const downloadBtn=document.getElementById('downloadBtn');
-const refreshBtn=document.getElementById('refreshBtn');
-const moduleWidthInput=document.getElementById('moduleWidth');
-const dpiInput=document.getElementById('dpi');
-const imageFormatSelect=document.getElementById('imageFormat');
-const refreshQRBtn=document.getElementById('refreshQRBtn');
+  window.location.href = "login.html";
 
-fileInput.addEventListener('change', handleFile);
-prevBtn.addEventListener('click', prevQR);
-nextBtn.addEventListener('click', nextQR);
-downloadBtn.addEventListener('click', downloadQR);
-refreshBtn.addEventListener('click', refreshApp);
-refreshQRBtn.addEventListener('click',()=>{ if(qrBatches.length>0) generateQR(); });
-window.addEventListener('resize',()=>{ if(qrBatches.length>0) generateQR(); });
+}
+
+document.getElementById("userBadge").textContent =
+  "👤 " + user;
+
+
+/* =========================================================
+   PAGE LOGGING
+========================================================= */
+
+if(typeof trackPage === "function"){
+
+  trackPage("SERIAL PAGE OPEN");
+
+}
+
+if(
+  typeof sendLog === "function" &&
+  typeof getTime === "function"
+){
+
+  sendLog(
+    `📦 SERIAL PAGE\n👤 ${user}\n⏰ ${getTime()}`
+  );
+
+}
+
+
+/* =========================================================
+   QR VARIABLES
+========================================================= */
+
+let qrBatches = [];
+
+let batchRowCounts = [];
+
+let currentIndex = 0;
+
+const MAX_QR_LENGTH = 2200;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const fileInput =
+  document.getElementById("fileInput");
+
+const qrCanvas =
+  document.getElementById("qrCanvas");
+
+const counter =
+  document.getElementById("counter");
+
+const info =
+  document.getElementById("info");
+
+const prevBtn =
+  document.getElementById("prevBtn");
+
+const nextBtn =
+  document.getElementById("nextBtn");
+
+const downloadBtn =
+  document.getElementById("downloadBtn");
+
+const refreshBtn =
+  document.getElementById("refreshBtn");
+
+const moduleWidthInput =
+  document.getElementById("moduleWidth");
+
+const dpiInput =
+  document.getElementById("dpi");
+
+const imageFormatSelect =
+  document.getElementById("imageFormat");
+
+const refreshQRBtn =
+  document.getElementById("refreshQRBtn");
+
+const emptyState =
+  document.getElementById("emptyState");
+
+const formatInfo =
+  document.getElementById("formatInfo");
+
+const dpiInfo =
+  document.getElementById("dpiInfo");
+
+const moduleInfo =
+  document.getElementById("moduleInfo");
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+fileInput.addEventListener(
+  "change",
+  handleFile
+);
+
+prevBtn.addEventListener(
+  "click",
+  prevQR
+);
+
+nextBtn.addEventListener(
+  "click",
+  nextQR
+);
+
+downloadBtn.addEventListener(
+  "click",
+  downloadQR
+);
+
+refreshBtn.addEventListener(
+  "click",
+  refreshApp
+);
+
+refreshQRBtn.addEventListener(
+  "click",
+  () => {
+
+    if(qrBatches.length > 0){
+
+      generateQR();
+
+    }
+
+  }
+);
+
+moduleWidthInput.addEventListener(
+  "input",
+  updateSettingInfo
+);
+
+dpiInput.addEventListener(
+  "input",
+  updateSettingInfo
+);
+
+imageFormatSelect.addEventListener(
+  "change",
+  updateSettingInfo
+);
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    if(qrBatches.length > 0){
+
+      generateQR();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   SETTINGS DISPLAY
+========================================================= */
+
+function updateSettingInfo(){
+
+  formatInfo.textContent =
+    imageFormatSelect.value.toUpperCase();
+
+  dpiInfo.textContent =
+    dpiInput.value || "96";
+
+  moduleInfo.textContent =
+    moduleWidthInput.value || "4";
+
+}
+
+
+/* =========================================================
+   FILE HANDLER
+========================================================= */
 
 function handleFile(e){
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const data=new Uint8Array(e.target.result);
-    const workbook=XLSX.read(data,{type:'array'});
-    const sheet=workbook.Sheets[workbook.SheetNames[0]];
-    const rows=XLSX.utils.sheet_to_json(sheet);
-    const payloadRows=rows.map(r=>buildRow(r));
-    const result=buildBatches(payloadRows);
-    qrBatches=result.batches; batchRowCounts=result.counts; currentIndex=0;
-    qrBatches.length>0 ? generateQR() : clearQR();
-  };
-  reader.readAsArrayBuffer(e.target.files[0]);
+
+  const file =
+    e.target.files[0];
+
+  if(!file){
+
+    return;
+
+  }
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    function(e){
+
+      try{
+
+        const data =
+          new Uint8Array(
+            e.target.result
+          );
+
+
+        const workbook =
+          XLSX.read(
+            data,
+            {
+              type:"array"
+            }
+          );
+
+
+        const sheet =
+          workbook.Sheets[
+            workbook.SheetNames[0]
+          ];
+
+
+        const rows =
+          XLSX.utils.sheet_to_json(
+            sheet
+          );
+
+
+        const payloadRows =
+          rows.map(
+            r => buildRow(r)
+          );
+
+
+        const result =
+          buildBatches(
+            payloadRows
+          );
+
+
+        qrBatches =
+          result.batches;
+
+        batchRowCounts =
+          result.counts;
+
+        currentIndex = 0;
+
+
+        if(qrBatches.length > 0){
+
+          emptyState.style.display =
+            "none";
+
+          generateQR();
+
+        }else{
+
+          clearQR();
+
+        }
+
+
+      }catch(error){
+
+        console.error(
+          "Excel processing error:",
+          error
+        );
+
+        alert(
+          "Unable to read the Excel file."
+        );
+
+      }
+
+    };
+
+
+  reader.readAsArrayBuffer(file);
+
 }
+
+
+/* =========================================================
+   SERIAL PAYLOAD
+========================================================= */
 
 function buildRow(r){
-  return "\x01\x17"+"1\t"+
-    (r["ORDER NUMBER"]||"")+"\t"+
-    (r["LPN"]||"")+"\t"+
-    "\f"+(r["LOCK CODE"]||"")+"\t"+
-    (r["ITEM CODE"]||"")+"\t"+
-    (r["QTY"]||"")+"\t"+
-    (r["LOT"]||"")+"\t"+
-    "\t\x01"+(r["SERIAL NUMBER"]||"")+"\t"+"\x05";
+
+  return "\x01\x17" +
+    "1\t" +
+
+    (r["ORDER NUMBER"] || "") +
+    "\t" +
+
+    (r["LPN"] || "") +
+    "\t" +
+
+    "\f" +
+
+    (r["LOCK CODE"] || "") +
+    "\t" +
+
+    (r["ITEM CODE"] || "") +
+    "\t" +
+
+    (r["QTY"] || "") +
+    "\t" +
+
+    (r["LOT"] || "") +
+    "\t" +
+
+    "\t\x01" +
+
+    (r["SERIAL NUMBER"] || "") +
+
+    "\t" +
+
+    "\x05";
+
 }
+
+
+/* =========================================================
+   BUILD QR BATCHES
+========================================================= */
 
 function buildBatches(rows){
-  let batches=[], counts=[], current="", rowCount=0;
-  rows.forEach(r=>{
-    const candidate=current?current+r:r;
-    if(candidate.length>MAX_QR_LENGTH){ batches.push(current); counts.push(rowCount); current=r; rowCount=1; }
-    else { current=candidate; rowCount++; }
-  });
-  if(current){ batches.push(current); counts.push(rowCount); }
-  return {batches, counts};
+
+  let batches = [];
+
+  let counts = [];
+
+  let current = "";
+
+  let rowCount = 0;
+
+
+  rows.forEach(
+    r => {
+
+      const candidate =
+        current
+          ? current + r
+          : r;
+
+
+      if(
+        candidate.length >
+        MAX_QR_LENGTH
+      ){
+
+        if(current){
+
+          batches.push(
+            current
+          );
+
+          counts.push(
+            rowCount
+          );
+
+        }
+
+
+        current = r;
+
+        rowCount = 1;
+
+
+      }else{
+
+        current =
+          candidate;
+
+        rowCount++;
+
+      }
+
+    }
+  );
+
+
+  if(current){
+
+    batches.push(
+      current
+    );
+
+    counts.push(
+      rowCount
+    );
+
+  }
+
+
+  return {
+    batches,
+    counts
+  };
+
 }
+
+
+/* =========================================================
+   GENERATE QR
+========================================================= */
 
 function generateQR(){
-  if(qrBatches.length===0) return;
-  const rightPanel=document.querySelector('.right-panel');
-  const navHeight=document.querySelector('.navigation').offsetHeight;
-  const availableHeight=rightPanel.clientHeight-navHeight-20;
-  const availableWidth=rightPanel.clientWidth-20;
-  const size=Math.min(availableHeight,availableWidth);
-  const moduleWidth=parseInt(moduleWidthInput.value)||4;
-  const dpi=parseInt(dpiInput.value)||96;
-  const scale=dpi/96;
 
-  qrCanvas.width=size*scale; qrCanvas.height=size*scale;
-  const ctx=qrCanvas.getContext('2d'); ctx.setTransform(scale,0,0,scale,0,0);
-  ctx.clearRect(0,0,size,size);
+  if(
+    qrBatches.length === 0
+  ){
 
-  QRCode.toCanvas(qrCanvas,qrBatches[currentIndex],{errorCorrectionLevel:'L',width:size,margin:moduleWidth},err=>{if(err) console.error(err);});
+    return;
 
-  counter.textContent=`QR ${currentIndex+1} / ${qrBatches.length}`;
-  info.textContent=`Rows in this QR: ${batchRowCounts[currentIndex]}`;
+  }
+
+
+  const rightPanel =
+    document.querySelector(
+      ".qr-card"
+    );
+
+
+  const availableWidth =
+    rightPanel.clientWidth - 70;
+
+
+  const availableHeight =
+    rightPanel.clientHeight - 70;
+
+
+  const size =
+    Math.max(
+      100,
+      Math.min(
+        availableHeight,
+        availableWidth
+      )
+    );
+
+
+  const moduleWidth =
+    parseInt(
+      moduleWidthInput.value
+    ) || 4;
+
+
+  const dpi =
+    parseInt(
+      dpiInput.value
+    ) || 96;
+
+
+  const scale =
+    dpi / 96;
+
+
+  qrCanvas.width =
+    size * scale;
+
+  qrCanvas.height =
+    size * scale;
+
+
+  const ctx =
+    qrCanvas.getContext("2d");
+
+
+  ctx.setTransform(
+    scale,
+    0,
+    0,
+    scale,
+    0,
+    0
+  );
+
+
+  ctx.clearRect(
+    0,
+    0,
+    size,
+    size
+  );
+
+
+  QRCode.toCanvas(
+
+    qrCanvas,
+
+    qrBatches[currentIndex],
+
+    {
+
+      errorCorrectionLevel:"L",
+
+      width:size,
+
+      margin:moduleWidth,
+
+      color:{
+        dark:"#000000",
+        light:"#ffffff"
+      }
+
+    },
+
+    err => {
+
+      if(err){
+
+        console.error(
+          "QR generation error:",
+          err
+        );
+
+        return;
+
+      }
+
+    }
+
+  );
+
+
+  counter.innerHTML =
+    `${currentIndex + 1} <span>/ ${qrBatches.length}</span>`;
+
+
+  info.textContent =
+    `Rows in this QR: ${batchRowCounts[currentIndex]}`;
+
+
+  updateNavigation();
+
 }
 
-function prevQR(){ if(currentIndex>0){ currentIndex--; generateQR(); } }
-function nextQR(){ if(currentIndex<qrBatches.length-1){ currentIndex++; generateQR(); } }
-function clearQR(){ const ctx=qrCanvas.getContext('2d'); ctx.clearRect(0,0,qrCanvas.width,qrCanvas.height); counter.textContent="QR 0 / 0"; info.textContent="Rows in this QR: 0"; }
+
+/* =========================================================
+   NAVIGATION STATE
+========================================================= */
+
+function updateNavigation(){
+
+  prevBtn.disabled =
+    currentIndex === 0;
+
+  nextBtn.disabled =
+    currentIndex >=
+    qrBatches.length - 1;
+
+
+  prevBtn.style.opacity =
+    prevBtn.disabled
+      ? ".45"
+      : "1";
+
+
+  nextBtn.style.opacity =
+    nextBtn.disabled
+      ? ".45"
+      : "1";
+
+}
+
+
+/* =========================================================
+   PREVIOUS
+========================================================= */
+
+function prevQR(){
+
+  if(
+    currentIndex > 0
+  ){
+
+    currentIndex--;
+
+    generateQR();
+
+  }
+
+}
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+function nextQR(){
+
+  if(
+    currentIndex <
+    qrBatches.length - 1
+  ){
+
+    currentIndex++;
+
+    generateQR();
+
+  }
+
+}
+
+
+/* =========================================================
+   CLEAR QR
+========================================================= */
+
+function clearQR(){
+
+  const ctx =
+    qrCanvas.getContext("2d");
+
+
+  ctx.clearRect(
+    0,
+    0,
+    qrCanvas.width,
+    qrCanvas.height
+  );
+
+
+  counter.innerHTML =
+    `0 <span>/ 0</span>`;
+
+
+  info.textContent =
+    "Rows in this QR: 0";
+
+
+  emptyState.style.display =
+    "block";
+
+
+  updateNavigation();
+
+}
+
+
+/* =========================================================
+   DOWNLOAD QR
+========================================================= */
 
 function downloadQR(){
-  if(qrBatches.length===0) return;
-  const format=imageFormatSelect.value;
-  const dpi=parseInt(dpiInput.value)||96;
-  const tempCanvas=document.createElement('canvas');
-  tempCanvas.width=qrCanvas.width; tempCanvas.height=qrCanvas.height;
-  const ctx=tempCanvas.getContext('2d'); const scale=dpi/96;
-  tempCanvas.width*=scale; tempCanvas.height*=scale; ctx.scale(scale,scale);
-  ctx.drawImage(qrCanvas,0,0);
-  const link=document.createElement('a'); link.download=`qr_${currentIndex+1}.${format}`;
-  link.href=tempCanvas.toDataURL(`image/${format}`); link.click();
+
+  if(
+    qrBatches.length === 0
+  ){
+
+    return;
+
+  }
+
+
+  const format =
+    imageFormatSelect.value;
+
+
+  const dpi =
+    parseInt(
+      dpiInput.value
+    ) || 96;
+
+
+  const tempCanvas =
+    document.createElement(
+      "canvas"
+    );
+
+
+  const scale =
+    dpi / 96;
+
+
+  tempCanvas.width =
+    qrCanvas.width * scale;
+
+
+  tempCanvas.height =
+    qrCanvas.height * scale;
+
+
+  const ctx =
+    tempCanvas.getContext(
+      "2d"
+    );
+
+
+  ctx.fillStyle =
+    "#ffffff";
+
+
+  ctx.fillRect(
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height
+  );
+
+
+  ctx.drawImage(
+    qrCanvas,
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height
+  );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.download =
+    `serial_qr_${currentIndex + 1}.${format}`;
+
+
+  link.href =
+    tempCanvas.toDataURL(
+      `image/${format}`
+    );
+
+
+  link.click();
+
+
+  /* Optional logging */
+
+  if(typeof track === "function"){
+
+    track(
+      `SERIAL QR DOWNLOAD ${currentIndex + 1}`
+    );
+
+  }
+
 }
 
-function refreshApp(){ qrBatches=[]; batchRowCounts=[]; currentIndex=0; clearQR(); fileInput.value=""; fileInput.focus(); }
+
+/* =========================================================
+   RESET APPLICATION
+========================================================= */
+
+function refreshApp(){
+
+  qrBatches = [];
+
+  batchRowCounts = [];
+
+  currentIndex = 0;
+
+
+  clearQR();
+
+
+  fileInput.value = "";
+
+
+  fileInput.focus();
+
+
+  if(typeof track === "function"){
+
+    track(
+      "SERIAL QR RESET"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIAL SETTINGS
+========================================================= */
+
+updateSettingInfo();
+
+updateNavigation();
+
 </script>
+
 </body>
 </html>
