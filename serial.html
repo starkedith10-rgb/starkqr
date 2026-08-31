@@ -12,6 +12,11 @@
 
 <style>
 
+/* =========================================================
+   W2R SERIAL QR STATION
+   DARK NAVY + CYAN PROFESSIONAL THEME
+========================================================= */
+
 *{
   margin:0;
   padding:0;
@@ -27,6 +32,10 @@ body{
   color:#eaf7ff;
   overflow:hidden;
 }
+
+/* =========================
+   MAIN APP
+========================= */
 
 .app{
   width:100%;
@@ -120,7 +129,7 @@ body{
 }
 
 /* =========================
-   SIDEBAR
+   LEFT CONTROL PANEL
 ========================= */
 
 .sidebar{
@@ -306,7 +315,7 @@ input[type="file"]{
 }
 
 /* =========================
-   WORKSPACE
+   MAIN WORKSPACE
 ========================= */
 
 .workspace{
@@ -319,6 +328,10 @@ input[type="file"]{
     radial-gradient(circle at 50% 30%,rgba(0,174,255,.08),transparent 35%),
     #07111f;
 }
+
+/* =========================
+   WORKSPACE HEADER
+========================= */
 
 .workspace-header{
   display:flex;
@@ -377,6 +390,8 @@ input[type="file"]{
     0 8px 30px rgba(0,0,0,.25);
 }
 
+/* Corner decorations */
+
 .qr-card::before,
 .qr-card::after{
   content:"";
@@ -421,6 +436,8 @@ input[type="file"]{
   max-width:90%;
   max-height:90%;
 }
+
+/* Empty state */
 
 .empty-state{
   position:absolute;
@@ -580,6 +597,10 @@ input[type="file"]{
 
 }
 
+/* =========================
+   SCROLLBAR
+========================= */
+
 ::-webkit-scrollbar{
   width:5px;
 }
@@ -601,7 +622,9 @@ input[type="file"]{
 
 <div class="app">
 
-  <!-- TOP BAR -->
+  <!-- =====================================================
+       TOP BAR
+  ====================================================== -->
 
   <div class="topbar">
 
@@ -612,13 +635,8 @@ input[type="file"]{
       </div>
 
       <div class="brand-text">
-
         <h1>R2W SERIAL STATION</h1>
-
-        <span>
-          WAREHOUSE QR MANAGEMENT SYSTEM
-        </span>
-
+        <span>WAREHOUSE QR MANAGEMENT SYSTEM</span>
       </div>
 
     </div>
@@ -638,12 +656,16 @@ input[type="file"]{
   </div>
 
 
-  <!-- CONTENT -->
+  <!-- =====================================================
+       CONTENT
+  ====================================================== -->
 
   <div class="content">
 
 
-    <!-- SIDEBAR -->
+    <!-- ===================================================
+         SIDEBAR
+    ==================================================== -->
 
     <aside class="sidebar">
 
@@ -821,7 +843,9 @@ input[type="file"]{
     </aside>
 
 
-    <!-- WORKSPACE -->
+    <!-- ===================================================
+         WORKSPACE
+    ==================================================== -->
 
     <main class="workspace">
 
@@ -830,9 +854,7 @@ input[type="file"]{
 
         <div class="workspace-title">
 
-          <h2>
-            Serial QR Preview
-          </h2>
+          <h2>Serial QR Preview</h2>
 
           <p>
             Scan-ready QR generated from uploaded serial data
@@ -945,9 +967,12 @@ input[type="file"]{
 </div>
 
 
-<!-- LOGGER -->
+<!-- =====================================================
+     LOGGER
+====================================================== -->
 
 <script src="logger.js"></script>
+
 
 <script>
 
@@ -955,19 +980,15 @@ input[type="file"]{
    LOGIN CHECK
 ========================================================= */
 
-let user =
-  sessionStorage.getItem("wms_user");
+let user = sessionStorage.getItem("wms_user");
 
 if(!user){
 
-  window.location.href =
-    "login.html";
+  window.location.href = "login.html";
 
 }
 
-document.getElementById(
-  "userBadge"
-).textContent =
+document.getElementById("userBadge").textContent =
   "👤 " + user;
 
 
@@ -977,9 +998,7 @@ document.getElementById(
 
 if(typeof trackPage === "function"){
 
-  trackPage(
-    "SERIAL PAGE OPEN"
-  );
+  trackPage("SERIAL PAGE OPEN");
 
 }
 
@@ -989,9 +1008,7 @@ if(
 ){
 
   sendLog(
-    `📦 SERIAL PAGE OPEN\n` +
-    `👤 ${user}\n` +
-    `⏰ ${getTime()}`
+    `📦 SERIAL PAGE\n👤 ${user}\n⏰ ${getTime()}`
   );
 
 }
@@ -1007,10 +1024,6 @@ let batchRowCounts = [];
 
 let currentIndex = 0;
 
-let totalExcelRows = 0;
-
-let currentFileName = "";
-
 const MAX_QR_LENGTH = 2200;
 
 
@@ -1019,84 +1032,52 @@ const MAX_QR_LENGTH = 2200;
 ========================================================= */
 
 const fileInput =
-  document.getElementById(
-    "fileInput"
-  );
+  document.getElementById("fileInput");
 
 const qrCanvas =
-  document.getElementById(
-    "qrCanvas"
-  );
+  document.getElementById("qrCanvas");
 
 const counter =
-  document.getElementById(
-    "counter"
-  );
+  document.getElementById("counter");
 
 const info =
-  document.getElementById(
-    "info"
-  );
+  document.getElementById("info");
 
 const prevBtn =
-  document.getElementById(
-    "prevBtn"
-  );
+  document.getElementById("prevBtn");
 
 const nextBtn =
-  document.getElementById(
-    "nextBtn"
-  );
+  document.getElementById("nextBtn");
 
 const downloadBtn =
-  document.getElementById(
-    "downloadBtn"
-  );
+  document.getElementById("downloadBtn");
 
 const refreshBtn =
-  document.getElementById(
-    "refreshBtn"
-  );
+  document.getElementById("refreshBtn");
 
 const moduleWidthInput =
-  document.getElementById(
-    "moduleWidth"
-  );
+  document.getElementById("moduleWidth");
 
 const dpiInput =
-  document.getElementById(
-    "dpi"
-  );
+  document.getElementById("dpi");
 
 const imageFormatSelect =
-  document.getElementById(
-    "imageFormat"
-  );
+  document.getElementById("imageFormat");
 
 const refreshQRBtn =
-  document.getElementById(
-    "refreshQRBtn"
-  );
+  document.getElementById("refreshQRBtn");
 
 const emptyState =
-  document.getElementById(
-    "emptyState"
-  );
+  document.getElementById("emptyState");
 
 const formatInfo =
-  document.getElementById(
-    "formatInfo"
-  );
+  document.getElementById("formatInfo");
 
 const dpiInfo =
-  document.getElementById(
-    "dpiInfo"
-  );
+  document.getElementById("dpiInfo");
 
 const moduleInfo =
-  document.getElementById(
-    "moduleInfo"
-  );
+  document.getElementById("moduleInfo");
 
 
 /* =========================================================
@@ -1135,12 +1116,6 @@ refreshQRBtn.addEventListener(
     if(qrBatches.length > 0){
 
       generateQR();
-
-      /*
-        IMPORTANT:
-        We are NOT sending
-        "QR REFRESH" to Telegram.
-      */
 
     }
 
@@ -1210,14 +1185,6 @@ function handleFile(e){
   }
 
 
-  /*
-    Store Excel file name
-  */
-
-  currentFileName =
-    file.name;
-
-
   const reader =
     new FileReader();
 
@@ -1254,27 +1221,11 @@ function handleFile(e){
           );
 
 
-        /*
-          Total Excel rows
-        */
-
-        totalExcelRows =
-          rows.length;
-
-
-        /*
-          Build serial payload
-        */
-
         const payloadRows =
           rows.map(
             r => buildRow(r)
           );
 
-
-        /*
-          Build QR batches
-        */
 
         const result =
           buildBatches(
@@ -1291,66 +1242,7 @@ function handleFile(e){
         currentIndex = 0;
 
 
-        /*
-          Log upload information
-          WITHOUT serial data
-        */
-
-        if(
-          typeof sendLog === "function" &&
-          typeof getTime === "function"
-        ){
-
-          sendLog(
-            `📤 EXCEL UPLOAD\n` +
-            `👤 ${user}\n` +
-            `📄 FILE: ${currentFileName}\n` +
-            `📊 ROWS: ${totalExcelRows}\n` +
-            `🔲 QR GENERATED: ${qrBatches.length}\n` +
-            `⏰ ${getTime()}`
-          );
-
-        }
-
-
-        /*
-          Log individual QR row counts
-        */
-
-        if(
-          typeof sendLog === "function" &&
-          typeof getTime === "function" &&
-          qrBatches.length > 0
-        ){
-
-          const qrDetails =
-            batchRowCounts
-              .map(
-                (count,index) =>
-                  `QR ${index + 1}: ${count} rows`
-              )
-              .join("\n");
-
-
-          sendLog(
-            `📊 QR BATCH SUMMARY\n` +
-            `📄 FILE: ${currentFileName}\n` +
-            `📊 TOTAL ROWS: ${totalExcelRows}\n` +
-            `🔲 TOTAL QR: ${qrBatches.length}\n` +
-            `${qrDetails}\n` +
-            `⏰ ${getTime()}`
-          );
-
-        }
-
-
-        /*
-          Generate QR
-        */
-
-        if(
-          qrBatches.length > 0
-        ){
+        if(qrBatches.length > 0){
 
           emptyState.style.display =
             "none";
@@ -1360,10 +1252,6 @@ function handleFile(e){
         }else{
 
           clearQR();
-
-          alert(
-            "No rows found in the Excel file."
-          );
 
         }
 
@@ -1375,26 +1263,6 @@ function handleFile(e){
           error
         );
 
-
-        /*
-          Log file processing error
-        */
-
-        if(
-          typeof sendLog === "function" &&
-          typeof getTime === "function"
-        ){
-
-          sendLog(
-            `❌ EXCEL PROCESSING ERROR\n` +
-            `👤 ${user}\n` +
-            `📄 FILE: ${currentFileName}\n` +
-            `⏰ ${getTime()}`
-          );
-
-        }
-
-
         alert(
           "Unable to read the Excel file."
         );
@@ -1404,9 +1272,7 @@ function handleFile(e){
     };
 
 
-  reader.readAsArrayBuffer(
-    file
-  );
+  reader.readAsArrayBuffer(file);
 
 }
 
@@ -1595,9 +1461,7 @@ function generateQR(){
 
 
   const ctx =
-    qrCanvas.getContext(
-      "2d"
-    );
+    qrCanvas.getContext("2d");
 
 
   ctx.setTransform(
@@ -1626,14 +1490,11 @@ function generateQR(){
 
     {
 
-      errorCorrectionLevel:
-        "L",
+      errorCorrectionLevel:"L",
 
-      width:
-        size,
+      width:size,
 
-      margin:
-        moduleWidth,
+      margin:moduleWidth,
 
       color:{
         dark:"#000000",
@@ -1650,6 +1511,8 @@ function generateQR(){
           "QR generation error:",
           err
         );
+
+        return;
 
       }
 
@@ -1745,9 +1608,7 @@ function nextQR(){
 function clearQR(){
 
   const ctx =
-    qrCanvas.getContext(
-      "2d"
-    );
+    qrCanvas.getContext("2d");
 
 
   ctx.clearRect(
@@ -1864,23 +1725,12 @@ function downloadQR(){
   link.click();
 
 
-  /*
-    Log QR download
-  */
+  /* Optional logging */
 
-  if(
-    typeof sendLog === "function" &&
-    typeof getTime === "function"
-  ){
+  if(typeof track === "function"){
 
-    sendLog(
-      `⬇️ QR DOWNLOAD\n` +
-      `👤 ${user}\n` +
-      `📄 FILE: ${currentFileName || "N/A"}\n` +
-      `🔲 QR: ${currentIndex + 1} / ${qrBatches.length}\n` +
-      `📊 ROWS IN QR: ${batchRowCounts[currentIndex] || 0}\n` +
-      `📁 FORMAT: ${format.toUpperCase()}\n` +
-      `⏰ ${getTime()}`
+    track(
+      `SERIAL QR DOWNLOAD ${currentIndex + 1}`
     );
 
   }
@@ -1894,40 +1744,11 @@ function downloadQR(){
 
 function refreshApp(){
 
-  /*
-    Log PAGE RESET before clearing data
-  */
-
-  if(
-    typeof sendLog === "function" &&
-    typeof getTime === "function"
-  ){
-
-    sendLog(
-      `🔃 PAGE RESET\n` +
-      `👤 ${user}\n` +
-      `📄 FILE: ${currentFileName || "N/A"}\n` +
-      `📊 ROWS: ${totalExcelRows}\n` +
-      `🔲 QR GENERATED: ${qrBatches.length}\n` +
-      `⏰ ${getTime()}`
-    );
-
-  }
-
-
-  /*
-    Clear application
-  */
-
   qrBatches = [];
 
   batchRowCounts = [];
 
   currentIndex = 0;
-
-  totalExcelRows = 0;
-
-  currentFileName = "";
 
 
   clearQR();
@@ -1937,6 +1758,15 @@ function refreshApp(){
 
 
   fileInput.focus();
+
+
+  if(typeof track === "function"){
+
+    track(
+      "SERIAL QR RESET"
+    );
+
+  }
 
 }
 
