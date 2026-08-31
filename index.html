@@ -3,677 +3,1716 @@
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>STARK QR DASHBOARD</title>
+<title>STARK QR - W2R Control Center</title>
 
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    rel="stylesheet"
-  >
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+rel="stylesheet"
+>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <style>
+<style>
 
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial,sans-serif;
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+    background:#07111f;
+    color:#eaf4ff;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+
+/* =========================================================
+   LOADING SCREEN
+========================================================= */
+
+#loadingScreen{
+
+    position:fixed;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    background:
+        radial-gradient(circle at center,#12345a 0%,#07111f 45%,#020812 100%);
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:999999;
+
+}
+
+
+.loading-logo{
+
+    font-size:46px;
+
+    font-weight:900;
+
+    letter-spacing:6px;
+
+    color:#52b7ff;
+
+    text-shadow:
+        0 0 10px #168cff,
+        0 0 25px rgba(22,140,255,.7),
+        3px 3px #003b69;
+
+}
+
+
+.loading-subtitle{
+
+    margin-top:12px;
+
+    font-size:13px;
+
+    letter-spacing:3px;
+
+    color:#8fb9d9;
+
+}
+
+
+.loading-bar-container{
+
+    width:280px;
+
+    height:6px;
+
+    margin-top:28px;
+
+    background:#17283b;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 0 10px rgba(0,150,255,.2);
+
+}
+
+
+.loading-bar{
+
+    width:0%;
+
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #006eff,
+            #00c6ff
+        );
+
+    box-shadow:
+        0 0 12px #00aaff;
+
+    transition:width .08s linear;
+
+}
+
+
+.loading-percent{
+
+    margin-top:12px;
+
+    color:#67c7ff;
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   MAIN APP
+========================================================= */
+
+#dashboard{
+
+    display:none;
+
+    min-height:100vh;
+
+    background:
+        radial-gradient(
+            circle at 75% 20%,
+            rgba(0,119,255,.08),
+            transparent 30%
+        ),
+        #07111f;
+
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar{
+
+    height:68px;
+
+    position:fixed;
+
+    top:0;
+    left:0;
+    right:0;
+
+    z-index:1000;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 22px;
+
+    background:
+        rgba(7,17,31,.95);
+
+    border-bottom:
+        1px solid rgba(70,170,255,.25);
+
+    box-shadow:
+        0 4px 25px rgba(0,0,0,.35);
+
+    backdrop-filter:blur(10px);
+
+}
+
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+
+.brand-icon{
+
+    width:40px;
+    height:40px;
+
+    border-radius:10px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #087eff,
+            #00b8ff
+        );
+
+    color:white;
+
+    font-size:20px;
+
+    box-shadow:
+        0 0 18px rgba(0,150,255,.45);
+
+}
+
+
+.brand-title{
+
+    font-size:20px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+}
+
+
+.brand-subtitle{
+
+    font-size:10px;
+
+    color:#6fa9d3;
+
+    letter-spacing:2px;
+
+    margin-top:2px;
+
+}
+
+
+.top-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+
+/* SYSTEM STATUS */
+
+.system-status{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    color:#76e6a5;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+
+.status-dot{
+
+    width:8px;
+    height:8px;
+
+    background:#21e67a;
+
+    border-radius:50%;
+
+    box-shadow:
+        0 0 10px #21e67a;
+
+}
+
+
+.user-box{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:#b8d8f0;
+
+    font-size:13px;
+
+}
+
+
+.user-box i{
+
+    color:#43b8ff;
+
+}
+
+
+.logout-btn{
+
+    border:none;
+
+    background:#b91c2c;
+
+    color:white;
+
+    padding:9px 14px;
+
+    border-radius:7px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    transition:.2s;
+
+}
+
+
+.logout-btn:hover{
+
+    background:#e12638;
+
+    box-shadow:
+        0 0 12px rgba(225,38,56,.4);
+
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar{
+
+    position:fixed;
+
+    left:0;
+
+    top:68px;
+
+    bottom:0;
+
+    width:220px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #0b1a2b,
+            #07111f
+        );
+
+    border-right:
+        1px solid rgba(70,170,255,.18);
+
+    padding:18px 12px;
+
+    z-index:900;
+
+}
+
+
+.menu-title{
+
+    color:#547b9c;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+    letter-spacing:2px;
+
+    padding:8px 12px 12px;
+
+}
+
+
+.menu{
+
+    list-style:none;
+
+}
+
+
+.menu li{
+
+    margin-bottom:6px;
+
+    padding:13px 14px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    color:#a8c2d9;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    transition:.2s;
+
+}
+
+
+.menu li i{
+
+    width:20px;
+
+    text-align:center;
+
+    color:#55baff;
+
+}
+
+
+.menu li:hover{
+
+    background:
+        rgba(32,126,219,.16);
+
+    color:white;
+
+    transform:translateX(3px);
+
+}
+
+
+.menu li.active{
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,126,255,.28),
+            rgba(0,126,255,.05)
+        );
+
+    color:white;
+
+    border-left:
+        3px solid #28aaff;
+
+}
+
+
+.sidebar-footer{
+
+    position:absolute;
+
+    bottom:20px;
+
+    left:15px;
+
+    right:15px;
+
+    padding:12px;
+
+    border:
+        1px solid rgba(75,160,220,.15);
+
+    border-radius:9px;
+
+    background:rgba(20,50,75,.3);
+
+    text-align:center;
+
+    font-size:10px;
+
+    color:#557894;
+
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main{
+
+    margin-left:220px;
+
+    padding:
+        92px
+        24px
+        30px;
+
+    min-height:100vh;
+
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:space-between;
+
+    margin-bottom:20px;
+
+}
+
+
+.page-title{
+
+    font-size:27px;
+
+    font-weight:800;
+
+    letter-spacing:.5px;
+
+}
+
+
+.page-title span{
+
+    color:#32b8ff;
+
+}
+
+
+.page-description{
+
+    margin-top:5px;
+
+    color:#6e91ad;
+
+    font-size:12px;
+
+}
+
+
+.refresh-info{
+
+    text-align:right;
+
+    color:#66859e;
+
+    font-size:11px;
+
+}
+
+
+.refresh-info strong{
+
+    color:#72bdf0;
+
+}
+
+
+/* =========================================================
+   STATUS HERO
+========================================================= */
+
+.status-panel{
+
+    position:relative;
+
+    overflow:hidden;
+
+    min-height:185px;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #0d2945,
+            #0b1d32 55%,
+            #09253e
+        );
+
+    border:
+        1px solid rgba(62,175,255,.25);
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.25);
+
+}
+
+
+.status-panel::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:300px;
+    height:300px;
+
+    right:-100px;
+    top:-140px;
+
+    border-radius:50%;
+
+    background:
+        rgba(0,160,255,.08);
+
+}
+
+
+.status-panel::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    right:100px;
+    bottom:-120px;
+
+    border-radius:50%;
+
+    border:
+        1px solid rgba(50,180,255,.12);
+
+}
+
+
+.status-content{
+
+    position:relative;
+
+    z-index:2;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:30px;
+
+}
+
+
+.status-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+
+.status-circle{
+
+    width:85px;
+    height:85px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:
+        rgba(21,220,118,.08);
+
+    border:
+        2px solid #27e47c;
+
+    box-shadow:
+        0 0 25px rgba(39,228,124,.2);
+
+    color:#27e47c;
+
+    font-size:30px;
+
+}
+
+
+.status-label{
+
+    color:#7fa8c6;
+
+    font-size:11px;
+
+    letter-spacing:2px;
+
+}
+
+
+.status-ready{
+
+    margin-top:5px;
+
+    font-size:30px;
+
+    font-weight:900;
+
+    color:#43e890;
+
+    letter-spacing:1px;
+
+}
+
+
+.status-message{
+
+    margin-top:7px;
+
+    color:#7195af;
+
+    font-size:12px;
+
+}
+
+
+.progress-area{
+
+    min-width:300px;
+
+    width:45%;
+
+}
+
+
+.progress-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:9px;
+
+}
+
+
+.progress-top span:first-child{
+
+    color:#83a7c0;
+
+    font-size:12px;
+
+}
+
+
+.progress-percent{
+
+    color:#42c3ff;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+}
+
+
+.progress-bar{
+
+    height:11px;
+
+    width:100%;
+
+    background:#142a3e;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+
+.progress-fill{
+
+    width:0%;
+
+    height:100%;
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #087eff,
+            #00caff
+        );
+
+    box-shadow:
+        0 0 12px rgba(0,181,255,.6);
+
+    transition:
+        width .7s ease;
+
+}
+
+
+.progress-numbers{
+
+    margin-top:8px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:#56758e;
+
+    font-size:11px;
+
+}
+
+
+/* =========================================================
+   KPI CARDS
+========================================================= */
+
+.kpi-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:16px;
+
+    margin-bottom:20px;
+
+}
+
+
+.kpi-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    min-height:125px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d1e31,
+            #091625
+        );
+
+    border:
+        1px solid rgba(78,159,218,.16);
+
+    border-radius:13px;
+
+    padding:18px;
+
+    box-shadow:
+        0 7px 25px rgba(0,0,0,.18);
+
+    transition:.25s;
+
+}
+
+
+.kpi-card:hover{
+
+    transform:translateY(-3px);
+
+    border-color:
+        rgba(60,177,255,.4);
+
+}
+
+
+.kpi-icon{
+
+    width:38px;
+    height:38px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:9px;
+
+    background:
+        rgba(40,150,255,.12);
+
+    color:#45baff;
+
+    font-size:17px;
+
+}
+
+
+.kpi-label{
+
+    margin-top:12px;
+
+    color:#63849d;
+
+    font-size:11px;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+}
+
+
+.kpi-value{
+
+    margin-top:3px;
+
+    color:#e8f5ff;
+
+    font-size:29px;
+
+    font-weight:800;
+
+}
+
+
+.kpi-card.pending .kpi-icon{
+
+    background:rgba(255,62,77,.1);
+
+    color:#ff5360;
+
+}
+
+
+.kpi-card.pending .kpi-value{
+
+    color:#ff6670;
+
+}
+
+
+.kpi-card.scanned .kpi-icon{
+
+    background:rgba(32,225,125,.1);
+
+    color:#36e58a;
+
+}
+
+
+.kpi-card.scanned .kpi-value{
+
+    color:#48e999;
+
+}
+
+
+.kpi-card.today .kpi-icon{
+
+    background:rgba(255,194,59,.1);
+
+    color:#ffc43d;
+
+}
+
+
+.kpi-card.today .kpi-value{
+
+    color:#ffd05d;
+
+}
+
+
+/* =========================================================
+   CONTENT GRID
+========================================================= */
+
+.content-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,1.1fr)
+        minmax(0,.9fr);
+
+    gap:18px;
+
+}
+
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.panel{
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d1d2e,
+            #091523
+        );
+
+    border:
+        1px solid rgba(78,159,218,.15);
+
+    border-radius:14px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 7px 25px rgba(0,0,0,.18);
+
+}
+
+
+.panel-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:15px 17px;
+
+    border-bottom:
+        1px solid rgba(78,159,218,.12);
+
+}
+
+
+.panel-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+}
+
+
+.panel-title i{
+
+    color:#38b8ff;
+
+}
+
+
+.panel-badge{
+
+    padding:4px 8px;
+
+    border-radius:5px;
+
+    background:
+        rgba(48,172,255,.1);
+
+    color:#51bfff;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+}
+
+
+/* =========================================================
+   TEAM PERFORMANCE
+========================================================= */
+
+.team-list{
+
+    padding:12px 15px 15px;
+
+}
+
+
+.team-item{
+
+    margin-bottom:13px;
+
+}
+
+
+.team-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:6px;
+
+}
+
+
+.team-name{
+
+    color:#c1d9eb;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+
+.team-count{
+
+    color:#54bdff;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+
+.team-progress{
+
+    height:7px;
+
+    background:#162b3f;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+}
+
+
+.team-fill{
+
+    height:100%;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #087eff,
+            #20c5ff
+        );
+
+}
+
+
+.team-empty{
+
+    padding:30px;
+
+    text-align:center;
+
+    color:#526f86;
+
+    font-size:12px;
+
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-actions{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:10px;
+
+    padding:15px;
+
+}
+
+
+.quick-btn{
+
+    padding:15px 10px;
+
+    background:
+        rgba(22,54,80,.45);
+
+    border:
+        1px solid rgba(65,150,210,.13);
+
+    border-radius:9px;
+
+    color:#a9c7dd;
+
+    cursor:pointer;
+
+    text-align:center;
+
+    transition:.2s;
+
+}
+
+
+.quick-btn i{
+
+    display:block;
+
+    color:#46b9ff;
+
+    font-size:20px;
+
+    margin-bottom:7px;
+
+}
+
+
+.quick-btn span{
+
+    font-size:11px;
+
+    font-weight:bold;
+
+}
+
+
+.quick-btn:hover{
+
+    background:
+        rgba(31,121,188,.18);
+
+    border-color:
+        rgba(70,185,255,.35);
+
+    color:white;
+
+}
+
+
+/* =========================================================
+   PENDING TABLE
+========================================================= */
+
+.table-panel{
+
+    margin-top:18px;
+
+}
+
+
+.table-wrapper{
+
+    max-height:390px;
+
+    overflow:auto;
+
+}
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+thead th{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:5;
+
+    background:#0b1c2d;
+
+    color:#6fa4c8;
+
+    padding:11px 12px;
+
+    font-size:10px;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+    text-align:left;
+
+    border-bottom:
+        1px solid rgba(70,150,210,.18);
+
+}
+
+
+tbody td{
+
+    padding:12px;
+
+    font-size:12px;
+
+    color:#b7cee0;
+
+    border-bottom:
+        1px solid rgba(70,150,210,.08);
+
+}
+
+
+tbody tr:hover{
+
+    background:
+        rgba(42,139,211,.07);
+
+}
+
+
+.item-code{
+
+    color:#53baff;
+
+    font-weight:bold;
+
+}
+
+
+.pending-number{
+
+    font-weight:bold;
+
+}
+
+
+.team-tag{
+
+    display:inline-block;
+
+    padding:4px 7px;
+
+    border-radius:5px;
+
+    background:
+        rgba(72,157,216,.1);
+
+    color:#73c2ef;
+
+    font-size:10px;
+
+}
+
+
+.normal-status{
+
+    color:#45df8d;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+}
+
+
+.critical-row{
+
+    background:
+        rgba(214,40,40,.12) !important;
+
+}
+
+
+.critical-row td{
+
+    color:#ff717a;
+
+}
+
+
+.critical-row .item-code{
+
+    color:#ff626c;
+
+}
+
+
+.critical-status{
+
+    color:#ff555f;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+}
+
+
+.no-data{
+
+    text-align:center;
+
+    padding:35px !important;
+
+    color:#526f86 !important;
+
+}
+
+
+/* =========================================================
+   LAST UPDATE
+========================================================= */
+
+.bottom-info{
+
+    margin-top:14px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:#4e6d84;
+
+    font-size:10px;
+
+}
+
+
+.live-indicator{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+}
+
+
+.live-dot{
+
+    width:6px;
+    height:6px;
+
+    border-radius:50%;
+
+    background:#20e27a;
+
+    box-shadow:
+        0 0 7px #20e27a;
+
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar{
+
+    width:7px;
+    height:7px;
+
+}
+
+
+::-webkit-scrollbar-track{
+
+    background:#07111f;
+
+}
+
+
+::-webkit-scrollbar-thumb{
+
+    background:#1b4566;
+
+    border-radius:10px;
+
+}
+
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#2876a7;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1100px){
+
+    .kpi-grid{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
     }
 
-    html,
-    body{
-      width:100%;
-      min-height:100%;
-      background:#eef2f7;
-    }
 
+    .content-grid{
 
-    /* =========================================
-       LOADING SCREEN
-    ========================================= */
-
-    #loadingScreen{
-
-      position:fixed;
-
-      top:0;
-      left:0;
-      right:0;
-      bottom:0;
-
-      width:100%;
-      height:100%;
-
-      background:#1f2a3a;
-
-      display:flex;
-      flex-direction:column;
-
-      justify-content:center;
-      align-items:center;
-
-      z-index:999999;
-
-      color:white;
+        grid-template-columns:1fr;
 
     }
 
+}
 
-    .loading-logo{
 
-      font-size:42px;
-
-      font-weight:bold;
-
-      letter-spacing:4px;
-
-      color:#66b2ff;
-
-      text-shadow:
-        2px 2px #004080,
-        4px 4px #003366;
-
-      margin-bottom:15px;
-
-    }
-
-
-    .loading-title{
-
-      color:#d7deea;
-
-      font-size:16px;
-
-      margin-bottom:20px;
-
-    }
-
-
-    .loading-bar-container{
-
-      width:260px;
-
-      height:7px;
-
-      background:#34445a;
-
-      border-radius:20px;
-
-      overflow:hidden;
-
-    }
-
-
-    .loading-bar{
-
-      width:0%;
-
-      height:100%;
-
-      background:#2d63d1;
-
-      border-radius:20px;
-
-      transition:width .1s linear;
-
-    }
-
-
-    .loading-percent{
-
-      margin-top:10px;
-
-      color:#99ccff;
-
-      font-size:13px;
-
-    }
-
-
-    /* =========================================
-       MAIN DASHBOARD
-    ========================================= */
-
-    #dashboard{
-
-      display:none;
-
-    }
-
-
-    .topbar{
-
-      height:60px;
-
-      background:white;
-
-      display:flex;
-
-      justify-content:space-between;
-
-      align-items:center;
-
-      padding:0 20px;
-
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
-
-    }
-
-
-    .left{
-
-      display:flex;
-
-      align-items:center;
-
-      gap:12px;
-
-    }
-
-
-    .home-btn{
-
-      background:#2d63d1;
-
-      color:white;
-
-      border:none;
-
-      padding:8px 14px;
-
-      border-radius:6px;
-
-      cursor:pointer;
-
-      font-weight:bold;
-
-    }
-
-
-    .home-btn:hover{
-
-      background:#1f4fae;
-
-    }
-
-
-    .right{
-
-      display:flex;
-
-      align-items:center;
-
-      gap:15px;
-
-      font-weight:bold;
-
-      color:#2d63d1;
-
-    }
-
-
-    .logout-btn{
-
-      background:red;
-
-      color:white;
-
-      border:none;
-
-      padding:8px 14px;
-
-      border-radius:6px;
-
-      cursor:pointer;
-
-    }
-
-
-    .logout-btn:hover{
-
-      background:#b00000;
-
-    }
-
-
-    /* =========================================
-       SIDEBAR
-    ========================================= */
+@media(max-width:750px){
 
     .sidebar{
 
-      width:220px;
+        width:65px;
 
-      height:calc(100vh - 60px);
-
-      background:#1f2a3a;
-
-      position:fixed;
-
-      top:60px;
-
-      left:0;
-
-      padding-top:20px;
+        padding:15px 8px;
 
     }
 
 
-    .menu{
+    .menu-title,
+    .menu li span,
+    .sidebar-footer{
 
-      list-style:none;
+        display:none;
 
     }
 
 
     .menu li{
 
-      padding:16px 20px;
+        justify-content:center;
 
-      color:#d7deea;
-
-      display:flex;
-
-      align-items:center;
-
-      gap:14px;
-
-      cursor:pointer;
-
-      transition:.2s;
+        padding:14px 5px;
 
     }
 
-
-    .menu li:hover{
-
-      background:#2d63d1;
-
-      color:white;
-
-    }
-
-
-    /* =========================================
-       MAIN CONTENT
-    ========================================= */
 
     .main{
 
-      margin-left:220px;
+        margin-left:65px;
 
-      padding:20px;
-
-    }
-
-
-    /* =========================================
-       DASHBOARD CARDS
-    ========================================= */
-
-    .cards{
-
-      display:flex;
-
-      gap:20px;
-
-      flex-wrap:wrap;
+        padding:85px 12px 20px;
 
     }
 
 
-    .card{
+    .brand-subtitle{
 
-      width:210px;
-
-      height:120px;
-
-      background:white;
-
-      border-radius:14px;
-
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-
-      display:flex;
-
-      flex-direction:column;
-
-      justify-content:center;
-
-      align-items:center;
-
-      cursor:pointer;
-
-      transition:.2s;
+        display:none;
 
     }
 
 
-    .card:hover{
+    .brand-title{
 
-      transform:translateY(-3px);
-
-      box-shadow:0 7px 18px rgba(0,0,0,0.15);
+        font-size:16px;
 
     }
 
 
-    .card i{
+    .system-status{
 
-      font-size:30px;
-
-      color:#2d63d1;
-
-      margin-bottom:10px;
+        display:none;
 
     }
 
 
-    .card div{
+    .status-content{
 
-      font-size:20px;
+        flex-direction:column;
 
-      font-weight:bold;
-
-    }
-
-
-    /* =========================================
-       PENDING BOX
-    ========================================= */
-
-    .pending-box{
-
-      background:white;
-
-      border-radius:12px;
-
-      max-width:950px;
-
-      margin:20px auto;
-
-      box-shadow:0 3px 10px rgba(0,0,0,0.1);
-
-      overflow:hidden;
+        align-items:flex-start;
 
     }
 
 
-    .pending-header{
+    .progress-area{
 
-      background:#1f2a3a;
+        width:100%;
 
-      color:white;
-
-      padding:12px;
-
-      font-size:20px;
-
-      text-align:center;
-
-      font-weight:bold;
+        min-width:0;
 
     }
 
 
-    .pending-content{
+    .page-header{
 
-      padding:15px;
-
-    }
-
-
-    .metric{
-
-      text-align:center;
+        align-items:flex-start;
 
     }
 
 
-    .metric span{
+    .refresh-info{
 
-      font-size:14px;
+        display:none;
 
-      color:#666;
+    }
+
+}
+
+
+@media(max-width:500px){
+
+    .kpi-grid{
+
+        grid-template-columns:1fr;
 
     }
 
 
-    .metric h1{
-
-      font-size:50px;
-
-      margin-top:8px;
-
-      color:#d62828;
-
-      line-height:1;
-
-    }
-
-
-    .metric-row{
-
-      display:flex;
-
-      gap:12px;
-
-      margin-top:15px;
-
-      flex-wrap:wrap;
-
-    }
-
-
-    .small-box{
-
-      flex:1;
-
-      min-width:150px;
-
-      background:#f5f7fb;
-
-      padding:12px;
-
-      border-radius:10px;
-
-      text-align:center;
-
-    }
-
-
-    .small-box p{
-
-      font-size:13px;
-
-      color:#666;
-
-      margin-bottom:6px;
-
-    }
-
-
-    .small-box h2{
-
-      font-size:26px;
-
-      color:#2d63d1;
-
-    }
-
-
-    /* =========================================
-       TEAM BOX
-    ========================================= */
-
-    .team-box{
-
-      margin-top:15px;
-
-      display:flex;
-
-      gap:12px;
-
-      flex-wrap:wrap;
-
-    }
-
-
-    .team-card{
-
-      flex:1;
-
-      min-width:150px;
-
-      background:#e9f0ff;
-
-      padding:12px;
-
-      border-radius:10px;
-
-      text-align:center;
-
-      font-weight:bold;
-
-      color:#1f2a3a;
-
-    }
-
-
-    /* =========================================
-       TABLE
-    ========================================= */
-
-    .table-section{
-
-      margin-top:20px;
-
-      max-height:300px;
-
-      overflow:auto;
-
-    }
-
-
-    table{
-
-      width:100%;
-
-      border-collapse:collapse;
-
-    }
-
-
-    table th,
-    table td{
-
-      text-align:center;
-
-      vertical-align:middle;
-
-    }
-
-
-    table th{
-
-      background:#1f2a3a;
-
-      color:white;
-
-      padding:10px;
-
-      font-size:14px;
-
-      position:sticky;
-
-      top:0;
-
-    }
-
-
-    table td{
-
-      padding:10px;
-
-      font-size:14px;
-
-      border-bottom:1px solid #ddd;
-
-    }
-
-
-    table tr:hover{
-
-      background:#f5f7fb;
-
-    }
-
-
-    /* =========================================
-       CRITICAL ROW
-    ========================================= */
-
-    .critical-row{
-
-      background:#ffe5e5 !important;
-
-      color:#d62828;
-
-      font-weight:bold;
-
-    }
-
-
-    /* =========================================
-       MOBILE
-    ========================================= */
-
-    @media(max-width:700px){
-
-      .sidebar{
-
-        width:180px;
-
-      }
-
-
-      .main{
-
-        margin-left:180px;
-
-        padding:12px;
-
-      }
-
-
-      .card{
-
-        width:170px;
-
-      }
-
-
-      .topbar{
+    .topbar{
 
         padding:0 10px;
 
-      }
+    }
 
 
-      .topbar h2{
+    .user-box{
 
-        font-size:18px;
-
-      }
+        display:none;
 
     }
 
-  </style>
+
+    .status-left{
+
+        gap:12px;
+
+    }
+
+
+    .status-circle{
+
+        width:65px;
+        height:65px;
+
+        font-size:22px;
+
+    }
+
+
+    .status-ready{
+
+        font-size:23px;
+
+    }
+
+
+    .page-title{
+
+        font-size:22px;
+
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -681,337 +1720,781 @@
 <body>
 
 
-<!-- =========================================
+<!-- =========================================================
      LOADING SCREEN
-========================================= -->
+========================================================= -->
 
 <div id="loadingScreen">
 
-  <div class="loading-logo">
-    STARK QR
-  </div>
-
-  <div class="loading-title">
-    Initializing System...
-  </div>
-
-  <div class="loading-bar-container">
-
-    <div
-      class="loading-bar"
-      id="loadingBar">
+    <div class="loading-logo">
+        STARK QR
     </div>
 
-  </div>
+    <div class="loading-subtitle">
+        W2R CONTROL CENTER
+    </div>
 
-  <div
-    class="loading-percent"
-    id="loadingPercent">
-    0%
-  </div>
+    <div class="loading-bar-container">
+
+        <div
+            id="loadingBar"
+            class="loading-bar">
+        </div>
+
+    </div>
+
+    <div
+        id="loadingPercent"
+        class="loading-percent">
+        0%
+    </div>
 
 </div>
 
 
 
-<!-- =========================================
+<!-- =========================================================
      DASHBOARD
-========================================= -->
+========================================================= -->
 
 <div id="dashboard">
 
 
-  <!-- TOP BAR -->
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
 
-  <div class="topbar">
-
-    <div class="left">
-
-      <button
-        class="home-btn"
-        onclick="goHome()">
-
-        Home
-
-      </button>
-
-      <h2>Stark QR</h2>
-
-    </div>
+    <div class="topbar">
 
 
-    <div class="right">
+        <div class="brand">
 
-      <div id="userBox"></div>
+            <div class="brand-icon">
 
-      <div id="headerQR"></div>
+                <i class="fa fa-qrcode"></i>
 
-      <button
-        class="logout-btn"
-        onclick="logout()">
-
-        Logout
-
-      </button>
-
-    </div>
-
-  </div>
+            </div>
 
 
+            <div>
 
-  <!-- SIDEBAR -->
+                <div class="brand-title">
+                    STARK QR
+                </div>
 
-  <div class="sidebar">
+                <div class="brand-subtitle">
+                    W2R CONTROL SYSTEM
+                </div>
 
-    <ul class="menu">
+            </div>
 
-
-      <li onclick="go('accept.html')">
-
-        <i class="fa fa-check-circle"></i>
-
-        Accept
-
-      </li>
-
-
-      <li onclick="go('mit.html')">
-
-        <i class="fa fa-print"></i>
-
-        MIT
-
-      </li>
-
-
-      <li onclick="go('serial.html')">
-
-        <i class="fa fa-box"></i>
-
-        Serial
-
-      </li>
-
-
-      <li onclick="go('nonserial.html')">
-
-        <i class="fa fa-cubes"></i>
-
-        Non-Serial
-
-      </li>
-
-
-    </ul>
-
-  </div>
-
-
-
-  <!-- MAIN -->
-
-  <div class="main">
-
-
-    <!-- CARDS -->
-
-    <div class="cards">
-
-
-      <div
-        class="card"
-        onclick="go('pdfexcel.html')">
-
-        <i class="fa fa-file-excel"></i>
-
-        <div>
-          PDF TO EXCEL
         </div>
 
-      </div>
 
 
-      <div
-        class="card"
-        onclick="go('mit.html')">
+        <div class="top-right">
 
-        <i class="fa fa-print"></i>
 
-        <div>
-          MIT
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                SYSTEM ONLINE
+
+            </div>
+
+
+            <div
+                class="user-box"
+                id="userBox">
+
+            </div>
+
+
+            <div id="headerQR"></div>
+
+
+            <button
+                class="logout-btn"
+                onclick="logout()">
+
+                <i class="fa fa-sign-out-alt"></i>
+
+                Logout
+
+            </button>
+
+
         </div>
-
-      </div>
-
-
-      <div
-        class="card"
-        onclick="go('serial.html')">
-
-        <i class="fa fa-box"></i>
-
-        <div>
-          Serial
-        </div>
-
-      </div>
-
-
-      <div
-        class="card"
-        onclick="go('nonserial.html')">
-
-        <i class="fa fa-cubes"></i>
-
-        <div>
-          Non-Serial
-        </div>
-
-      </div>
 
 
     </div>
 
 
 
-    <!-- W2R DASHBOARD -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-    <div class="pending-box">
-
-
-      <div class="pending-header">
-
-        W2R Scanning Dashboard
-
-      </div>
+    <div class="sidebar">
 
 
-      <div class="pending-content">
-
-
-        <!-- TOTAL PENDING -->
-
-        <div class="metric">
-
-          <span>
-            Total Pending Quantity
-          </span>
-
-          <h1 id="pendingQty">
-            0
-          </h1>
-
+        <div class="menu-title">
+            OPERATIONS
         </div>
 
 
-
-        <!-- METRICS -->
-
-        <div class="metric-row">
+        <ul class="menu">
 
 
-          <div class="small-box">
+            <li
+                class="active"
+                onclick="go('index.html')">
 
-            <p>
-              Quantity Required
-            </p>
+                <i class="fa fa-chart-line"></i>
 
-            <h2 id="qtyRequired">
-              0
-            </h2>
+                <span>
+                    Dashboard
+                </span>
 
-          </div>
-
-
-          <div class="small-box">
-
-            <p>
-              Today Scanned
-            </p>
-
-            <h2 id="qtyScanned">
-              0
-            </h2>
-
-          </div>
+            </li>
 
 
-          <div class="small-box">
+            <li
+                onclick="go('accept.html')">
 
-            <p>
-              Total Scanned Quantity
-            </p>
+                <i class="fa fa-check-circle"></i>
 
-            <h2 id="totalScannedBox">
-              0
-            </h2>
+                <span>
+                    Accept
+                </span>
 
-          </div>
-
-
-        </div>
+            </li>
 
 
+            <li
+                onclick="go('mit.html')">
 
-        <!-- TEAM DATA -->
+                <i class="fa fa-print"></i>
 
-        <div
-          class="team-box"
-          id="teamBox">
+                <span>
+                    MIT
+                </span>
 
-        </div>
-
-
-
-        <!-- TABLE -->
-
-        <div class="table-section">
+            </li>
 
 
-          <table>
+            <li
+                onclick="go('serial.html')">
+
+                <i class="fa fa-box"></i>
+
+                <span>
+                    Serial
+                </span>
+
+            </li>
 
 
-            <thead>
+            <li
+                onclick="go('nonserial.html')">
 
-              <tr>
+                <i class="fa fa-cubes"></i>
 
-                <th>
-                  Item Code
-                </th>
+                <span>
+                    Non-Serial
+                </span>
 
-                <th>
-                  Pending Qty
-                </th>
-
-                <th>
-                  Team
-                </th>
-
-              </tr>
-
-            </thead>
+            </li>
 
 
-            <tbody
-              id="pendingTable">
+            <li
+                onclick="go('pdfexcel.html')">
 
-            </tbody>
+                <i class="fa fa-file-excel"></i>
+
+                <span>
+                    PDF to Excel
+                </span>
+
+            </li>
 
 
-          </table>
+        </ul>
 
+
+        <div class="sidebar-footer">
+
+            STARK QR v1.0
+
+            <br>
+
+            W2R MONITORING
 
         </div>
-
-
-      </div>
 
 
     </div>
 
 
-  </div>
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+
+            <div>
+
+                <div class="page-title">
+
+                    W2R
+                    <span>
+                        Dashboard
+                    </span>
+
+                </div>
+
+                <div class="page-description">
+
+                    Warehouse to Rack scanning control center
+
+                </div>
+
+            </div>
+
+
+            <div class="refresh-info">
+
+                AUTO REFRESH
+
+                <br>
+
+                Every
+                <strong>
+                    30 seconds
+                </strong>
+
+                <br>
+
+                Last update:
+                <strong id="lastUpdate">
+                    --
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             STATUS PANEL
+        ================================================== -->
+
+        <section class="status-panel">
+
+
+            <div class="status-content">
+
+
+                <div class="status-left">
+
+
+                    <div class="status-circle">
+
+                        <i class="fa fa-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="status-label">
+                            SCANNING SYSTEM STATUS
+                        </div>
+
+                        <div
+                            id="systemStatus"
+                            class="status-ready">
+
+                            READY
+
+                        </div>
+
+                        <div class="status-message">
+
+                            W2R operations are being monitored in real time.
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="progress-area">
+
+
+                    <div class="progress-top">
+
+                        <span>
+                            OVERALL SCANNING PROGRESS
+                        </span>
+
+                        <span
+                            id="progressPercent"
+                            class="progress-percent">
+
+                            0%
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="progress-bar">
+
+                        <div
+                            id="progressFill"
+                            class="progress-fill">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-numbers">
+
+                        <span>
+
+                            Scanned:
+                            <strong id="progressScanned">
+                                0
+                            </strong>
+
+                        </span>
+
+
+                        <span>
+
+                            Required:
+                            <strong id="progressRequired">
+                                0
+                            </strong>
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             KPI CARDS
+        ================================================== -->
+
+        <div class="kpi-grid">
+
+
+            <!-- REQUIRED -->
+
+            <div class="kpi-card">
+
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-list-check"></i>
+
+                </div>
+
+
+                <div class="kpi-label">
+
+                    Quantity Required
+
+                </div>
+
+
+                <div
+                    id="qtyRequired"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- SCANNED -->
+
+            <div class="kpi-card scanned">
+
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-circle-check"></i>
+
+                </div>
+
+
+                <div class="kpi-label">
+
+                    Total Scanned
+
+                </div>
+
+
+                <div
+                    id="totalScannedBox"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- TODAY -->
+
+            <div class="kpi-card today">
+
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-calendar-day"></i>
+
+                </div>
+
+
+                <div class="kpi-label">
+
+                    Today Scanned
+
+                </div>
+
+
+                <div
+                    id="qtyScanned"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- PENDING -->
+
+            <div class="kpi-card pending">
+
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-triangle-exclamation"></i>
+
+                </div>
+
+
+                <div class="kpi-label">
+
+                    Total Pending
+
+                </div>
+
+
+                <div
+                    id="pendingQty"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             TWO COLUMN CONTENT
+        ================================================== -->
+
+        <div class="content-grid">
+
+
+            <!-- TEAM PERFORMANCE -->
+
+            <section class="panel">
+
+
+                <div class="panel-header">
+
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-users"></i>
+
+                        Team Performance
+
+                    </div>
+
+
+                    <div class="panel-badge">
+
+                        LIVE
+
+                    </div>
+
+
+                </div>
+
+
+                <div
+                    id="teamBox"
+                    class="team-list">
+
+                    <div class="team-empty">
+
+                        Loading team data...
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- QUICK ACTIONS -->
+
+            <section class="panel">
+
+
+                <div class="panel-header">
+
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-bolt"></i>
+
+                        Quick Operations
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="quick-actions">
+
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('accept.html')">
+
+                        <i class="fa fa-check-circle"></i>
+
+                        <span>
+                            ACCEPT
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('mit.html')">
+
+                        <i class="fa fa-print"></i>
+
+                        <span>
+                            MIT
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('serial.html')">
+
+                        <i class="fa fa-barcode"></i>
+
+                        <span>
+                            SERIAL
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('nonserial.html')">
+
+                        <i class="fa fa-qrcode"></i>
+
+                        <span>
+                            NON-SERIAL
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             PENDING TABLE
+        ================================================== -->
+
+        <section class="panel table-panel">
+
+
+            <div class="panel-header">
+
+
+                <div class="panel-title">
+
+                    <i class="fa fa-triangle-exclamation"></i>
+
+                    Live Pending Items
+
+                </div>
+
+
+                <div
+                    id="pendingBadge"
+                    class="panel-badge">
+
+                    0 ITEMS
+
+                </div>
+
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Item Code
+                            </th>
+
+                            <th>
+                                Pending Qty
+                            </th>
+
+                            <th>
+                                Team
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="pendingTable">
+
+                        <tr>
+
+                            <td
+                                colspan="4"
+                                class="no-data">
+
+                                Loading pending items...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- BOTTOM INFO -->
+
+        <div class="bottom-info">
+
+
+            <div class="live-indicator">
+
+                <span class="live-dot"></span>
+
+                LIVE DATA CONNECTION
+
+            </div>
+
+
+            <div>
+
+                STARK QR W2R MONITOR
+
+            </div>
+
+
+        </div>
+
+
+    </main>
 
 
 </div>
@@ -1020,372 +2503,806 @@
 
 <script>
 
-/* =========================================
-   LOGIN CHECK + LOADING
-========================================= */
+/* =========================================================
+   LOGIN + LOADING
+========================================================= */
 
 (function(){
 
-  const loadingScreen =
-    document.getElementById("loadingScreen");
 
-  const loadingBar =
-    document.getElementById("loadingBar");
-
-  const loadingPercent =
-    document.getElementById("loadingPercent");
-
-  const dashboard =
-    document.getElementById("dashboard");
+    const loadingScreen =
+        document.getElementById("loadingScreen");
 
 
-  let percent = 0;
+    const loadingBar =
+        document.getElementById("loadingBar");
 
 
-  /*
-     Check login immediately.
-
-     If there is no user:
-     Loading screen stays visible while
-     login.html is opened.
-
-     This prevents the dashboard from
-     flashing on screen.
-  */
-
-  const user =
-    sessionStorage.getItem("wms_user");
+    const loadingPercent =
+        document.getElementById("loadingPercent");
 
 
-  const timer =
-    setInterval(function(){
-
-      percent += 2;
-
-      if(percent > 100){
-        percent = 100;
-      }
+    const dashboard =
+        document.getElementById("dashboard");
 
 
-      loadingBar.style.width =
-        percent + "%";
+    const user =
+        sessionStorage.getItem("wms_user");
 
 
-      loadingPercent.innerText =
-        percent + "%";
+    let percent = 0;
 
 
-      if(percent >= 100){
-
-        clearInterval(timer);
-
-
-        setTimeout(function(){
-
-          if(!user){
-
-            /*
-              User is NOT logged in.
-              Go directly to login page.
-            */
-
-            window.location.replace("login.html");
-
-            return;
-
-          }
+    const loadingTimer =
+        setInterval(function(){
 
 
-          /*
-            User is already logged in.
-            Show dashboard.
-          */
-
-          loadingScreen.style.display =
-            "none";
-
-          dashboard.style.display =
-            "block";
+            percent += 2;
 
 
-          initializeDashboard(user);
+            if(percent > 100){
+
+                percent = 100;
+
+            }
 
 
-        },300);
+            loadingBar.style.width =
+                percent + "%";
 
-      }
+
+            loadingPercent.innerText =
+                percent + "%";
 
 
-    },25);
+            if(percent >= 100){
+
+
+                clearInterval(loadingTimer);
+
+
+                setTimeout(function(){
+
+
+                    /*
+                     * IMPORTANT:
+                     *
+                     * If no login session exists,
+                     * redirect before showing dashboard.
+                     */
+
+                    if(!user){
+
+                        window.location.replace(
+                            "login.html"
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * User exists.
+                     * Show dashboard.
+                     */
+
+                    loadingScreen.style.display =
+                        "none";
+
+
+                    dashboard.style.display =
+                        "block";
+
+
+                    initializeDashboard(user);
+
+
+                },300);
+
+
+            }
+
+
+        },25);
 
 
 })();
 
 
 
-/* =========================================
+/* =========================================================
    INITIALIZE DASHBOARD
-========================================= */
+========================================================= */
 
 function initializeDashboard(user){
 
-  document.getElementById("userBox").innerHTML =
-    `<i class="fa fa-user"></i> ${escapeHTML(user)}`;
+
+    document.getElementById("userBox").innerHTML =
+
+        `<i class="fa fa-user"></i>
+         ${escapeHTML(user)}`;
 
 
-  /*
-     Header QR
-  */
+    /*
+     * Header QR
+     */
 
-  const headerQR =
-    document.getElementById("headerQR");
-
-
-  headerQR.innerHTML = "";
+    const headerQR =
+        document.getElementById("headerQR");
 
 
-  new QRCode(headerQR,{
-
-    text:"OWNED BY SHARATH",
-
-    width:40,
-
-    height:40
-
-  });
+    headerQR.innerHTML = "";
 
 
-  /*
-     Load dashboard data
-  */
+    try{
 
-  loadDashboard();
+        new QRCode(
+            headerQR,
+            {
+                text:"OWNED BY SHARATH",
+                width:40,
+                height:40
+            }
+        );
+
+    }catch(error){
+
+        console.log(
+            "QR error:",
+            error
+        );
+
+    }
 
 
-  /*
-     Refresh every 30 seconds
-  */
-
-  setInterval(function(){
+    /*
+     * First dashboard load
+     */
 
     loadDashboard();
 
-  },30000);
+
+    /*
+     * Automatic refresh
+     */
+
+    setInterval(
+        loadDashboard,
+        30000
+    );
 
 }
 
 
 
-/* =========================================
-   SAFE HTML
-========================================= */
+/* =========================================================
+   HTML SECURITY
+========================================================= */
 
 function escapeHTML(value){
 
-  return String(value)
+    return String(value ?? "")
 
-    .replace(/&/g,"&amp;")
+        .replace(/&/g,"&amp;")
 
-    .replace(/</g,"&lt;")
+        .replace(/</g,"&lt;")
 
-    .replace(/>/g,"&gt;")
+        .replace(/>/g,"&gt;")
 
-    .replace(/"/g,"&quot;")
+        .replace(/"/g,"&quot;")
 
-    .replace(/'/g,"&#039;");
+        .replace(/'/g,"&#039;");
 
 }
 
 
 
-/* =========================================
-   PAGE NAVIGATION
-========================================= */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function go(page){
 
-  window.location.href = page;
+    window.location.href = page;
 
 }
 
-
-function goHome(){
-
-  window.location.href = "index.html";
-
-}
-
-
-
-/* =========================================
-   LOGOUT
-========================================= */
 
 function logout(){
 
-  sessionStorage.removeItem("wms_user");
+    sessionStorage.removeItem(
+        "wms_user"
+    );
 
-  window.location.replace("login.html");
+    window.location.replace(
+        "login.html"
+    );
 
 }
 
 
 
-/* =========================================
-   LOAD DASHBOARD DATA
-========================================= */
+/* =========================================================
+   NUMBER FORMAT
+========================================================= */
+
+function formatNumber(value){
+
+    const number =
+        Number(value) || 0;
+
+    return number.toLocaleString(
+        "en-IN"
+    );
+
+}
+
+
+
+/* =========================================================
+   LOAD DASHBOARD
+========================================================= */
 
 async function loadDashboard(){
 
-  try{
+
+    try{
 
 
-    const url =
-      "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
-      new Date().getTime();
+        /*
+         * Google Apps Script endpoint
+         */
+
+        const url =
+            "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
+            Date.now();
 
 
-    const res =
-      await fetch(url);
+        const response =
+            await fetch(url);
 
 
-    if(!res.ok){
+        if(!response.ok){
 
-      throw new Error(
-        "Dashboard request failed: " +
-        res.status
-      );
+            throw new Error(
+                "HTTP Error " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+
+        /* =================================================
+           VALUES
+        ================================================== */
+
+        const totalPending =
+            Number(data.totalPending) || 0;
+
+
+        const totalRequired =
+            Number(data.totalRequired) || 0;
+
+
+        const totalTodayScanned =
+            Number(data.totalTodayScanned) || 0;
+
+
+        const totalScanned =
+            Number(data.totalScanned) || 0;
+
+
+
+        /* =================================================
+           KPI
+        ================================================== */
+
+        document.getElementById(
+            "pendingQty"
+        ).innerText =
+            formatNumber(totalPending);
+
+
+        document.getElementById(
+            "qtyRequired"
+        ).innerText =
+            formatNumber(totalRequired);
+
+
+        document.getElementById(
+            "qtyScanned"
+        ).innerText =
+            formatNumber(totalTodayScanned);
+
+
+        document.getElementById(
+            "totalScannedBox"
+        ).innerText =
+            formatNumber(totalScanned);
+
+
+
+        /* =================================================
+           PROGRESS
+        ================================================= */
+
+        let progress = 0;
+
+
+        if(totalRequired > 0){
+
+            progress =
+                (totalScanned /
+                totalRequired) * 100;
+
+        }
+
+
+        progress =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    progress
+                )
+            );
+
+
+        document.getElementById(
+            "progressFill"
+        ).style.width =
+            progress.toFixed(1) + "%";
+
+
+        document.getElementById(
+            "progressPercent"
+        ).innerText =
+            progress.toFixed(1) + "%";
+
+
+        document.getElementById(
+            "progressScanned"
+        ).innerText =
+            formatNumber(totalScanned);
+
+
+        document.getElementById(
+            "progressRequired"
+        ).innerText =
+            formatNumber(totalRequired);
+
+
+
+        /* =================================================
+           SYSTEM STATUS
+        ================================================== */
+
+        const statusElement =
+            document.getElementById(
+                "systemStatus"
+            );
+
+
+        if(totalPending <= 0){
+
+            statusElement.innerText =
+                "COMPLETED";
+
+            statusElement.style.color =
+                "#43e890";
+
+        }
+        else if(totalPending > 1000){
+
+            statusElement.innerText =
+                "CRITICAL";
+
+            statusElement.style.color =
+                "#ff5b66";
+
+        }
+        else{
+
+            statusElement.innerText =
+                "READY";
+
+            statusElement.style.color =
+                "#43e890";
+
+        }
+
+
+
+        /* =================================================
+           TEAM DATA
+        ================================================== */
+
+        renderTeams(
+            data.teamWise || {},
+            totalScanned
+        );
+
+
+
+        /* =================================================
+           PENDING ITEMS
+        ================================================== */
+
+        renderPendingItems(
+            data.itemList || []
+        );
+
+
+
+        /* =================================================
+           LAST UPDATE
+        ================================================= */
+
+        document.getElementById(
+            "lastUpdate"
+        ).innerText =
+            new Date().toLocaleTimeString(
+                "en-IN",
+                {
+                    hour:"2-digit",
+                    minute:"2-digit",
+                    second:"2-digit"
+                }
+            );
+
+
+    }
+    catch(error){
+
+
+        console.error(
+            "Dashboard loading error:",
+            error
+        );
+
+
+        document.getElementById(
+            "systemStatus"
+        ).innerText =
+            "CONNECTION ERROR";
+
+
+        document.getElementById(
+            "systemStatus"
+        ).style.color =
+            "#ff5b66";
+
+
+        document.getElementById(
+            "lastUpdate"
+        ).innerText =
+            "Connection failed";
+
 
     }
 
-
-    const data =
-      await res.json();
+}
 
 
 
-    /* =====================================
-       MAIN METRICS
-    ===================================== */
+/* =========================================================
+   TEAM RENDER
+========================================================= */
+
+function renderTeams(
+    teams,
+    totalScanned
+){
 
 
-    document.getElementById(
-      "pendingQty"
-    ).innerText =
-      data.totalPending ?? 0;
+    const teamBox =
+        document.getElementById(
+            "teamBox"
+        );
 
 
-    document.getElementById(
-      "qtyRequired"
-    ).innerText =
-      data.totalRequired ?? 0;
+    const teamNames =
+        Object.keys(teams);
 
 
-    document.getElementById(
-      "qtyScanned"
-    ).innerText =
-      data.totalTodayScanned ?? 0;
+    if(teamNames.length === 0){
 
+        teamBox.innerHTML = `
 
-    document.getElementById(
-      "totalScannedBox"
-    ).innerText =
-      data.totalScanned ?? 0;
+            <div class="team-empty">
 
+                No team data available.
 
+            </div>
 
-    /* =====================================
-       TEAM DATA
-    ===================================== */
+        `;
 
-    let teamHTML = "";
-
-    const teams =
-      data.teamWise || {};
-
-
-    for(let team in teams){
-
-      teamHTML += `
-
-        <div class="team-card">
-
-          ${escapeHTML(team)}:
-          ${escapeHTML(teams[team])}
-
-        </div>
-
-      `;
+        return;
 
     }
 
-
-    document.getElementById(
-      "teamBox"
-    ).innerHTML =
-      teamHTML;
-
-
-
-    /* =====================================
-       PENDING TABLE
-    ===================================== */
 
     let html = "";
 
 
-    (data.itemList || []).forEach(function(row){
-
-      const pending =
-        Number(row.pending) || 0;
+    teamNames.forEach(function(team){
 
 
-      const critical =
-        pending > 1000;
+        const count =
+            Number(teams[team]) || 0;
 
 
-      html += `
+        let percentage = 0;
 
-        <tr
-          class="${critical ? "critical-row" : ""}">
 
-          <td>
-            ${escapeHTML(row.item ?? "")}
-          </td>
+        if(totalScanned > 0){
 
-          <td>
+            percentage =
+                (count /
+                totalScanned) * 100;
 
-            ${pending}
+        }
 
-            ${critical ? " ⚠️" : ""}
 
-          </td>
+        percentage =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    percentage
+                )
+            );
 
-          <td>
-            ${escapeHTML(row.team || "-")}
-          </td>
 
-        </tr>
+        html += `
 
-      `;
+            <div class="team-item">
+
+                <div class="team-top">
+
+                    <span class="team-name">
+
+                        ${escapeHTML(team)}
+
+                    </span>
+
+                    <span class="team-count">
+
+                        ${formatNumber(count)}
+
+                    </span>
+
+                </div>
+
+
+                <div class="team-progress">
+
+                    <div
+                        class="team-fill"
+                        style="
+                            width:${percentage.toFixed(1)}%;
+                        ">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
 
     });
 
 
-    document.getElementById(
-      "pendingTable"
-    ).innerHTML =
-      html;
+    teamBox.innerHTML =
+        html;
+
+}
 
 
-  }catch(err){
 
-    console.error(
-      "Dashboard loading error:",
-      err
+/* =========================================================
+   PENDING TABLE
+========================================================= */
+
+function renderPendingItems(
+    items
+){
+
+
+    const table =
+        document.getElementById(
+            "pendingTable"
+        );
+
+
+    const badge =
+        document.getElementById(
+            "pendingBadge"
+        );
+
+
+    if(!items.length){
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="no-data">
+
+                    <i
+                        class="fa fa-circle-check"
+                        style="
+                            color:#35e58a;
+                            margin-right:5px;
+                        ">
+
+                    </i>
+
+                    No pending items
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        badge.innerText =
+            "0 ITEMS";
+
+
+        return;
+
+    }
+
+
+    /*
+     * Sort highest pending first
+     */
+
+    const sortedItems =
+        [...items].sort(
+            function(a,b){
+
+                return (
+                    Number(b.pending) || 0
+                ) -
+                (
+                    Number(a.pending) || 0
+                );
+
+            }
+        );
+
+
+    badge.innerText =
+        sortedItems.length +
+        " ITEMS";
+
+
+    let html = "";
+
+
+    sortedItems.forEach(
+        function(row){
+
+
+            const pending =
+                Number(row.pending) || 0;
+
+
+            const critical =
+                pending > 1000;
+
+
+            html += `
+
+                <tr
+                    class="${
+                        critical
+                        ? "critical-row"
+                        : ""
+                    }">
+
+
+                    <td>
+
+                        <span class="item-code">
+
+                            ${escapeHTML(
+                                row.item ?? ""
+                            )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="pending-number">
+
+                            ${formatNumber(
+                                pending
+                            )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="team-tag">
+
+                            ${escapeHTML(
+                                row.team || "-"
+                            )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+
+                        ${
+                            critical
+
+                            ?
+
+                            `
+                            <span
+                                class="critical-status">
+
+                                <i class="fa fa-triangle-exclamation"></i>
+
+                                CRITICAL
+
+                            </span>
+                            `
+
+                            :
+
+                            `
+                            <span
+                                class="normal-status">
+
+                                <i class="fa fa-circle-check"></i>
+
+                                NORMAL
+
+                            </span>
+                            `
+
+                        }
+
+
+                    </td>
+
+
+                </tr>
+
+            `;
+
+
+        }
     );
 
-  }
+
+    table.innerHTML =
+        html;
 
 }
 
@@ -1393,4 +3310,5 @@ async function loadDashboard(){
 
 
 </body>
+
 </html>
