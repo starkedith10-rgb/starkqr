@@ -11,8 +11,8 @@
 <style>
 
 /* =========================================================
-   W2R LOGIN
-   METALLIC BLUE / CYAN THEME
+   W2R WMS LOGIN
+   DARK NAVY + CYAN + AVENGERS LOGO
 ========================================================= */
 
 *{
@@ -25,138 +25,102 @@ html,
 body{
   width:100%;
   height:100%;
-  font-family:Arial, Helvetica, sans-serif;
-  background:#07111f;
-  color:#eaf7ff;
-  overflow:hidden;
 }
 
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
 body{
+  font-family:Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(0,190,255,.12),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #030a13,
+      #071522,
+      #020812
+    );
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  background:
-    radial-gradient(
-      circle at 50% 40%,
-      rgba(0,174,255,.14),
-      transparent 35%
-    ),
-    linear-gradient(
-      135deg,
-      #050d18,
-      #07111f 50%,
-      #081827
-    );
-
+  color:#eaf8ff;
+  overflow:hidden;
 }
 
 
 /* =========================================================
-   BACKGROUND GRID
+   BACKGROUND EFFECT
 ========================================================= */
 
-body::before{
-
-  content:"";
-
+.background-grid{
   position:fixed;
-
   inset:0;
 
   background-image:
-
     linear-gradient(
-      rgba(0,207,255,.035) 1px,
+      rgba(0,210,255,.025) 1px,
       transparent 1px
     ),
-
     linear-gradient(
       90deg,
-      rgba(0,207,255,.035) 1px,
+      rgba(0,210,255,.025) 1px,
       transparent 1px
     );
 
   background-size:40px 40px;
 
   pointer-events:none;
-
 }
 
 
 /* =========================================================
-   LOGIN WRAPPER
+   LOGIN CONTAINER
 ========================================================= */
 
-.login-wrapper{
-
-  width:100%;
-  max-width:430px;
-
-  padding:20px;
-
-  position:relative;
-
-  z-index:2;
-
-}
-
-
-/* =========================================================
-   LOGIN CARD
-========================================================= */
-
-.login-card{
-
-  position:relative;
+.login-container{
+  width:390px;
+  max-width:90%;
 
   background:
     linear-gradient(
       145deg,
-      rgba(13,32,52,.98),
-      rgba(7,20,34,.98)
+      rgba(12,31,48,.97),
+      rgba(5,17,29,.98)
     );
 
-  border:1px solid #1c425c;
+  border:1px solid #1b4b67;
 
   border-radius:18px;
 
-  padding:38px 32px 30px;
+  padding:34px 35px 30px;
+
+  text-align:center;
 
   box-shadow:
+    0 20px 70px rgba(0,0,0,.55),
+    inset 0 0 35px rgba(0,190,255,.035);
 
-    0 25px 70px rgba(0,0,0,.55),
+  position:relative;
 
-    inset 0 0 45px
-    rgba(0,174,255,.035),
-
-    0 0 30px
-    rgba(0,174,255,.08);
-
+  z-index:2;
 }
 
 
 /* =========================================================
-   TOP CYAN GLOW
+   TOP CYAN LINE
 ========================================================= */
 
-.login-card::before{
-
+.login-container::before{
   content:"";
 
   position:absolute;
 
-  top:-1px;
-
-  left:15%;
-
-  right:15%;
+  top:0;
+  left:12%;
+  right:12%;
 
   height:2px;
 
@@ -173,342 +137,117 @@ body::before{
   box-shadow:
     0 0 15px #00cfff;
 
+  border-radius:10px;
 }
 
 
 /* =========================================================
-   CORNER DECORATIONS
+   AVENGERS LOGO
 ========================================================= */
 
-.corner{
+.logo-wrapper{
+  width:100px;
+  height:100px;
 
-  position:absolute;
-
-  width:25px;
-
-  height:25px;
-
-  border-color:#00cfff;
-
-  opacity:.7;
-
-}
-
-
-/* TOP LEFT */
-
-.corner.top-left{
-
-  top:12px;
-
-  left:12px;
-
-  border-top:2px solid;
-
-  border-left:2px solid;
-
-}
-
-
-/* TOP RIGHT */
-
-.corner.top-right{
-
-  top:12px;
-
-  right:12px;
-
-  border-top:2px solid;
-
-  border-right:2px solid;
-
-}
-
-
-/* BOTTOM LEFT */
-
-.corner.bottom-left{
-
-  bottom:12px;
-
-  left:12px;
-
-  border-bottom:2px solid;
-
-  border-left:2px solid;
-
-}
-
-
-/* BOTTOM RIGHT */
-
-.corner.bottom-right{
-
-  bottom:12px;
-
-  right:12px;
-
-  border-bottom:2px solid;
-
-  border-right:2px solid;
-
-}
-
-
-/* =========================================================
-   METALLIC SUPERHERO A LOGO
-========================================================= */
-
-.logo{
-
-  width:78px;
-
-  height:78px;
-
-  margin:0 auto 20px;
-
-  position:relative;
+  margin:0 auto 17px;
 
   display:flex;
-
   align-items:center;
-
   justify-content:center;
 
   border-radius:50%;
 
-
-  /* METALLIC OUTER RING */
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffffff 0%,
-      #b8c7d1 18%,
-      #4e6675 42%,
-      #dce8ee 58%,
-      #718795 78%,
-      #f5fbff 100%
-    );
-
-
-  border:3px solid #dff8ff;
-
-
-  box-shadow:
-
-    0 0 0 3px #071522,
-
-    0 0 0 5px #4b91b0,
-
-    0 0 20px
-    rgba(0,217,255,.65),
-
-    0 0 45px
-    rgba(0,119,255,.30),
-
-    inset 0 3px 5px
-    rgba(255,255,255,.8),
-
-    inset 0 -5px 8px
-    rgba(0,0,0,.55);
-
-}
-
-
-/* =========================================================
-   INNER BLUE CIRCLE
-========================================================= */
-
-.logo::before{
-
-  content:"";
-
-  position:absolute;
-
-  width:58px;
-
-  height:58px;
-
-  border-radius:50%;
-
-
   background:
     radial-gradient(
-      circle at 35% 25%,
-      #48e8ff,
-      #087fc0 45%,
-      #03436d 75%,
-      #021c30 100%
+      circle,
+      rgba(0,191,255,.14),
+      rgba(0,50,80,.08),
+      transparent 70%
     );
 
-
-  border:2px solid #8cecff;
-
+  border:1px solid #1d526c;
 
   box-shadow:
+    0 0 25px rgba(0,190,255,.16),
+    inset 0 0 20px rgba(0,190,255,.08);
+}
 
-    inset 0 3px 8px
-    rgba(255,255,255,.35),
+.login-logo{
+  width:78px;
+  height:78px;
 
-    inset 0 -6px 10px
-    rgba(0,0,0,.6);
+  object-fit:contain;
 
+  display:block;
+
+  filter:
+    drop-shadow(0 0 8px rgba(0,210,255,.35))
+    drop-shadow(0 0 18px rgba(0,120,255,.18));
 }
 
 
 /* =========================================================
-   A SYMBOL
+   BRAND
 ========================================================= */
 
-.logo::after{
-
-  content:"A";
-
-  position:absolute;
-
-  color:#ffffff;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-
-  font-size:39px;
-
-  font-weight:900;
-
-  font-style:italic;
-
-  line-height:1;
-
-  transform:
-    skewX(-8deg);
-
-
-  text-shadow:
-
-    2px 2px 0 #17465f,
-
-    3px 3px 0 #0a2d43,
-
-    0 0 5px #ffffff,
-
-    0 0 12px #00d9ff;
-
-}
-
-
-/* =========================================================
-   LOGO HIGHLIGHT
-========================================================= */
-
-.logo span{
-
-  position:absolute;
-
-  width:8px;
-
-  height:8px;
-
-  border-radius:50%;
-
-  background:#ffffff;
-
-  top:13px;
-
-  left:18px;
-
-  opacity:.75;
-
-  filter:blur(1px);
-
-  z-index:5;
-
-}
-
-
-/* =========================================================
-   TITLE
-========================================================= */
-
-.title{
-
-  text-align:center;
-
-  margin-bottom:5px;
-
-  color:#ffffff;
-
-  font-size:23px;
+.brand-title{
+  font-size:24px;
 
   font-weight:bold;
 
   letter-spacing:2px;
 
-  text-shadow:
-    0 0 10px
-    rgba(0,207,255,.15);
+  color:#ffffff;
 
+  text-shadow:
+    0 0 10px rgba(0,200,255,.15);
 }
 
-
-.subtitle{
-
-  text-align:center;
-
-  color:#5f91ad;
+.brand-subtitle{
+  margin-top:6px;
 
   font-size:10px;
 
-  letter-spacing:1.5px;
+  letter-spacing:2px;
 
-  margin-bottom:28px;
-
+  color:#5c91ac;
 }
 
 
 /* =========================================================
-   SYSTEM STATUS
+   STATUS
 ========================================================= */
 
 .system-status{
-
   display:flex;
-
-  align-items:center;
 
   justify-content:center;
 
+  align-items:center;
+
   gap:7px;
 
-  margin-bottom:22px;
+  margin-top:18px;
 
-  color:#55e1ff;
+  color:#55dfff;
 
   font-size:9px;
 
   font-weight:bold;
 
   letter-spacing:1px;
-
 }
 
-
 .status-dot{
-
   width:7px;
-
   height:7px;
 
   border-radius:50%;
 
-  background:#00e5a0;
+  background:#00e59a;
 
   box-shadow:
-    0 0 10px
-    rgba(0,229,160,.9);
-
+    0 0 8px #00e59a;
 }
 
 
@@ -516,45 +255,33 @@ body::before{
    FORM
 ========================================================= */
 
-.form-group{
+.login-form{
+  margin-top:25px;
 
-  margin-bottom:18px;
-
+  text-align:left;
 }
 
-
-.form-group label{
-
+.input-label{
   display:block;
 
-  margin-bottom:7px;
-
-  color:#7fa8be;
+  color:#79a8bd;
 
   font-size:10px;
 
   font-weight:bold;
 
-  text-transform:uppercase;
-
   letter-spacing:1px;
 
+  margin-bottom:7px;
+
+  text-transform:uppercase;
 }
-
-
-/* =========================================================
-   INPUT
-========================================================= */
 
 .input-wrapper{
-
   position:relative;
-
 }
 
-
 .input-icon{
-
   position:absolute;
 
   left:12px;
@@ -563,59 +290,45 @@ body::before{
 
   transform:translateY(-50%);
 
-  color:#3e7894;
+  color:#3e87a7;
 
-  font-size:14px;
+  font-size:13px;
 
   pointer-events:none;
-
 }
 
-
 input{
-
   width:100%;
 
-  height:44px;
+  height:45px;
 
-  border:1px solid #21445d;
+  padding:0 12px 0 38px;
 
   border-radius:8px;
 
-  background:#071522;
+  border:1px solid #21465e;
+
+  background:#07131f;
 
   color:#eafaff;
-
-  padding:0 12px 0 38px;
 
   outline:none;
 
   font-size:13px;
 
   transition:.2s;
-
 }
-
 
 input::placeholder{
-
   color:#46697d;
-
 }
 
-
 input:focus{
-
   border-color:#00cfff;
 
   box-shadow:
-
-    0 0 0 2px
-    rgba(0,207,255,.08),
-
-    0 0 15px
-    rgba(0,207,255,.08);
-
+    0 0 0 2px rgba(0,207,255,.08),
+    0 0 15px rgba(0,207,255,.08);
 }
 
 
@@ -624,10 +337,11 @@ input:focus{
 ========================================================= */
 
 .login-btn{
-
   width:100%;
 
-  height:44px;
+  height:45px;
+
+  margin-top:16px;
 
   border:0;
 
@@ -636,7 +350,7 @@ input:focus{
   background:
     linear-gradient(
       90deg,
-      #0077ff,
+      #006cff,
       #00cfff
     );
 
@@ -650,41 +364,21 @@ input:focus{
 
   cursor:pointer;
 
-  margin-top:4px;
-
   box-shadow:
-    0 5px 20px
-    rgba(0,153,255,.25);
+    0 5px 20px rgba(0,130,255,.25);
 
   transition:.2s;
-
 }
-
 
 .login-btn:hover{
-
   filter:brightness(1.15);
 
-  transform:translateY(-1px);
-
   box-shadow:
-    0 7px 25px
-    rgba(0,174,255,.35);
-
+    0 5px 25px rgba(0,190,255,.35);
 }
-
 
 .login-btn:active{
-
-  transform:translateY(0);
-
-}
-
-
-.login-btn:disabled{
-
-  cursor:not-allowed;
-
+  transform:scale(.98);
 }
 
 
@@ -693,65 +387,71 @@ input:focus{
 ========================================================= */
 
 .loading{
-
   display:none;
 
-  text-align:center;
+  margin-top:15px;
 
-  margin-top:12px;
+  color:#59dcff;
 
-  color:#51ddff;
-
-  font-size:9px;
+  font-size:10px;
 
   letter-spacing:1px;
-
 }
 
+.loading-spinner{
+  display:inline-block;
 
-.loading.active{
+  width:12px;
+  height:12px;
 
-  display:block;
+  border:2px solid #24536a;
+
+  border-top-color:#00d9ff;
+
+  border-radius:50%;
+
+  vertical-align:middle;
+
+  margin-right:6px;
+
+  animation:spin .7s linear infinite;
+}
+
+@keyframes spin{
+
+  from{
+    transform:rotate(0deg);
+  }
+
+  to{
+    transform:rotate(360deg);
+  }
 
 }
 
 
 /* =========================================================
-   LOADING ANIMATION
+   ERROR MESSAGE
 ========================================================= */
 
-.loading::after{
+.error-message{
+  display:none;
 
-  content:"";
+  margin-top:12px;
 
-  display:inline-block;
+  padding:9px;
 
-  width:10px;
+  border-radius:7px;
 
-  animation:
-    dots 1.2s infinite;
+  border:1px solid #6b2931;
 
-}
+  background:#35151b;
 
+  color:#ff8f9a;
 
-@keyframes dots{
+  font-size:10px;
 
-  0%{
-    content:"";
-  }
-
-  33%{
-    content:".";
-  }
-
-  66%{
-    content:"..";
-  }
-
-  100%{
-    content:"...";
-  }
-
+  text-align:center;
 }
 
 
@@ -759,54 +459,72 @@ input:focus{
    FOOTER
 ========================================================= */
 
-.footer{
+.login-footer{
+  margin-top:24px;
 
-  margin-top:25px;
+  padding-top:15px;
 
-  padding-top:16px;
+  border-top:1px solid #18364b;
 
-  border-top:1px solid #173349;
-
-  text-align:center;
-
-  color:#456a81;
+  color:#41657a;
 
   font-size:9px;
 
-  line-height:1.7;
+  line-height:1.6;
 
+  letter-spacing:.5px;
 }
 
-
-.footer strong{
-
-  color:#5b91aa;
-
+.login-footer strong{
+  color:#5b92aa;
 }
 
 
 /* =========================================================
-   SECURITY BADGE
+   DECORATION
 ========================================================= */
 
-.security{
+.corner{
+  position:absolute;
 
-  display:flex;
+  width:20px;
+  height:20px;
 
-  justify-content:center;
+  border-color:#00bfe8;
 
-  align-items:center;
+  opacity:.6;
+}
 
-  gap:6px;
+.corner.tl{
+  top:12px;
+  left:12px;
 
-  margin-top:10px;
+  border-top:1px solid;
+  border-left:1px solid;
+}
 
-  color:#3f687d;
+.corner.tr{
+  top:12px;
+  right:12px;
 
-  font-size:8px;
+  border-top:1px solid;
+  border-right:1px solid;
+}
 
-  letter-spacing:.7px;
+.corner.bl{
+  bottom:12px;
+  left:12px;
 
+  border-bottom:1px solid;
+  border-left:1px solid;
+}
+
+.corner.br{
+  bottom:12px;
+  right:12px;
+
+  border-bottom:1px solid;
+  border-right:1px solid;
 }
 
 
@@ -814,51 +532,14 @@ input:focus{
    MOBILE
 ========================================================= */
 
-@media(max-width:480px){
+@media(max-width:500px){
 
-  .login-wrapper{
-
-    padding:15px;
-
+  .login-container{
+    padding:28px 24px 25px;
   }
 
-
-  .login-card{
-
-    padding:30px 22px 25px;
-
-  }
-
-
-  .title{
-
-    font-size:19px;
-
-  }
-
-
-  .logo{
-
-    width:70px;
-
-    height:70px;
-
-  }
-
-
-  .logo::before{
-
-    width:52px;
-
-    height:52px;
-
-  }
-
-
-  .logo::after{
-
-    font-size:35px;
-
+  .brand-title{
+    font-size:21px;
   }
 
 }
@@ -871,162 +552,129 @@ input:focus{
 <body>
 
 
-<!-- =====================================================
-     LOGIN WRAPPER
-====================================================== -->
-
-<div class="login-wrapper">
+<div class="background-grid"></div>
 
 
-  <!-- ===================================================
-       LOGIN CARD
-  ==================================================== -->
-
-  <div class="login-card">
+<div class="login-container">
 
 
-    <!-- CORNER DECORATIONS -->
+  <!-- CORNER DECORATIONS -->
 
-    <div class="corner top-left"></div>
-
-    <div class="corner top-right"></div>
-
-    <div class="corner bottom-left"></div>
-
-    <div class="corner bottom-right"></div>
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
 
 
-    <!-- =================================================
-         SUPERHERO A LOGO
-    ================================================== -->
+  <!-- AVENGERS LOGO -->
 
-    <div class="logo">
+  <div class="logo-wrapper">
 
-      <span></span>
+    <img
+      src="https://www.freepnglogos.com/uploads/avengers-png-logo/avengers-logo-transparent-png-image-download-2.png"
+      alt="Avengers Logo"
+      class="login-logo"
+    >
 
-    </div>
-
-
-    <!-- =================================================
-         TITLE
-    ================================================== -->
-
-    <div class="title">
-
-      WMS LOGIN
-
-    </div>
+  </div>
 
 
-    <div class="subtitle">
+  <!-- BRAND -->
 
-      WAREHOUSE QR MANAGEMENT SYSTEM
+  <div class="brand-title">
+    W2R WMS
+  </div>
 
-    </div>
-
-
-    <!-- =================================================
-         SYSTEM STATUS
-    ================================================== -->
-
-    <div class="system-status">
-
-      <div class="status-dot"></div>
-
-      SYSTEM READY
-
-    </div>
+  <div class="brand-subtitle">
+    WAREHOUSE MANAGEMENT SYSTEM
+  </div>
 
 
-    <!-- =================================================
-         USERNAME
-    ================================================== -->
+  <!-- SYSTEM STATUS -->
 
-    <div class="form-group">
+  <div class="system-status">
 
-      <label for="username">
+    <div class="status-dot"></div>
 
-        Username
+    SYSTEM READY
 
-      </label>
+  </div>
 
 
-      <div class="input-wrapper">
+  <!-- LOGIN -->
 
-        <div class="input-icon">
+  <div class="login-form">
 
-          👤
+    <label
+      class="input-label"
+      for="username"
+    >
+      Operator Username
+    </label>
 
-        </div>
 
+    <div class="input-wrapper">
 
-        <input
-          type="text"
-          id="username"
-          placeholder="Enter username"
-          autocomplete="username"
-          onkeydown="handleEnter(event)"
-        >
+      <span class="input-icon">
+        👤
+      </span>
 
-      </div>
+      <input
+        type="text"
+        id="username"
+        placeholder="Enter username"
+        autocomplete="username"
+        onkeydown="handleEnter(event)"
+      >
 
     </div>
 
-
-    <!-- =================================================
-         LOGIN BUTTON
-    ================================================== -->
 
     <button
       class="login-btn"
       id="loginBtn"
       onclick="login()"
     >
-
       LOGIN TO W2R
-
     </button>
 
 
-    <!-- =================================================
-         LOADING
-    ================================================== -->
+    <!-- LOADING -->
 
     <div
       class="loading"
       id="loading"
     >
 
-      AUTHENTICATING
+      <span class="loading-spinner"></span>
+
+      AUTHENTICATING OPERATOR...
 
     </div>
 
 
-    <!-- =================================================
-         FOOTER
-    ================================================== -->
+    <!-- ERROR -->
 
-    <div class="footer">
-
-      W2R WAREHOUSE SYSTEM
-
-      <br>
-
-      <strong>
-        QR PROCESSING STATION
-      </strong>
-
-
-      <div class="security">
-
-        🔒 SECURE SESSION
-
-      </div>
-
+    <div
+      class="error-message"
+      id="errorMessage"
+    >
+      Please enter your username.
     </div>
-
 
   </div>
+
+
+  <!-- FOOTER -->
+
+  <div class="login-footer">
+
+    <strong>W2R SERIAL & NON-SERIAL QR SYSTEM</strong><br>
+
+    Secure Operator Access • QR Management Station
+
+  </div>
+
 
 </div>
 
@@ -1056,42 +704,36 @@ function handleEnter(event){
 
 
 /* =========================================================
-   LOGIN FUNCTION
+   LOGIN
 ========================================================= */
 
 function login(){
 
   const usernameInput =
-    document.getElementById(
-      "username"
-    );
-
+    document.getElementById("username");
 
   const loginBtn =
-    document.getElementById(
-      "loginBtn"
-    );
-
+    document.getElementById("loginBtn");
 
   const loading =
-    document.getElementById(
-      "loading"
-    );
+    document.getElementById("loading");
+
+  const errorMessage =
+    document.getElementById("errorMessage");
 
 
   const user =
     usernameInput.value.trim();
 
 
-  /* =====================================================
-     CHECK USERNAME
-  ====================================================== */
+  /* =========================
+     VALIDATION
+  ========================= */
 
   if(user === ""){
 
-    alert(
-      "Please enter username."
-    );
+    errorMessage.style.display =
+      "block";
 
     usernameInput.focus();
 
@@ -1100,9 +742,13 @@ function login(){
   }
 
 
-  /* =====================================================
-     SAVE USER SESSION
-  ====================================================== */
+  errorMessage.style.display =
+    "none";
+
+
+  /* =========================
+     SAVE USER
+  ========================= */
 
   sessionStorage.setItem(
     "wms_user",
@@ -1110,24 +756,32 @@ function login(){
   );
 
 
-  /* =====================================================
+  /* =========================
      TRACK LOGIN
-  ====================================================== */
+  ========================= */
 
-  if(
-    typeof track === "function"
-  ){
+  if(typeof track === "function"){
 
-    track(
-      "LOGIN"
-    );
+    track("LOGIN");
 
   }
 
 
-  /* =====================================================
+  /* =========================
+     SHOW LOADING
+  ========================= */
+
+  loginBtn.disabled = true;
+
+  loginBtn.style.opacity = ".6";
+
+  loading.style.display =
+    "block";
+
+
+  /* =========================
      TELEGRAM LOG
-  ====================================================== */
+  ========================= */
 
   if(
     typeof sendLog === "function" &&
@@ -1135,44 +789,30 @@ function login(){
   ){
 
     sendLog(
-
       `🔐 LOGIN\n` +
       `👤 ${user}\n` +
       `⏰ ${getTime()}`
-
     );
 
   }
 
 
-  /* =====================================================
-     SHOW AUTHENTICATION
-  ====================================================== */
-
-  loginBtn.disabled = true;
-
-  loginBtn.style.opacity = ".65";
-
-  loading.classList.add(
-    "active"
-  );
-
-
-  /* =====================================================
+  /* =========================
      REDIRECT
-  ====================================================== */
+     
+     Small delay allows the
+     loading screen to appear
+     before moving to index.
+  ========================= */
 
   setTimeout(
-
     function(){
 
       window.location.href =
         "index.html";
 
     },
-
-    350
-
+    500
   );
 
 }
@@ -1183,9 +823,7 @@ function login(){
 ========================================================= */
 
 window.addEventListener(
-
   "load",
-
   function(){
 
     document
@@ -1193,7 +831,6 @@ window.addEventListener(
       .focus();
 
   }
-
 );
 
 </script>
