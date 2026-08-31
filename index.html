@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>STARK QR DASHBOARD</title>
 
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  >
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -14,464 +22,1375 @@
       margin:0;
       padding:0;
       box-sizing:border-box;
-      font-family:Arial;
+      font-family:Arial,sans-serif;
     }
 
+    html,
     body{
+      width:100%;
+      min-height:100%;
       background:#eef2f7;
     }
 
-    .topbar{
-      height:60px;
-      background:white;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:0 20px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    }
 
-    .left{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
+    /* =========================================
+       LOADING SCREEN
+    ========================================= */
 
-    .home-btn{
-      background:#2d63d1;
-      color:white;
-      border:none;
-      padding:8px 14px;
-      border-radius:6px;
-      cursor:pointer;
-      font-weight:bold;
-    }
+    #loadingScreen{
 
-    .right{
-      display:flex;
-      align-items:center;
-      gap:15px;
-      font-weight:bold;
-      color:#2d63d1;
-    }
-
-    .logout-btn{
-      background:red;
-      color:white;
-      border:none;
-      padding:8px 14px;
-      border-radius:6px;
-      cursor:pointer;
-    }
-
-    .sidebar{
-      width:220px;
-      height:calc(100vh - 60px);
-      background:#1f2a3a;
       position:fixed;
-      top:60px;
+
+      top:0;
       left:0;
-      padding-top:20px;
-    }
+      right:0;
+      bottom:0;
 
-    .menu{
-      list-style:none;
-    }
+      width:100%;
+      height:100%;
 
-    .menu li{
-      padding:16px 20px;
-      color:#d7deea;
-      display:flex;
-      align-items:center;
-      gap:14px;
-      cursor:pointer;
-    }
+      background:#1f2a3a;
 
-    .menu li:hover{
-      background:#2d63d1;
-      color:white;
-    }
-
-    .main{
-      margin-left:220px;
-      padding:20px;
-    }
-
-    .cards{
-      display:flex;
-      gap:20px;
-      flex-wrap:wrap;
-    }
-
-    .card{
-      width:210px;
-      height:120px;
-      background:white;
-      border-radius:14px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
       display:flex;
       flex-direction:column;
+
       justify-content:center;
       align-items:center;
-      cursor:pointer;
+
+      z-index:999999;
+
+      color:white;
+
     }
+
+
+    .loading-logo{
+
+      font-size:42px;
+
+      font-weight:bold;
+
+      letter-spacing:4px;
+
+      color:#66b2ff;
+
+      text-shadow:
+        2px 2px #004080,
+        4px 4px #003366;
+
+      margin-bottom:15px;
+
+    }
+
+
+    .loading-title{
+
+      color:#d7deea;
+
+      font-size:16px;
+
+      margin-bottom:20px;
+
+    }
+
+
+    .loading-bar-container{
+
+      width:260px;
+
+      height:7px;
+
+      background:#34445a;
+
+      border-radius:20px;
+
+      overflow:hidden;
+
+    }
+
+
+    .loading-bar{
+
+      width:0%;
+
+      height:100%;
+
+      background:#2d63d1;
+
+      border-radius:20px;
+
+      transition:width .1s linear;
+
+    }
+
+
+    .loading-percent{
+
+      margin-top:10px;
+
+      color:#99ccff;
+
+      font-size:13px;
+
+    }
+
+
+    /* =========================================
+       MAIN DASHBOARD
+    ========================================= */
+
+    #dashboard{
+
+      display:none;
+
+    }
+
+
+    .topbar{
+
+      height:60px;
+
+      background:white;
+
+      display:flex;
+
+      justify-content:space-between;
+
+      align-items:center;
+
+      padding:0 20px;
+
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+
+    }
+
+
+    .left{
+
+      display:flex;
+
+      align-items:center;
+
+      gap:12px;
+
+    }
+
+
+    .home-btn{
+
+      background:#2d63d1;
+
+      color:white;
+
+      border:none;
+
+      padding:8px 14px;
+
+      border-radius:6px;
+
+      cursor:pointer;
+
+      font-weight:bold;
+
+    }
+
+
+    .home-btn:hover{
+
+      background:#1f4fae;
+
+    }
+
+
+    .right{
+
+      display:flex;
+
+      align-items:center;
+
+      gap:15px;
+
+      font-weight:bold;
+
+      color:#2d63d1;
+
+    }
+
+
+    .logout-btn{
+
+      background:red;
+
+      color:white;
+
+      border:none;
+
+      padding:8px 14px;
+
+      border-radius:6px;
+
+      cursor:pointer;
+
+    }
+
+
+    .logout-btn:hover{
+
+      background:#b00000;
+
+    }
+
+
+    /* =========================================
+       SIDEBAR
+    ========================================= */
+
+    .sidebar{
+
+      width:220px;
+
+      height:calc(100vh - 60px);
+
+      background:#1f2a3a;
+
+      position:fixed;
+
+      top:60px;
+
+      left:0;
+
+      padding-top:20px;
+
+    }
+
+
+    .menu{
+
+      list-style:none;
+
+    }
+
+
+    .menu li{
+
+      padding:16px 20px;
+
+      color:#d7deea;
+
+      display:flex;
+
+      align-items:center;
+
+      gap:14px;
+
+      cursor:pointer;
+
+      transition:.2s;
+
+    }
+
+
+    .menu li:hover{
+
+      background:#2d63d1;
+
+      color:white;
+
+    }
+
+
+    /* =========================================
+       MAIN CONTENT
+    ========================================= */
+
+    .main{
+
+      margin-left:220px;
+
+      padding:20px;
+
+    }
+
+
+    /* =========================================
+       DASHBOARD CARDS
+    ========================================= */
+
+    .cards{
+
+      display:flex;
+
+      gap:20px;
+
+      flex-wrap:wrap;
+
+    }
+
+
+    .card{
+
+      width:210px;
+
+      height:120px;
+
+      background:white;
+
+      border-radius:14px;
+
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+
+      display:flex;
+
+      flex-direction:column;
+
+      justify-content:center;
+
+      align-items:center;
+
+      cursor:pointer;
+
+      transition:.2s;
+
+    }
+
+
+    .card:hover{
+
+      transform:translateY(-3px);
+
+      box-shadow:0 7px 18px rgba(0,0,0,0.15);
+
+    }
+
 
     .card i{
+
       font-size:30px;
+
       color:#2d63d1;
+
       margin-bottom:10px;
+
     }
+
 
     .card div{
+
       font-size:20px;
+
       font-weight:bold;
+
     }
+
+
+    /* =========================================
+       PENDING BOX
+    ========================================= */
 
     .pending-box{
+
       background:white;
+
       border-radius:12px;
+
       max-width:950px;
+
       margin:20px auto;
+
       box-shadow:0 3px 10px rgba(0,0,0,0.1);
+
       overflow:hidden;
+
     }
+
 
     .pending-header{
+
       background:#1f2a3a;
+
       color:white;
+
       padding:12px;
+
       font-size:20px;
+
       text-align:center;
+
       font-weight:bold;
+
     }
+
 
     .pending-content{
+
       padding:15px;
+
     }
+
 
     .metric{
+
       text-align:center;
+
     }
+
 
     .metric span{
+
       font-size:14px;
+
       color:#666;
+
     }
+
 
     .metric h1{
+
       font-size:50px;
+
       margin-top:8px;
+
       color:#d62828;
+
       line-height:1;
+
     }
+
 
     .metric-row{
+
       display:flex;
+
       gap:12px;
+
       margin-top:15px;
+
       flex-wrap:wrap;
+
     }
+
 
     .small-box{
+
       flex:1;
+
       min-width:150px;
+
       background:#f5f7fb;
+
       padding:12px;
+
       border-radius:10px;
+
       text-align:center;
+
     }
+
 
     .small-box p{
+
       font-size:13px;
+
       color:#666;
+
       margin-bottom:6px;
+
     }
+
 
     .small-box h2{
+
       font-size:26px;
+
       color:#2d63d1;
+
     }
+
+
+    /* =========================================
+       TEAM BOX
+    ========================================= */
 
     .team-box{
+
       margin-top:15px;
+
       display:flex;
+
       gap:12px;
+
       flex-wrap:wrap;
+
     }
+
 
     .team-card{
+
       flex:1;
+
       min-width:150px;
+
       background:#e9f0ff;
+
       padding:12px;
+
       border-radius:10px;
+
       text-align:center;
+
       font-weight:bold;
+
       color:#1f2a3a;
+
     }
+
+
+    /* =========================================
+       TABLE
+    ========================================= */
 
     .table-section{
+
       margin-top:20px;
+
       max-height:300px;
+
       overflow:auto;
+
     }
 
+
     table{
+
       width:100%;
+
       border-collapse:collapse;
+
     }
+
 
     table th,
     table td{
+
       text-align:center;
+
       vertical-align:middle;
+
     }
+
 
     table th{
+
       background:#1f2a3a;
+
       color:white;
+
       padding:10px;
+
       font-size:14px;
+
       position:sticky;
+
       top:0;
+
     }
+
 
     table td{
+
       padding:10px;
+
       font-size:14px;
+
       border-bottom:1px solid #ddd;
+
     }
+
 
     table tr:hover{
+
       background:#f5f7fb;
+
     }
 
-    /* 🔥 CRITICAL ROW */
+
+    /* =========================================
+       CRITICAL ROW
+    ========================================= */
+
     .critical-row{
+
       background:#ffe5e5 !important;
+
       color:#d62828;
+
       font-weight:bold;
+
+    }
+
+
+    /* =========================================
+       MOBILE
+    ========================================= */
+
+    @media(max-width:700px){
+
+      .sidebar{
+
+        width:180px;
+
+      }
+
+
+      .main{
+
+        margin-left:180px;
+
+        padding:12px;
+
+      }
+
+
+      .card{
+
+        width:170px;
+
+      }
+
+
+      .topbar{
+
+        padding:0 10px;
+
+      }
+
+
+      .topbar h2{
+
+        font-size:18px;
+
+      }
+
     }
 
   </style>
 
 </head>
 
+
 <body>
 
-<div class="topbar">
 
-  <div class="left">
-    <button class="home-btn" onclick="goHome()">Home</button>
-    <h2>Stark QR</h2>
+<!-- =========================================
+     LOADING SCREEN
+========================================= -->
+
+<div id="loadingScreen">
+
+  <div class="loading-logo">
+    STARK QR
   </div>
 
-  <div class="right">
-    <div id="userBox"></div>
-    <div id="headerQR"></div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+  <div class="loading-title">
+    Initializing System...
   </div>
 
-</div>
+  <div class="loading-bar-container">
 
-<div class="sidebar">
-
-  <ul class="menu">
-    <li onclick="go('accept.html')"><i class="fa fa-check-circle"></i> Accept</li>
-    <li onclick="go('mit.html')"><i class="fa fa-print"></i> MIT</li>
-    <li onclick="go('serial.html')"><i class="fa fa-box"></i> Serial</li>
-    <li onclick="go('nonserial.html')"><i class="fa fa-cubes"></i> Non-Serial</li>
-  </ul>
-
-</div>
-
-<div class="main">
-
-  <div class="cards">
-
-    <div class="card" onclick="go('pdfexcel.html')">
-      <i class="fa fa-file-excel"></i>
-      <div>PDF TO EXCEL</div>
-    </div>
-
-    <div class="card" onclick="go('mit.html')">
-      <i class="fa fa-print"></i>
-      <div>MIT</div>
-    </div>
-
-    <div class="card" onclick="go('serial.html')">
-      <i class="fa fa-box"></i>
-      <div>Serial</div>
-    </div>
-
-    <div class="card" onclick="go('nonserial.html')">
-      <i class="fa fa-cubes"></i>
-      <div>Non-Serial</div>
+    <div
+      class="loading-bar"
+      id="loadingBar">
     </div>
 
   </div>
 
-  <div class="pending-box">
-
-    <div class="pending-header">
-      W2R Scanning Dashboard
-    </div>
-
-    <div class="pending-content">
-
-      <div class="metric">
-        <span>Total Pending Quantity</span>
-        <h1 id="pendingQty">0</h1>
-      </div>
-
-      <div class="metric-row">
-
-        <div class="small-box">
-          <p>Quantity Required</p>
-          <h2 id="qtyRequired">0</h2>
-        </div>
-
-        <div class="small-box">
-          <p>Today Scanned</p>
-          <h2 id="qtyScanned">0</h2>
-        </div>
-
-        <div class="small-box">
-          <p>Total Scanned Quantity</p>
-          <h2 id="totalScannedBox">0</h2>
-        </div>
-
-      </div>
-
-      <div class="team-box" id="teamBox"></div>
-
-      <div class="table-section">
-
-        <table>
-
-          <thead>
-            <tr>
-              <th>Item Code</th>
-              <th>Pending Qty</th>
-              <th>Team</th>
-            </tr>
-          </thead>
-
-          <tbody id="pendingTable"></tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
+  <div
+    class="loading-percent"
+    id="loadingPercent">
+    0%
   </div>
 
 </div>
+
+
+
+<!-- =========================================
+     DASHBOARD
+========================================= -->
+
+<div id="dashboard">
+
+
+  <!-- TOP BAR -->
+
+  <div class="topbar">
+
+    <div class="left">
+
+      <button
+        class="home-btn"
+        onclick="goHome()">
+
+        Home
+
+      </button>
+
+      <h2>Stark QR</h2>
+
+    </div>
+
+
+    <div class="right">
+
+      <div id="userBox"></div>
+
+      <div id="headerQR"></div>
+
+      <button
+        class="logout-btn"
+        onclick="logout()">
+
+        Logout
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- SIDEBAR -->
+
+  <div class="sidebar">
+
+    <ul class="menu">
+
+
+      <li onclick="go('accept.html')">
+
+        <i class="fa fa-check-circle"></i>
+
+        Accept
+
+      </li>
+
+
+      <li onclick="go('mit.html')">
+
+        <i class="fa fa-print"></i>
+
+        MIT
+
+      </li>
+
+
+      <li onclick="go('serial.html')">
+
+        <i class="fa fa-box"></i>
+
+        Serial
+
+      </li>
+
+
+      <li onclick="go('nonserial.html')">
+
+        <i class="fa fa-cubes"></i>
+
+        Non-Serial
+
+      </li>
+
+
+    </ul>
+
+  </div>
+
+
+
+  <!-- MAIN -->
+
+  <div class="main">
+
+
+    <!-- CARDS -->
+
+    <div class="cards">
+
+
+      <div
+        class="card"
+        onclick="go('pdfexcel.html')">
+
+        <i class="fa fa-file-excel"></i>
+
+        <div>
+          PDF TO EXCEL
+        </div>
+
+      </div>
+
+
+      <div
+        class="card"
+        onclick="go('mit.html')">
+
+        <i class="fa fa-print"></i>
+
+        <div>
+          MIT
+        </div>
+
+      </div>
+
+
+      <div
+        class="card"
+        onclick="go('serial.html')">
+
+        <i class="fa fa-box"></i>
+
+        <div>
+          Serial
+        </div>
+
+      </div>
+
+
+      <div
+        class="card"
+        onclick="go('nonserial.html')">
+
+        <i class="fa fa-cubes"></i>
+
+        <div>
+          Non-Serial
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- W2R DASHBOARD -->
+
+    <div class="pending-box">
+
+
+      <div class="pending-header">
+
+        W2R Scanning Dashboard
+
+      </div>
+
+
+      <div class="pending-content">
+
+
+        <!-- TOTAL PENDING -->
+
+        <div class="metric">
+
+          <span>
+            Total Pending Quantity
+          </span>
+
+          <h1 id="pendingQty">
+            0
+          </h1>
+
+        </div>
+
+
+
+        <!-- METRICS -->
+
+        <div class="metric-row">
+
+
+          <div class="small-box">
+
+            <p>
+              Quantity Required
+            </p>
+
+            <h2 id="qtyRequired">
+              0
+            </h2>
+
+          </div>
+
+
+          <div class="small-box">
+
+            <p>
+              Today Scanned
+            </p>
+
+            <h2 id="qtyScanned">
+              0
+            </h2>
+
+          </div>
+
+
+          <div class="small-box">
+
+            <p>
+              Total Scanned Quantity
+            </p>
+
+            <h2 id="totalScannedBox">
+              0
+            </h2>
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- TEAM DATA -->
+
+        <div
+          class="team-box"
+          id="teamBox">
+
+        </div>
+
+
+
+        <!-- TABLE -->
+
+        <div class="table-section">
+
+
+          <table>
+
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Item Code
+                </th>
+
+                <th>
+                  Pending Qty
+                </th>
+
+                <th>
+                  Team
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody
+              id="pendingTable">
+
+            </tbody>
+
+
+          </table>
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>
+
+
 
 <script>
 
-let user = sessionStorage.getItem("wms_user");
+/* =========================================
+   LOGIN CHECK + LOADING
+========================================= */
 
-if(!user){
-  window.location.href = "login.html";
+(function(){
+
+  const loadingScreen =
+    document.getElementById("loadingScreen");
+
+  const loadingBar =
+    document.getElementById("loadingBar");
+
+  const loadingPercent =
+    document.getElementById("loadingPercent");
+
+  const dashboard =
+    document.getElementById("dashboard");
+
+
+  let percent = 0;
+
+
+  /*
+     Check login immediately.
+
+     If there is no user:
+     Loading screen stays visible while
+     login.html is opened.
+
+     This prevents the dashboard from
+     flashing on screen.
+  */
+
+  const user =
+    sessionStorage.getItem("wms_user");
+
+
+  const timer =
+    setInterval(function(){
+
+      percent += 2;
+
+      if(percent > 100){
+        percent = 100;
+      }
+
+
+      loadingBar.style.width =
+        percent + "%";
+
+
+      loadingPercent.innerText =
+        percent + "%";
+
+
+      if(percent >= 100){
+
+        clearInterval(timer);
+
+
+        setTimeout(function(){
+
+          if(!user){
+
+            /*
+              User is NOT logged in.
+              Go directly to login page.
+            */
+
+            window.location.replace("login.html");
+
+            return;
+
+          }
+
+
+          /*
+            User is already logged in.
+            Show dashboard.
+          */
+
+          loadingScreen.style.display =
+            "none";
+
+          dashboard.style.display =
+            "block";
+
+
+          initializeDashboard(user);
+
+
+        },300);
+
+      }
+
+
+    },25);
+
+
+})();
+
+
+
+/* =========================================
+   INITIALIZE DASHBOARD
+========================================= */
+
+function initializeDashboard(user){
+
+  document.getElementById("userBox").innerHTML =
+    `<i class="fa fa-user"></i> ${escapeHTML(user)}`;
+
+
+  /*
+     Header QR
+  */
+
+  const headerQR =
+    document.getElementById("headerQR");
+
+
+  headerQR.innerHTML = "";
+
+
+  new QRCode(headerQR,{
+
+    text:"OWNED BY SHARATH",
+
+    width:40,
+
+    height:40
+
+  });
+
+
+  /*
+     Load dashboard data
+  */
+
+  loadDashboard();
+
+
+  /*
+     Refresh every 30 seconds
+  */
+
+  setInterval(function(){
+
+    loadDashboard();
+
+  },30000);
+
 }
 
-document.getElementById("userBox").innerHTML =
-  `<i class="fa fa-user"></i> ${user}`;
 
-new QRCode(document.getElementById("headerQR"), {
-  text:"OWNED BY SHARATH",
-  width:40,
-  height:40
-});
+
+/* =========================================
+   SAFE HTML
+========================================= */
+
+function escapeHTML(value){
+
+  return String(value)
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#039;");
+
+}
+
+
+
+/* =========================================
+   PAGE NAVIGATION
+========================================= */
 
 function go(page){
+
   window.location.href = page;
+
 }
+
 
 function goHome(){
+
   window.location.href = "index.html";
+
 }
 
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
 function logout(){
+
   sessionStorage.removeItem("wms_user");
-  window.location.href = "login.html";
+
+  window.location.replace("login.html");
+
 }
+
+
+
+/* =========================================
+   LOAD DASHBOARD DATA
+========================================= */
 
 async function loadDashboard(){
 
   try{
 
+
     const url =
       "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
       new Date().getTime();
 
-    const res = await fetch(url);
-    const data = await res.json();
 
-    document.getElementById("pendingQty").innerText =
+    const res =
+      await fetch(url);
+
+
+    if(!res.ok){
+
+      throw new Error(
+        "Dashboard request failed: " +
+        res.status
+      );
+
+    }
+
+
+    const data =
+      await res.json();
+
+
+
+    /* =====================================
+       MAIN METRICS
+    ===================================== */
+
+
+    document.getElementById(
+      "pendingQty"
+    ).innerText =
       data.totalPending ?? 0;
 
-    document.getElementById("qtyRequired").innerText =
+
+    document.getElementById(
+      "qtyRequired"
+    ).innerText =
       data.totalRequired ?? 0;
 
-    document.getElementById("qtyScanned").innerText =
+
+    document.getElementById(
+      "qtyScanned"
+    ).innerText =
       data.totalTodayScanned ?? 0;
 
-    document.getElementById("totalScannedBox").innerText =
+
+    document.getElementById(
+      "totalScannedBox"
+    ).innerText =
       data.totalScanned ?? 0;
 
-    // TEAM DATA
+
+
+    /* =====================================
+       TEAM DATA
+    ===================================== */
+
     let teamHTML = "";
 
-    const teams = data.teamWise || {};
+    const teams =
+      data.teamWise || {};
+
 
     for(let team in teams){
 
       teamHTML += `
+
         <div class="team-card">
-          ${team}: ${teams[team]}
+
+          ${escapeHTML(team)}:
+          ${escapeHTML(teams[team])}
+
         </div>
+
       `;
+
     }
 
-    document.getElementById("teamBox").innerHTML = teamHTML;
 
-    // TABLE
+    document.getElementById(
+      "teamBox"
+    ).innerHTML =
+      teamHTML;
+
+
+
+    /* =====================================
+       PENDING TABLE
+    ===================================== */
+
     let html = "";
 
-    (data.itemList || []).forEach(row => {
 
-      // 🔥 CRITICAL CONDITION
-      const critical = row.pending > 1000;
+    (data.itemList || []).forEach(function(row){
+
+      const pending =
+        Number(row.pending) || 0;
+
+
+      const critical =
+        pending > 1000;
+
 
       html += `
-        <tr class="${critical ? 'critical-row' : ''}">
-          <td>${row.item}</td>
+
+        <tr
+          class="${critical ? "critical-row" : ""}">
+
           <td>
-            ${row.pending}
-            ${critical ? '⚠️' : ''}
+            ${escapeHTML(row.item ?? "")}
           </td>
-          <td>${row.team || "-"}</td>
+
+          <td>
+
+            ${pending}
+
+            ${critical ? " ⚠️" : ""}
+
+          </td>
+
+          <td>
+            ${escapeHTML(row.team || "-")}
+          </td>
+
         </tr>
+
       `;
+
     });
 
-    document.getElementById("pendingTable").innerHTML = html;
+
+    document.getElementById(
+      "pendingTable"
+    ).innerHTML =
+      html;
+
 
   }catch(err){
-    console.log(err);
+
+    console.error(
+      "Dashboard loading error:",
+      err
+    );
+
   }
+
 }
 
-loadDashboard();
-
-setInterval(() => {
-  loadDashboard();
-}, 30000);
-
 </script>
+
 
 </body>
 </html>
