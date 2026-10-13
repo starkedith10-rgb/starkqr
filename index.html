@@ -3121,7 +3121,7 @@ function renderTeams(
 
 
 /* =========================================================
-   PENDING TABLE
+   ITEM-WISE AND PARTNER-WISE PENDING
 ========================================================= */
 
 function renderPendingItems(items) {
@@ -3130,47 +3130,75 @@ function renderPendingItems(items) {
     const partnerTable = document.getElementById("partnerPendingTable");
     const partnerBadge = document.getElementById("partnerPendingBadge");
 
-    if (!Array.isArray(items)) items = [];
+    if (!Array.isArray(items)) {
+        items = [];
+    }
 
-    // Accept common partner field names from the API.
+    // Read partner names from supported API field names.
     function getPartner(row) {
-        return String(
+        const value =
             row.partner ??
             row.partnerName ??
             row.partner_name ??
             row.Partner ??
             row.PARTNER ??
-            "Unassigned"
-        ).trim() || "Unassigned";
+            row["Partner Name"] ??
+            row["PARTNER NAME"];
+
+        return String(value ?? "").trim() || "Unassigned";
     }
 
-    // Sort item-wise pending by highest quantity first.
+    // Support common item-code and pending-quantity field names.
+    function getItem(row) {
+        return row.item ??
+            row.itemCode ??
+            row.item_code ??
+            row.Item ??
+            row["Item Code"] ??
+            row["ITEM CODE"] ??
+            "-";
+    }
+
+    function getPending(row) {
+        const value =
+            row.pending ??
+            row.pendingQty ??
+            row.pending_qty ??
+            row["Pending Qty"] ??
+            row["PENDING QTY"] ??
+            0;
+
+        return Math.max(0, Number(value) || 0);
+    }
+
+    // Show the highest-pending items first.
     const sortedItems = [...items].sort(
-        (a, b) =>
-            (Number(b.pending) || 0) -
-            (Number(a.pending) || 0)
+        (a, b) => getPending(b) - getPending(a)
     );
 
-    badge.innerText = `${sortedItems.length} ITEMS`;
+    badge.textContent = `${sortedItems.length} ITEMS`;
 
+    // ITEM-WISE PENDING TABLE
     if (sortedItems.length === 0) {
         table.innerHTML = `
             <tr>
                 <td colspan="5" class="no-data">
-                    <i class="fa fa-circle-check"></i>
-                    No pending items
+                    No pending items available
                 </td>
             </tr>`;
     } else {
         table.innerHTML = sortedItems.map(row => {
-            const pending = Number(row.pending) || 0;
+            const pending = getPending(row);
             const critical = pending > 1000;
+            const partner = getPartner(row);
+            const item = getItem(row);
+            const team = row.team ?? row.Team ?? "-";
 
             return `
                 <tr class="${critical ? "critical-row" : ""}">
                     <td>
                         <span class="item-code">
-                            ${escapeHTML(row.item ?? row.itemCode ?? "")}
+                            ${escapeHTML(item)}
                         </span>
                     </td>
                     <td>
@@ -3180,31 +3208,36 @@ function renderPendingItems(items) {
                     </td>
                     <td>
                         <span class="team-tag">
-                            ${escapeHTML(getPartner(row))}
+                            ${escapeHTML(partner)}
                         </span>
                     </td>
                     <td>
                         <span class="team-tag">
-                            ${escapeHTML(row.team || "-")}
+                            ${escapeHTML(team)}
                         </span>
                     </td>
                     <td>
-                        <span class="${critical ? "critical-status" : "normal-status"}">
-                            ${critical
-                                ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
-                                : '<i class="fa fa-circle-check"></i> NORMAL'}
+                        <span class="${
+                            critical ? "critical-status" : "normal-status"
+                        }">
+                            ${
+                                critical
+                                    ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
+                                    : '<i class="fa fa-circle-check"></i> NORMAL'
+                            }
                         </span>
                     </td>
                 </tr>`;
         }).join("");
     }
 
-    // Group pending quantities by partner.
+    // GROUP PENDING QUANTITIES BY PARTNER.
+    // Each itemList record contributes once to its partner total.
     const partners = {};
 
     sortedItems.forEach(row => {
         const partner = getPartner(row);
-        const pending = Number(row.pending) || 0;
+        const pending = getPending(row);
 
         if (!partners[partner]) {
             partners[partner] = {
@@ -3221,13 +3254,15 @@ function renderPendingItems(items) {
         (a, b) => b[1].pending - a[1].pending
     );
 
-    partnerBadge.innerText = `${sortedPartners.length} PARTNERS`;
+    partnerBadge.textContent =
+        `${sortedPartners.length} PARTNERS`;
 
+    // PARTNER-WISE PENDING TABLE
     if (sortedPartners.length === 0) {
         partnerTable.innerHTML = `
             <tr>
                 <td colspan="3" class="no-data">
-                    No partner pending data
+                    No partner pending data available
                 </td>
             </tr>`;
         return;
@@ -3249,147 +3284,6 @@ function renderPendingItems(items) {
         </tr>
     `).join("");
 }
-
-    /*
-     * Sort highest pending first
-     */
-
-    const sortedItems =
-        [...items].sort(
-            function(a,b){
-
-                return (
-                    Number(b.pending) || 0
-                ) -
-                (
-                    Number(a.pending) || 0
-                );
-
-            }
-        );
-
-
-    badge.innerText =
-        sortedItems.length +
-        " ITEMS";
-
-
-    let html = "";
-
-
-    sortedItems.forEach(
-        function(row){
-
-
-            const pending =
-                Number(row.pending) || 0;
-
-
-            const critical =
-                pending > 1000;
-
-
-            html += `
-
-                <tr
-                    class="${
-                        critical
-                        ? "critical-row"
-                        : ""
-                    }">
-
-
-                    <td>
-
-                        <span class="item-code">
-
-                            ${escapeHTML(
-                                row.item ?? ""
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="pending-number">
-
-                            ${formatNumber(
-                                pending
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="team-tag">
-
-                            ${escapeHTML(
-                                row.team || "-"
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-
-                        ${
-                            critical
-
-                            ?
-
-                            `
-                            <span
-                                class="critical-status">
-
-                                <i class="fa fa-triangle-exclamation"></i>
-
-                                CRITICAL
-
-                            </span>
-                            `
-
-                            :
-
-                            `
-                            <span
-                                class="normal-status">
-
-                                <i class="fa fa-circle-check"></i>
-
-                                NORMAL
-
-                            </span>
-                            `
-
-                        }
-
-
-                    </td>
-
-
-                </tr>
-
-            `;
-
-
-        }
-    );
-
-
-    table.innerHTML =
-        html;
-
-}
-
 </script>
 
 
