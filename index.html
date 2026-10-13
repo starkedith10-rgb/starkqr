@@ -1711,7 +1711,37 @@ tbody tr:hover{
     }
 
 }
+/* Side-by-side pending panels */
+.pending-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+}
 
+.pending-grid .table-panel {
+    margin-top: 0;
+    min-width: 0;
+}
+
+.pending-grid .table-wrapper {
+    max-height: 390px;
+    overflow: auto;
+}
+
+.pending-grid table {
+    min-width: 420px;
+}
+
+@media (max-width: 1100px) {
+    .pending-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .pending-grid table {
+        min-width: 360px;
+    }
+}
 </style>
 
 </head>
@@ -2381,92 +2411,75 @@ tbody tr:hover{
 
 
 
-        <!-- =================================================
-             PENDING TABLE
-        ================================================== -->
 
-        <section class="panel table-panel">
+<!-- ITEM-WISE AND PARTNER-WISE PENDING -->
+<div class="content-grid pending-grid">
 
-
-            <div class="panel-header">
-
-
-                <div class="panel-title">
-
-                    <i class="fa fa-triangle-exclamation"></i>
-
-                    Live Pending Items
-
-                </div>
-
-
-                <div
-                    id="pendingBadge"
-                    class="panel-badge">
-
-                    0 ITEMS
-
-                </div>
-
-
+    <!-- ITEM-WISE PENDING -->
+    <section class="panel table-panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <i class="fa fa-boxes-stacked"></i>
+                Item-wise Pending
             </div>
+            <div id="pendingBadge" class="panel-badge">0 ITEMS</div>
+        </div>
 
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Code</th>
+                        <th>Pending Qty</th>
+                        <th>Partner</th>
+                        <th>Team</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingTable">
+                    <tr>
+                        <td colspan="5" class="no-data">
+                            Loading pending items...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-            <div class="table-wrapper">
-
-
-                <table>
-
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Item Code
-                            </th>
-
-                            <th>
-                                Pending Qty
-                            </th>
-
-                            <th>
-                                Team
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="pendingTable">
-
-                        <tr>
-
-                            <td
-                                colspan="4"
-                                class="no-data">
-
-                                Loading pending items...
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-
-                </table>
-
-
+    <!-- PARTNER-WISE PENDING -->
+    <section class="panel table-panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <i class="fa fa-handshake"></i>
+                Partner-wise Pending
             </div>
+            <div id="partnerPendingBadge" class="panel-badge">
+                0 PARTNERS
+            </div>
+        </div>
 
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Partner</th>
+                        <th>Pending Qty</th>
+                        <th>Items</th>
+                    </tr>
+                </thead>
+                <tbody id="partnerPendingTable">
+                    <tr>
+                        <td colspan="3" class="no-data">
+                            Loading partner data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-        </section>
+</div>
 
 
 
@@ -3111,60 +3124,131 @@ function renderTeams(
    PENDING TABLE
 ========================================================= */
 
-function renderPendingItems(
-    items
-){
+function renderPendingItems(items) {
+    const table = document.getElementById("pendingTable");
+    const badge = document.getElementById("pendingBadge");
+    const partnerTable = document.getElementById("partnerPendingTable");
+    const partnerBadge = document.getElementById("partnerPendingBadge");
 
+    if (!Array.isArray(items)) items = [];
 
-    const table =
-        document.getElementById(
-            "pendingTable"
-        );
-
-
-    const badge =
-        document.getElementById(
-            "pendingBadge"
-        );
-
-
-    if(!items.length){
-
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="4"
-                    class="no-data">
-
-                    <i
-                        class="fa fa-circle-check"
-                        style="
-                            color:#35e58a;
-                            margin-right:5px;
-                        ">
-
-                    </i>
-
-                    No pending items
-
-                </td>
-
-            </tr>
-
-        `;
-
-
-        badge.innerText =
-            "0 ITEMS";
-
-
-        return;
-
+    // Accept common partner field names from the API.
+    function getPartner(row) {
+        return String(
+            row.partner ??
+            row.partnerName ??
+            row.partner_name ??
+            row.Partner ??
+            row.PARTNER ??
+            "Unassigned"
+        ).trim() || "Unassigned";
     }
 
+    // Sort item-wise pending by highest quantity first.
+    const sortedItems = [...items].sort(
+        (a, b) =>
+            (Number(b.pending) || 0) -
+            (Number(a.pending) || 0)
+    );
+
+    badge.innerText = `${sortedItems.length} ITEMS`;
+
+    if (sortedItems.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="5" class="no-data">
+                    <i class="fa fa-circle-check"></i>
+                    No pending items
+                </td>
+            </tr>`;
+    } else {
+        table.innerHTML = sortedItems.map(row => {
+            const pending = Number(row.pending) || 0;
+            const critical = pending > 1000;
+
+            return `
+                <tr class="${critical ? "critical-row" : ""}">
+                    <td>
+                        <span class="item-code">
+                            ${escapeHTML(row.item ?? row.itemCode ?? "")}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="pending-number">
+                            ${formatNumber(pending)}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="team-tag">
+                            ${escapeHTML(getPartner(row))}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="team-tag">
+                            ${escapeHTML(row.team || "-")}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="${critical ? "critical-status" : "normal-status"}">
+                            ${critical
+                                ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
+                                : '<i class="fa fa-circle-check"></i> NORMAL'}
+                        </span>
+                    </td>
+                </tr>`;
+        }).join("");
+    }
+
+    // Group pending quantities by partner.
+    const partners = {};
+
+    sortedItems.forEach(row => {
+        const partner = getPartner(row);
+        const pending = Number(row.pending) || 0;
+
+        if (!partners[partner]) {
+            partners[partner] = {
+                pending: 0,
+                items: 0
+            };
+        }
+
+        partners[partner].pending += pending;
+        partners[partner].items += 1;
+    });
+
+    const sortedPartners = Object.entries(partners).sort(
+        (a, b) => b[1].pending - a[1].pending
+    );
+
+    partnerBadge.innerText = `${sortedPartners.length} PARTNERS`;
+
+    if (sortedPartners.length === 0) {
+        partnerTable.innerHTML = `
+            <tr>
+                <td colspan="3" class="no-data">
+                    No partner pending data
+                </td>
+            </tr>`;
+        return;
+    }
+
+    partnerTable.innerHTML = sortedPartners.map(([partner, data]) => `
+        <tr>
+            <td>
+                <span class="item-code">
+                    ${escapeHTML(partner)}
+                </span>
+            </td>
+            <td>
+                <span class="pending-number">
+                    ${formatNumber(data.pending)}
+                </span>
+            </td>
+            <td>${formatNumber(data.items)}</td>
+        </tr>
+    `).join("");
+}
 
     /*
      * Sort highest pending first
