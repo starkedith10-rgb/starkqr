@@ -47,110 +47,71 @@ body{
 ========================================================= */
 
 #loadingScreen{
-
     position:fixed;
-
     inset:0;
-
     width:100%;
     height:100%;
-
     background:
-        radial-gradient(circle at center,#12345a 0%,#07111f 45%,#020812 100%);
-
+        radial-gradient(
+            circle at center,
+            #12345a 0%,
+            #07111f 45%,
+            #020812 100%
+        );
     display:flex;
-
     flex-direction:column;
-
     justify-content:center;
-
     align-items:center;
-
     z-index:999999;
-
 }
 
-
 .loading-logo{
-
     font-size:46px;
-
     font-weight:900;
-
     letter-spacing:6px;
-
     color:#52b7ff;
-
     text-shadow:
         0 0 10px #168cff,
         0 0 25px rgba(22,140,255,.7),
         3px 3px #003b69;
-
 }
-
 
 .loading-subtitle{
-
     margin-top:12px;
-
     font-size:13px;
-
     letter-spacing:3px;
-
     color:#8fb9d9;
-
 }
-
 
 .loading-bar-container{
-
     width:280px;
-
     height:6px;
-
     margin-top:28px;
-
     background:#17283b;
-
     border-radius:20px;
-
     overflow:hidden;
-
     box-shadow:
         0 0 10px rgba(0,150,255,.2);
-
 }
 
-
 .loading-bar{
-
     width:0%;
-
     height:100%;
-
     background:
         linear-gradient(
             90deg,
             #006eff,
             #00c6ff
         );
-
     box-shadow:
         0 0 12px #00aaff;
-
     transition:width .08s linear;
-
 }
 
-
 .loading-percent{
-
     margin-top:12px;
-
     color:#67c7ff;
-
     font-size:13px;
-
 }
 
 
@@ -159,11 +120,8 @@ body{
 ========================================================= */
 
 #dashboard{
-
     display:none;
-
     min-height:100vh;
-
     background:
         radial-gradient(
             circle at 75% 20%,
@@ -171,7 +129,6 @@ body{
             transparent 30%
         ),
         #07111f;
-
 }
 
 
@@ -180,198 +137,117 @@ body{
 ========================================================= */
 
 .topbar{
-
     height:68px;
-
     position:fixed;
-
     top:0;
     left:0;
     right:0;
-
     z-index:1000;
-
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
-
     padding:0 22px;
-
     background:
         rgba(7,17,31,.95);
-
     border-bottom:
         1px solid rgba(70,170,255,.25);
-
     box-shadow:
         0 4px 25px rgba(0,0,0,.35);
-
     backdrop-filter:blur(10px);
-
 }
-
 
 .brand{
-
     display:flex;
-
     align-items:center;
-
     gap:12px;
-
 }
 
-
 .brand-icon{
-
     width:40px;
     height:40px;
-
     border-radius:10px;
-
     display:flex;
-
     align-items:center;
     justify-content:center;
-
     background:
         linear-gradient(
             135deg,
             #087eff,
             #00b8ff
         );
-
     color:white;
-
     font-size:20px;
-
     box-shadow:
         0 0 18px rgba(0,150,255,.45);
-
 }
-
 
 .brand-title{
-
     font-size:20px;
-
     font-weight:800;
-
     letter-spacing:1px;
-
 }
-
 
 .brand-subtitle{
-
     font-size:10px;
-
     color:#6fa9d3;
-
     letter-spacing:2px;
-
     margin-top:2px;
-
 }
 
-
 .top-right{
-
     display:flex;
-
     align-items:center;
-
     gap:18px;
-
 }
 
 
 /* SYSTEM STATUS */
 
 .system-status{
-
     display:flex;
-
     align-items:center;
-
     gap:7px;
-
     color:#76e6a5;
-
     font-size:12px;
-
     font-weight:bold;
-
 }
-
 
 .status-dot{
-
     width:8px;
     height:8px;
-
     background:#21e67a;
-
     border-radius:50%;
-
     box-shadow:
         0 0 10px #21e67a;
-
 }
-
 
 .user-box{
-
     display:flex;
-
     align-items:center;
-
     gap:8px;
-
     color:#b8d8f0;
-
     font-size:13px;
-
 }
-
 
 .user-box i{
-
     color:#43b8ff;
-
 }
-
 
 .logout-btn{
-
     border:none;
-
     background:#b91c2c;
-
     color:white;
-
     padding:9px 14px;
-
     border-radius:7px;
-
     cursor:pointer;
-
     font-weight:bold;
-
     transition:.2s;
-
 }
 
-
 .logout-btn:hover{
-
     background:#e12638;
-
     box-shadow:
         0 0 12px rgba(225,38,56,.4);
-
 }
 
 
@@ -380,146 +256,86 @@ body{
 ========================================================= */
 
 .sidebar{
-
     position:fixed;
-
     left:0;
-
     top:68px;
-
     bottom:0;
-
     width:220px;
-
     background:
         linear-gradient(
             180deg,
             #0b1a2b,
             #07111f
         );
-
     border-right:
         1px solid rgba(70,170,255,.18);
-
     padding:18px 12px;
-
     z-index:900;
-
 }
-
 
 .menu-title{
-
     color:#547b9c;
-
     font-size:10px;
-
     font-weight:bold;
-
     letter-spacing:2px;
-
     padding:8px 12px 12px;
-
 }
-
 
 .menu{
-
     list-style:none;
-
 }
-
 
 .menu li{
-
     margin-bottom:6px;
-
     padding:13px 14px;
-
     display:flex;
-
     align-items:center;
-
     gap:12px;
-
     color:#a8c2d9;
-
     border-radius:8px;
-
     cursor:pointer;
-
     font-size:14px;
-
     transition:.2s;
-
 }
-
 
 .menu li i{
-
     width:20px;
-
     text-align:center;
-
     color:#55baff;
-
 }
-
 
 .menu li:hover{
-
     background:
         rgba(32,126,219,.16);
-
     color:white;
-
     transform:translateX(3px);
-
 }
 
-
 .menu li.active{
-
     background:
         linear-gradient(
             90deg,
             rgba(0,126,255,.28),
             rgba(0,126,255,.05)
         );
-
     color:white;
-
     border-left:
         3px solid #28aaff;
-
 }
 
-
 .sidebar-footer{
-
     position:absolute;
-
     bottom:20px;
-
     left:15px;
-
     right:15px;
-
     padding:12px;
-
     border:
         1px solid rgba(75,160,220,.15);
-
     border-radius:9px;
-
     background:rgba(20,50,75,.3);
-
     text-align:center;
-
     font-size:10px;
-
     color:#557894;
-
 }
 
 
@@ -528,16 +344,12 @@ body{
 ========================================================= */
 
 .main{
-
     margin-left:220px;
-
     padding:
         92px
         24px
         30px;
-
     min-height:100vh;
-
 }
 
 
@@ -546,62 +358,36 @@ body{
 ========================================================= */
 
 .page-header{
-
     display:flex;
-
     align-items:flex-end;
-
     justify-content:space-between;
-
     margin-bottom:20px;
-
 }
-
 
 .page-title{
-
     font-size:27px;
-
     font-weight:800;
-
     letter-spacing:.5px;
-
 }
-
 
 .page-title span{
-
     color:#32b8ff;
-
 }
-
 
 .page-description{
-
     margin-top:5px;
-
     color:#6e91ad;
-
     font-size:12px;
-
 }
-
 
 .refresh-info{
-
     text-align:right;
-
     color:#66859e;
-
     font-size:11px;
-
 }
 
-
 .refresh-info strong{
-
     color:#72bdf0;
-
 }
 
 
@@ -610,19 +396,12 @@ body{
 ========================================================= */
 
 .status-panel{
-
     position:relative;
-
     overflow:hidden;
-
     min-height:185px;
-
     border-radius:16px;
-
     padding:25px;
-
     margin-bottom:20px;
-
     background:
         linear-gradient(
             120deg,
@@ -630,242 +409,141 @@ body{
             #0b1d32 55%,
             #09253e
         );
-
     border:
         1px solid rgba(62,175,255,.25);
-
     box-shadow:
         0 10px 35px rgba(0,0,0,.25);
-
 }
-
 
 .status-panel::before{
-
     content:"";
-
     position:absolute;
-
     width:300px;
     height:300px;
-
     right:-100px;
     top:-140px;
-
     border-radius:50%;
-
     background:
         rgba(0,160,255,.08);
-
 }
-
 
 .status-panel::after{
-
     content:"";
-
     position:absolute;
-
     width:180px;
     height:180px;
-
     right:100px;
     bottom:-120px;
-
     border-radius:50%;
-
     border:
         1px solid rgba(50,180,255,.12);
-
 }
-
 
 .status-content{
-
     position:relative;
-
     z-index:2;
-
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
-
     gap:30px;
-
 }
-
 
 .status-left{
-
     display:flex;
-
     align-items:center;
-
     gap:20px;
-
 }
-
 
 .status-circle{
-
     width:85px;
     height:85px;
-
     border-radius:50%;
-
     display:flex;
-
     align-items:center;
     justify-content:center;
-
     background:
         rgba(21,220,118,.08);
-
     border:
         2px solid #27e47c;
-
     box-shadow:
         0 0 25px rgba(39,228,124,.2);
-
     color:#27e47c;
-
     font-size:30px;
-
 }
-
 
 .status-label{
-
     color:#7fa8c6;
-
     font-size:11px;
-
     letter-spacing:2px;
-
 }
-
 
 .status-ready{
-
     margin-top:5px;
-
     font-size:30px;
-
     font-weight:900;
-
     color:#43e890;
-
     letter-spacing:1px;
-
 }
-
 
 .status-message{
-
     margin-top:7px;
-
     color:#7195af;
-
     font-size:12px;
-
 }
-
 
 .progress-area{
-
     min-width:300px;
-
     width:45%;
-
 }
-
 
 .progress-top{
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     margin-bottom:9px;
-
 }
-
 
 .progress-top span:first-child{
-
     color:#83a7c0;
-
     font-size:12px;
-
 }
-
 
 .progress-percent{
-
     color:#42c3ff;
-
     font-size:20px;
-
     font-weight:bold;
-
 }
-
 
 .progress-bar{
-
     height:11px;
-
     width:100%;
-
     background:#142a3e;
-
     border-radius:20px;
-
     overflow:hidden;
-
 }
 
-
 .progress-fill{
-
     width:0%;
-
     height:100%;
-
     border-radius:20px;
-
     background:
         linear-gradient(
             90deg,
             #087eff,
             #00caff
         );
-
     box-shadow:
         0 0 12px rgba(0,181,255,.6);
-
     transition:
         width .7s ease;
-
 }
 
-
 .progress-numbers{
-
     margin-top:8px;
-
     display:flex;
-
     justify-content:space-between;
-
     color:#56758e;
-
     font-size:11px;
-
 }
 
 
@@ -874,154 +552,91 @@ body{
 ========================================================= */
 
 .kpi-grid{
-
     display:grid;
-
     grid-template-columns:
         repeat(4,1fr);
-
     gap:16px;
-
     margin-bottom:20px;
-
 }
 
-
 .kpi-card{
-
     position:relative;
-
     overflow:hidden;
-
     min-height:125px;
-
     background:
         linear-gradient(
             145deg,
             #0d1e31,
             #091625
         );
-
     border:
         1px solid rgba(78,159,218,.16);
-
     border-radius:13px;
-
     padding:18px;
-
     box-shadow:
         0 7px 25px rgba(0,0,0,.18);
-
     transition:.25s;
-
 }
-
 
 .kpi-card:hover{
-
     transform:translateY(-3px);
-
     border-color:
         rgba(60,177,255,.4);
-
 }
-
 
 .kpi-icon{
-
     width:38px;
     height:38px;
-
     display:flex;
-
     align-items:center;
     justify-content:center;
-
     border-radius:9px;
-
     background:
         rgba(40,150,255,.12);
-
     color:#45baff;
-
     font-size:17px;
-
 }
-
 
 .kpi-label{
-
     margin-top:12px;
-
     color:#63849d;
-
     font-size:11px;
-
     text-transform:uppercase;
-
     letter-spacing:1px;
-
 }
-
 
 .kpi-value{
-
     margin-top:3px;
-
     color:#e8f5ff;
-
     font-size:29px;
-
     font-weight:800;
-
 }
-
 
 .kpi-card.pending .kpi-icon{
-
     background:rgba(255,62,77,.1);
-
     color:#ff5360;
-
 }
-
 
 .kpi-card.pending .kpi-value{
-
     color:#ff6670;
-
 }
-
 
 .kpi-card.scanned .kpi-icon{
-
     background:rgba(32,225,125,.1);
-
     color:#36e58a;
-
 }
-
 
 .kpi-card.scanned .kpi-value{
-
     color:#48e999;
-
 }
-
 
 .kpi-card.today .kpi-icon{
-
     background:rgba(255,194,59,.1);
-
     color:#ffc43d;
-
 }
 
-
 .kpi-card.today .kpi-value{
-
     color:#ffd05d;
-
 }
 
 
@@ -1030,15 +645,11 @@ body{
 ========================================================= */
 
 .content-grid{
-
     display:grid;
-
     grid-template-columns:
         minmax(0,1.1fr)
         minmax(0,.9fr);
-
     gap:18px;
-
 }
 
 
@@ -1047,80 +658,49 @@ body{
 ========================================================= */
 
 .panel{
-
     background:
         linear-gradient(
             145deg,
             #0d1d2e,
             #091523
         );
-
     border:
         1px solid rgba(78,159,218,.15);
-
     border-radius:14px;
-
     overflow:hidden;
-
     box-shadow:
         0 7px 25px rgba(0,0,0,.18);
-
 }
-
 
 .panel-header{
-
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
-
     padding:15px 17px;
-
     border-bottom:
         1px solid rgba(78,159,218,.12);
-
 }
-
 
 .panel-title{
-
     display:flex;
-
     align-items:center;
-
     gap:9px;
-
     font-size:14px;
-
     font-weight:bold;
-
 }
-
 
 .panel-title i{
-
     color:#38b8ff;
-
 }
 
-
 .panel-badge{
-
     padding:4px 8px;
-
     border-radius:5px;
-
     background:
         rgba(48,172,255,.1);
-
     color:#51bfff;
-
     font-size:10px;
-
     font-weight:bold;
-
 }
 
 
@@ -1129,91 +709,54 @@ body{
 ========================================================= */
 
 .team-list{
-
     padding:12px 15px 15px;
-
 }
-
 
 .team-item{
-
     margin-bottom:13px;
-
 }
-
 
 .team-top{
-
     display:flex;
-
     justify-content:space-between;
-
     margin-bottom:6px;
-
 }
-
 
 .team-name{
-
     color:#c1d9eb;
-
     font-size:12px;
-
     font-weight:bold;
-
 }
-
 
 .team-count{
-
     color:#54bdff;
-
     font-size:12px;
-
     font-weight:bold;
-
 }
-
 
 .team-progress{
-
     height:7px;
-
     background:#162b3f;
-
     border-radius:10px;
-
     overflow:hidden;
-
 }
 
-
 .team-fill{
-
     height:100%;
-
     border-radius:10px;
-
     background:
         linear-gradient(
             90deg,
             #087eff,
             #20c5ff
         );
-
 }
 
-
 .team-empty{
-
     padding:30px;
-
     text-align:center;
-
     color:#526f86;
-
     font-size:12px;
-
 }
 
 
@@ -1222,74 +765,44 @@ body{
 ========================================================= */
 
 .quick-actions{
-
     display:grid;
-
     grid-template-columns:
         repeat(2,1fr);
-
     gap:10px;
-
     padding:15px;
-
 }
-
 
 .quick-btn{
-
     padding:15px 10px;
-
     background:
         rgba(22,54,80,.45);
-
     border:
         1px solid rgba(65,150,210,.13);
-
     border-radius:9px;
-
     color:#a9c7dd;
-
     cursor:pointer;
-
     text-align:center;
-
     transition:.2s;
-
 }
-
 
 .quick-btn i{
-
     display:block;
-
     color:#46b9ff;
-
     font-size:20px;
-
     margin-bottom:7px;
-
 }
-
 
 .quick-btn span{
-
     font-size:11px;
-
     font-weight:bold;
-
 }
 
-
 .quick-btn:hover{
-
     background:
         rgba(31,121,188,.18);
-
     border-color:
         rgba(70,185,255,.35);
-
     color:white;
-
 }
 
 
@@ -1298,166 +811,95 @@ body{
 ========================================================= */
 
 .table-panel{
-
     margin-top:18px;
-
 }
-
 
 .table-wrapper{
-
     max-height:390px;
-
     overflow:auto;
-
 }
-
 
 table{
-
     width:100%;
-
     border-collapse:collapse;
-
 }
-
 
 thead th{
-
     position:sticky;
-
     top:0;
-
     z-index:5;
-
     background:#0b1c2d;
-
     color:#6fa4c8;
-
     padding:11px 12px;
-
     font-size:10px;
-
     text-transform:uppercase;
-
     letter-spacing:1px;
-
     text-align:left;
-
     border-bottom:
         1px solid rgba(70,150,210,.18);
-
 }
-
 
 tbody td{
-
     padding:12px;
-
     font-size:12px;
-
     color:#b7cee0;
-
     border-bottom:
         1px solid rgba(70,150,210,.08);
-
 }
-
 
 tbody tr:hover{
-
     background:
         rgba(42,139,211,.07);
-
 }
-
 
 .item-code{
-
     color:#53baff;
-
     font-weight:bold;
-
 }
-
 
 .pending-number{
-
     font-weight:bold;
-
 }
-
 
 .team-tag{
-
     display:inline-block;
-
     padding:4px 7px;
-
     border-radius:5px;
-
     background:
         rgba(72,157,216,.1);
-
     color:#73c2ef;
-
     font-size:10px;
-
 }
-
 
 .normal-status{
-
     color:#45df8d;
-
     font-size:10px;
-
     font-weight:bold;
-
 }
-
 
 .critical-row{
-
     background:
         rgba(214,40,40,.12) !important;
-
 }
-
 
 .critical-row td{
-
     color:#ff717a;
-
 }
-
 
 .critical-row .item-code{
-
     color:#ff626c;
-
 }
-
 
 .critical-status{
-
     color:#ff555f;
-
     font-size:10px;
-
     font-weight:bold;
-
 }
 
-
 .no-data{
-
     text-align:center;
-
     padding:35px !important;
-
     color:#526f86 !important;
-
 }
 
 
@@ -1466,43 +908,26 @@ tbody tr:hover{
 ========================================================= */
 
 .bottom-info{
-
     margin-top:14px;
-
     display:flex;
-
     justify-content:space-between;
-
     color:#4e6d84;
-
     font-size:10px;
-
 }
-
 
 .live-indicator{
-
     display:flex;
-
     align-items:center;
-
     gap:6px;
-
 }
 
-
 .live-dot{
-
     width:6px;
     height:6px;
-
     border-radius:50%;
-
     background:#20e27a;
-
     box-shadow:
         0 0 7px #20e27a;
-
 }
 
 
@@ -1511,33 +936,49 @@ tbody tr:hover{
 ========================================================= */
 
 ::-webkit-scrollbar{
-
     width:7px;
     height:7px;
-
 }
-
 
 ::-webkit-scrollbar-track{
-
     background:#07111f;
-
 }
-
 
 ::-webkit-scrollbar-thumb{
-
     background:#1b4566;
-
     border-radius:10px;
+}
 
+::-webkit-scrollbar-thumb:hover{
+    background:#2876a7;
 }
 
 
-::-webkit-scrollbar-thumb:hover{
+/* =========================================================
+   PENDING GRID
+========================================================= */
 
-    background:#2876a7;
+.pending-grid{
+    grid-template-columns:
+        minmax(0,1.1fr)
+        minmax(0,.9fr);
+    gap:18px;
+    margin-top:18px;
+    align-items:start;
+}
 
+.pending-grid .table-panel{
+    margin-top:0;
+    min-width:0;
+}
+
+.pending-grid .table-wrapper{
+    max-height:390px;
+    overflow:auto;
+}
+
+.pending-grid table{
+    min-width:420px;
 }
 
 
@@ -1548,204 +989,114 @@ tbody tr:hover{
 @media(max-width:1100px){
 
     .kpi-grid{
-
         grid-template-columns:
             repeat(2,1fr);
-
     }
 
-
     .content-grid{
-
         grid-template-columns:1fr;
+    }
 
+    .pending-grid{
+        grid-template-columns:
+            minmax(0,1fr);
     }
 
 }
-
 
 @media(max-width:750px){
 
     .sidebar{
-
         width:65px;
-
         padding:15px 8px;
-
     }
-
 
     .menu-title,
     .menu li span,
     .sidebar-footer{
-
         display:none;
-
     }
-
 
     .menu li{
-
         justify-content:center;
-
         padding:14px 5px;
-
     }
-
 
     .main{
-
         margin-left:65px;
-
         padding:85px 12px 20px;
-
     }
-
 
     .brand-subtitle{
-
         display:none;
-
     }
-
 
     .brand-title{
-
         font-size:16px;
-
     }
-
 
     .system-status{
-
         display:none;
-
     }
-
 
     .status-content{
-
         flex-direction:column;
-
         align-items:flex-start;
-
     }
-
 
     .progress-area{
-
         width:100%;
-
         min-width:0;
-
     }
-
 
     .page-header{
-
         align-items:flex-start;
-
     }
 
-
     .refresh-info{
-
         display:none;
-
     }
 
 }
-
 
 @media(max-width:500px){
 
     .kpi-grid{
-
         grid-template-columns:1fr;
-
     }
-
 
     .topbar{
-
         padding:0 10px;
-
     }
-
 
     .user-box{
-
         display:none;
-
     }
-
 
     .status-left{
-
         gap:12px;
-
     }
-
 
     .status-circle{
-
         width:65px;
         height:65px;
-
         font-size:22px;
-
     }
-
 
     .status-ready{
-
         font-size:23px;
-
     }
-
 
     .page-title{
-
         font-size:22px;
+    }
 
+    .pending-grid table{
+        min-width:360px;
     }
 
 }
-/* Side-by-side pending panels - match Team Performance / Quick Operations layout */
-.pending-grid {
-    grid-template-columns:
-        minmax(0,1.1fr)
-        minmax(0,.9fr);
-    gap: 18px;
-    margin-top: 18px;
-    align-items: start;
-}
 
-.pending-grid .table-panel {
-    margin-top: 0;
-    min-width: 0;
-}
-
-.pending-grid .table-wrapper {
-    max-height: 390px;
-    overflow: auto;
-}
-
-.pending-grid table {
-    min-width: 420px;
-}
-
-@media (max-width: 1100px) {
-    .pending-grid {
-        grid-template-columns: minmax(0, 1fr);
-    }
-}
-
-@media (max-width: 500px) {
-    .pending-grid table {
-        min-width: 360px;
-    }
-}
 </style>
 
 </head>
@@ -1786,7 +1137,6 @@ tbody tr:hover{
 </div>
 
 
-
 <!-- =========================================================
      DASHBOARD
 ========================================================= -->
@@ -1825,7 +1175,6 @@ tbody tr:hover{
         </div>
 
 
-
         <div class="top-right">
 
 
@@ -1841,7 +1190,6 @@ tbody tr:hover{
             <div
                 class="user-box"
                 id="userBox">
-
             </div>
 
 
@@ -1865,7 +1213,6 @@ tbody tr:hover{
     </div>
 
 
-
     <!-- =====================================================
          SIDEBAR
     ====================================================== -->
@@ -1881,6 +1228,8 @@ tbody tr:hover{
         <ul class="menu">
 
 
+            <!-- DASHBOARD -->
+
             <li
                 class="active"
                 onclick="go('index.html')">
@@ -1894,17 +1243,21 @@ tbody tr:hover{
             </li>
 
 
-            <li
-                onclick="go('accept.html')">
+            <!-- S2W QR -->
 
-                <i class="fa fa-check-circle"></i>
+            <li
+                onclick="go('S2W%20QR.html')">
+
+                <i class="fa fa-qrcode"></i>
 
                 <span>
-                    Accept
+                    S2W QR
                 </span>
 
             </li>
 
+
+            <!-- MIT -->
 
             <li
                 onclick="go('mit.html')">
@@ -1918,6 +1271,8 @@ tbody tr:hover{
             </li>
 
 
+            <!-- SERIAL -->
+
             <li
                 onclick="go('serial.html')">
 
@@ -1930,6 +1285,8 @@ tbody tr:hover{
             </li>
 
 
+            <!-- NON-SERIAL -->
+
             <li
                 onclick="go('nonserial.html')">
 
@@ -1941,6 +1298,8 @@ tbody tr:hover{
 
             </li>
 
+
+            <!-- PDF TO EXCEL -->
 
             <li
                 onclick="go('pdfexcel.html')">
@@ -1969,7 +1328,6 @@ tbody tr:hover{
 
 
     </div>
-
 
 
     <!-- =====================================================
@@ -2028,7 +1386,6 @@ tbody tr:hover{
         </div>
 
 
-
         <!-- =================================================
              STATUS PANEL
         ================================================== -->
@@ -2075,7 +1432,6 @@ tbody tr:hover{
                 </div>
 
 
-
                 <div class="progress-area">
 
 
@@ -2101,7 +1457,6 @@ tbody tr:hover{
                         <div
                             id="progressFill"
                             class="progress-fill">
-
                         </div>
 
                     </div>
@@ -2140,7 +1495,6 @@ tbody tr:hover{
         </section>
 
 
-
         <!-- =================================================
              KPI CARDS
         ================================================== -->
@@ -2152,20 +1506,17 @@ tbody tr:hover{
 
             <div class="kpi-card">
 
-
                 <div class="kpi-icon">
 
                     <i class="fa fa-list-check"></i>
 
                 </div>
 
-
                 <div class="kpi-label">
 
                     Quantity Required
 
                 </div>
-
 
                 <div
                     id="qtyRequired"
@@ -2175,15 +1526,12 @@ tbody tr:hover{
 
                 </div>
 
-
             </div>
-
 
 
             <!-- SCANNED -->
 
             <div class="kpi-card scanned">
-
 
                 <div class="kpi-icon">
 
@@ -2191,13 +1539,11 @@ tbody tr:hover{
 
                 </div>
 
-
                 <div class="kpi-label">
 
                     Total Scanned
 
                 </div>
-
 
                 <div
                     id="totalScannedBox"
@@ -2207,15 +1553,12 @@ tbody tr:hover{
 
                 </div>
 
-
             </div>
-
 
 
             <!-- TODAY -->
 
             <div class="kpi-card today">
-
 
                 <div class="kpi-icon">
 
@@ -2223,13 +1566,11 @@ tbody tr:hover{
 
                 </div>
 
-
                 <div class="kpi-label">
 
                     Today Scanned
 
                 </div>
-
 
                 <div
                     id="qtyScanned"
@@ -2239,15 +1580,12 @@ tbody tr:hover{
 
                 </div>
 
-
             </div>
-
 
 
             <!-- PENDING -->
 
             <div class="kpi-card pending">
-
 
                 <div class="kpi-icon">
 
@@ -2255,13 +1593,11 @@ tbody tr:hover{
 
                 </div>
 
-
                 <div class="kpi-label">
 
                     Total Pending
 
                 </div>
-
 
                 <div
                     id="pendingQty"
@@ -2271,12 +1607,10 @@ tbody tr:hover{
 
                 </div>
 
-
             </div>
 
 
         </div>
-
 
 
         <!-- =================================================
@@ -2293,7 +1627,6 @@ tbody tr:hover{
 
                 <div class="panel-header">
 
-
                     <div class="panel-title">
 
                         <i class="fa fa-users"></i>
@@ -2302,13 +1635,11 @@ tbody tr:hover{
 
                     </div>
 
-
                     <div class="panel-badge">
 
                         LIVE
 
                     </div>
-
 
                 </div>
 
@@ -2329,14 +1660,12 @@ tbody tr:hover{
             </section>
 
 
-
-            <!-- QUICK ACTIONS -->
+            <!-- QUICK OPERATIONS -->
 
             <section class="panel">
 
 
                 <div class="panel-header">
-
 
                     <div class="panel-title">
 
@@ -2346,25 +1675,28 @@ tbody tr:hover{
 
                     </div>
 
-
                 </div>
 
 
                 <div class="quick-actions">
 
 
+                    <!-- S2W QR -->
+
                     <div
                         class="quick-btn"
-                        onclick="go('accept.html')">
+                        onclick="go('S2W%20QR.html')">
 
-                        <i class="fa fa-check-circle"></i>
+                        <i class="fa fa-qrcode"></i>
 
                         <span>
-                            ACCEPT
+                            S2W QR
                         </span>
 
                     </div>
 
+
+                    <!-- MIT -->
 
                     <div
                         class="quick-btn"
@@ -2379,6 +1711,8 @@ tbody tr:hover{
                     </div>
 
 
+                    <!-- SERIAL -->
+
                     <div
                         class="quick-btn"
                         onclick="go('serial.html')">
@@ -2391,6 +1725,8 @@ tbody tr:hover{
 
                     </div>
 
+
+                    <!-- NON-SERIAL -->
 
                     <div
                         class="quick-btn"
@@ -2414,80 +1750,177 @@ tbody tr:hover{
         </div>
 
 
+        <!-- =================================================
+             ITEM-WISE AND PARTNER-WISE PENDING
+        ================================================== -->
+
+        <div class="content-grid pending-grid">
 
 
-<!-- ITEM-WISE AND PARTNER-WISE PENDING -->
-<div class="content-grid pending-grid">
+            <!-- ITEM-WISE PENDING -->
 
-    <!-- ITEM-WISE PENDING -->
-    <section class="panel table-panel">
-        <div class="panel-header">
-            <div class="panel-title">
-                <i class="fa fa-boxes-stacked"></i>
-                Item-wise Pending
-            </div>
-            <div id="pendingBadge" class="panel-badge">0 ITEMS</div>
+            <section class="panel table-panel">
+
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-boxes-stacked"></i>
+
+                        Item-wise Pending
+
+                    </div>
+
+                    <div
+                        id="pendingBadge"
+                        class="panel-badge">
+
+                        0 ITEMS
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Item Code
+                                </th>
+
+                                <th>
+                                    Pending Qty
+                                </th>
+
+                                <th>
+                                    Partner
+                                </th>
+
+                                <th>
+                                    Team
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="pendingTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="no-data">
+
+                                    Loading pending items...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- PARTNER-WISE PENDING -->
+
+            <section class="panel table-panel">
+
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-handshake"></i>
+
+                        Partner-wise Pending
+
+                    </div>
+
+                    <div
+                        id="partnerPendingBadge"
+                        class="panel-badge">
+
+                        0 PARTNERS
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Partner
+                                </th>
+
+                                <th>
+                                    Pending Qty
+                                </th>
+
+                                <th>
+                                    Items
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="partnerPendingTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="3"
+                                    class="no-data">
+
+                                    Loading partner data...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </section>
+
+
         </div>
 
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Code</th>
-                        <th>Pending Qty</th>
-                        <th>Partner</th>
-                        <th>Team</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="pendingTable">
-                    <tr>
-                        <td colspan="5" class="no-data">
-                            Loading pending items...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
 
-    <!-- PARTNER-WISE PENDING -->
-    <section class="panel table-panel">
-        <div class="panel-header">
-            <div class="panel-title">
-                <i class="fa fa-handshake"></i>
-                Partner-wise Pending
-            </div>
-            <div id="partnerPendingBadge" class="panel-badge">
-                0 PARTNERS
-            </div>
-        </div>
-
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Partner</th>
-                        <th>Pending Qty</th>
-                        <th>Items</th>
-                    </tr>
-                </thead>
-                <tbody id="partnerPendingTable">
-                    <tr>
-                        <td colspan="3" class="no-data">
-                            Loading partner data...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-</div>
-
-
-
-        <!-- BOTTOM INFO -->
+        <!-- =================================================
+             BOTTOM INFO
+        ================================================== -->
 
         <div class="bottom-info">
 
@@ -2517,7 +1950,6 @@ tbody tr:hover{
 </div>
 
 
-
 <script>
 
 /* =========================================================
@@ -2526,67 +1958,43 @@ tbody tr:hover{
 
 (function(){
 
-
     const loadingScreen =
         document.getElementById("loadingScreen");
-
 
     const loadingBar =
         document.getElementById("loadingBar");
 
-
     const loadingPercent =
         document.getElementById("loadingPercent");
-
 
     const dashboard =
         document.getElementById("dashboard");
 
-
     const user =
         sessionStorage.getItem("wms_user");
 
-
     let percent = 0;
-
 
     const loadingTimer =
         setInterval(function(){
 
-
             percent += 2;
 
-
             if(percent > 100){
-
                 percent = 100;
-
             }
-
 
             loadingBar.style.width =
                 percent + "%";
 
-
             loadingPercent.innerText =
                 percent + "%";
 
-
             if(percent >= 100){
-
 
                 clearInterval(loadingTimer);
 
-
                 setTimeout(function(){
-
-
-                    /*
-                     * IMPORTANT:
-                     *
-                     * If no login session exists,
-                     * redirect before showing dashboard.
-                     */
 
                     if(!user){
 
@@ -2598,34 +2006,21 @@ tbody tr:hover{
 
                     }
 
-
-                    /*
-                     * User exists.
-                     * Show dashboard.
-                     */
-
                     loadingScreen.style.display =
                         "none";
-
 
                     dashboard.style.display =
                         "block";
 
-
                     initializeDashboard(user);
-
 
                 },300);
 
-
             }
-
 
         },25);
 
-
 })();
-
 
 
 /* =========================================================
@@ -2633,7 +2028,6 @@ tbody tr:hover{
 ========================================================= */
 
 function initializeDashboard(user){
-
 
     document.getElementById("userBox").innerHTML =
 
@@ -2648,9 +2042,7 @@ function initializeDashboard(user){
     const headerQR =
         document.getElementById("headerQR");
 
-
     headerQR.innerHTML = "";
-
 
     try{
 
@@ -2663,7 +2055,8 @@ function initializeDashboard(user){
             }
         );
 
-    }catch(error){
+    }
+    catch(error){
 
         console.log(
             "QR error:",
@@ -2692,7 +2085,6 @@ function initializeDashboard(user){
 }
 
 
-
 /* =========================================================
    HTML SECURITY
 ========================================================= */
@@ -2714,7 +2106,6 @@ function escapeHTML(value){
 }
 
 
-
 /* =========================================================
    NAVIGATION
 ========================================================= */
@@ -2725,6 +2116,10 @@ function go(page){
 
 }
 
+
+/* =========================================================
+   LOGOUT
+========================================================= */
 
 function logout(){
 
@@ -2737,7 +2132,6 @@ function logout(){
     );
 
 }
-
 
 
 /* =========================================================
@@ -2756,16 +2150,13 @@ function formatNumber(value){
 }
 
 
-
 /* =========================================================
    LOAD DASHBOARD
 ========================================================= */
 
 async function loadDashboard(){
 
-
     try{
-
 
         /*
          * Google Apps Script endpoint
@@ -2794,7 +2185,6 @@ async function loadDashboard(){
             await response.json();
 
 
-
         /* =================================================
            VALUES
         ================================================== */
@@ -2802,18 +2192,14 @@ async function loadDashboard(){
         const totalPending =
             Number(data.totalPending) || 0;
 
-
         const totalRequired =
             Number(data.totalRequired) || 0;
-
 
         const totalTodayScanned =
             Number(data.totalTodayScanned) || 0;
 
-
         const totalScanned =
             Number(data.totalScanned) || 0;
-
 
 
         /* =================================================
@@ -2844,13 +2230,11 @@ async function loadDashboard(){
             formatNumber(totalScanned);
 
 
-
         /* =================================================
            PROGRESS
-        ================================================= */
+        ================================================== */
 
         let progress = 0;
-
 
         if(totalRequired > 0){
 
@@ -2859,7 +2243,6 @@ async function loadDashboard(){
                 totalRequired) * 100;
 
         }
-
 
         progress =
             Math.max(
@@ -2893,7 +2276,6 @@ async function loadDashboard(){
             "progressRequired"
         ).innerText =
             formatNumber(totalRequired);
-
 
 
         /* =================================================
@@ -2935,7 +2317,6 @@ async function loadDashboard(){
         }
 
 
-
         /* =================================================
            TEAM DATA
         ================================================== */
@@ -2944,7 +2325,6 @@ async function loadDashboard(){
             data.teamWise || {},
             totalScanned
         );
-
 
 
         /* =================================================
@@ -2956,10 +2336,9 @@ async function loadDashboard(){
         );
 
 
-
         /* =================================================
            LAST UPDATE
-        ================================================= */
+        ================================================== */
 
         document.getElementById(
             "lastUpdate"
@@ -2973,10 +2352,8 @@ async function loadDashboard(){
                 }
             );
 
-
     }
     catch(error){
-
 
         console.error(
             "Dashboard loading error:",
@@ -3001,11 +2378,9 @@ async function loadDashboard(){
         ).innerText =
             "Connection failed";
 
-
     }
 
 }
-
 
 
 /* =========================================================
@@ -3016,7 +2391,6 @@ function renderTeams(
     teams,
     totalScanned
 ){
-
 
     const teamBox =
         document.getElementById(
@@ -3049,7 +2423,6 @@ function renderTeams(
 
 
     teamNames.forEach(function(team){
-
 
         const count =
             Number(teams[team]) || 0;
@@ -3123,23 +2496,46 @@ function renderTeams(
 }
 
 
-
 /* =========================================================
    ITEM-WISE AND PARTNER-WISE PENDING
 ========================================================= */
 
-function renderPendingItems(items) {
-    const table = document.getElementById("pendingTable");
-    const badge = document.getElementById("pendingBadge");
-    const partnerTable = document.getElementById("partnerPendingTable");
-    const partnerBadge = document.getElementById("partnerPendingBadge");
+function renderPendingItems(items){
 
-    if (!Array.isArray(items)) {
+    const table =
+        document.getElementById(
+            "pendingTable"
+        );
+
+    const badge =
+        document.getElementById(
+            "pendingBadge"
+        );
+
+    const partnerTable =
+        document.getElementById(
+            "partnerPendingTable"
+        );
+
+    const partnerBadge =
+        document.getElementById(
+            "partnerPendingBadge"
+        );
+
+
+    if(!Array.isArray(items)){
+
         items = [];
+
     }
 
-    // Read partner names from supported API field names.
-    function getPartner(row) {
+
+    /* =====================================================
+       GET PARTNER
+    ===================================================== */
+
+    function getPartner(row){
+
         const value =
             row.partner ??
             row.partnerName ??
@@ -3149,11 +2545,19 @@ function renderPendingItems(items) {
             row["Partner Name"] ??
             row["PARTNER NAME"];
 
-        return String(value ?? "").trim() || "Unassigned";
+        return String(
+            value ?? ""
+        ).trim() || "Unassigned";
+
     }
 
-    // Support common item-code and pending-quantity field names.
-    function getItem(row) {
+
+    /* =====================================================
+       GET ITEM
+    ===================================================== */
+
+    function getItem(row){
+
         return row.item ??
             row.itemCode ??
             row.item_code ??
@@ -3161,9 +2565,16 @@ function renderPendingItems(items) {
             row["Item Code"] ??
             row["ITEM CODE"] ??
             "-";
+
     }
 
-    function getPending(row) {
+
+    /* =====================================================
+       GET PENDING
+    ===================================================== */
+
+    function getPending(row){
+
         const value =
             row.pending ??
             row.pendingQty ??
@@ -3172,122 +2583,287 @@ function renderPendingItems(items) {
             row["PENDING QTY"] ??
             0;
 
-        return Math.max(0, Number(value) || 0);
+        return Math.max(
+            0,
+            Number(value) || 0
+        );
+
     }
 
-    // Show the highest-pending items first.
-    const sortedItems = [...items].sort(
-        (a, b) => getPending(b) - getPending(a)
-    );
 
-    badge.textContent = `${sortedItems.length} ITEMS`;
+    /* =====================================================
+       SORT ITEMS
+    ===================================================== */
 
-    // ITEM-WISE PENDING TABLE
-    if (sortedItems.length === 0) {
+    const sortedItems =
+        [...items].sort(
+            (a,b) =>
+                getPending(b) -
+                getPending(a)
+        );
+
+
+    badge.textContent =
+        `${sortedItems.length} ITEMS`;
+
+
+    /* =====================================================
+       ITEM-WISE TABLE
+    ===================================================== */
+
+    if(sortedItems.length === 0){
+
         table.innerHTML = `
-            <tr>
-                <td colspan="5" class="no-data">
-                    No pending items available
-                </td>
-            </tr>`;
-    } else {
-        table.innerHTML = sortedItems.map(row => {
-            const pending = getPending(row);
-            const critical = pending > 1000;
-            const partner = getPartner(row);
-            const item = getItem(row);
-            const team = row.team ?? row.Team ?? "-";
 
-            return `
-                <tr class="${critical ? "critical-row" : ""}">
-                    <td>
-                        <span class="item-code">
-                            ${escapeHTML(item)}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="pending-number">
-                            ${formatNumber(pending)}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="team-tag">
-                            ${escapeHTML(partner)}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="team-tag">
-                            ${escapeHTML(team)}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="${
-                            critical ? "critical-status" : "normal-status"
-                        }">
-                            ${
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="no-data">
+
+                    No pending items available
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+    else{
+
+        table.innerHTML =
+            sortedItems.map(
+                row => {
+
+                    const pending =
+                        getPending(row);
+
+                    const critical =
+                        pending > 1000;
+
+                    const partner =
+                        getPartner(row);
+
+                    const item =
+                        getItem(row);
+
+                    const team =
+                        row.team ??
+                        row.Team ??
+                        "-";
+
+
+                    return `
+
+                        <tr
+                            class="${
                                 critical
-                                    ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
-                                    : '<i class="fa fa-circle-check"></i> NORMAL'
-                            }
-                        </span>
-                    </td>
-                </tr>`;
-        }).join("");
+                                    ? "critical-row"
+                                    : ""
+                            }">
+
+                            <td>
+
+                                <span class="item-code">
+
+                                    ${escapeHTML(item)}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="pending-number">
+
+                                    ${formatNumber(pending)}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="team-tag">
+
+                                    ${escapeHTML(partner)}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="team-tag">
+
+                                    ${escapeHTML(team)}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="${
+                                        critical
+                                            ? "critical-status"
+                                            : "normal-status"
+                                    }">
+
+                                    ${
+                                        critical
+
+                                        ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
+
+                                        : '<i class="fa fa-circle-check"></i> NORMAL'
+                                    }
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            ).join("");
+
     }
 
-    // GROUP PENDING QUANTITIES BY PARTNER.
-    // Each itemList record contributes once to its partner total.
+
+    /* =====================================================
+       GROUP BY PARTNER
+    ===================================================== */
+
     const partners = {};
 
-    sortedItems.forEach(row => {
-        const partner = getPartner(row);
-        const pending = getPending(row);
 
-        if (!partners[partner]) {
-            partners[partner] = {
-                pending: 0,
-                items: 0
-            };
+    sortedItems.forEach(
+        row => {
+
+            const partner =
+                getPartner(row);
+
+            const pending =
+                getPending(row);
+
+
+            if(!partners[partner]){
+
+                partners[partner] = {
+
+                    pending:0,
+
+                    items:0
+
+                };
+
+            }
+
+
+            partners[partner].pending +=
+                pending;
+
+            partners[partner].items +=
+                1;
+
         }
-
-        partners[partner].pending += pending;
-        partners[partner].items += 1;
-    });
-
-    const sortedPartners = Object.entries(partners).sort(
-        (a, b) => b[1].pending - a[1].pending
     );
+
+
+    const sortedPartners =
+        Object.entries(
+            partners
+        ).sort(
+            (a,b) =>
+                b[1].pending -
+                a[1].pending
+        );
+
 
     partnerBadge.textContent =
         `${sortedPartners.length} PARTNERS`;
 
-    // PARTNER-WISE PENDING TABLE
-    if (sortedPartners.length === 0) {
+
+    /* =====================================================
+       PARTNER TABLE
+    ===================================================== */
+
+    if(sortedPartners.length === 0){
+
         partnerTable.innerHTML = `
+
             <tr>
-                <td colspan="3" class="no-data">
+
+                <td
+                    colspan="3"
+                    class="no-data">
+
                     No partner pending data available
+
                 </td>
-            </tr>`;
+
+            </tr>
+
+        `;
+
         return;
+
     }
 
-    partnerTable.innerHTML = sortedPartners.map(([partner, data]) => `
-        <tr>
-            <td>
-                <span class="item-code">
-                    ${escapeHTML(partner)}
-                </span>
-            </td>
-            <td>
-                <span class="pending-number">
-                    ${formatNumber(data.pending)}
-                </span>
-            </td>
-            <td>${formatNumber(data.items)}</td>
-        </tr>
-    `).join("");
+
+    partnerTable.innerHTML =
+        sortedPartners.map(
+            ([partner,data]) => `
+
+                <tr>
+
+                    <td>
+
+                        <span class="item-code">
+
+                            ${escapeHTML(partner)}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="pending-number">
+
+                            ${formatNumber(
+                                data.pending
+                            )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${formatNumber(
+                            data.items
+                        )}
+
+                    </td>
+
+                </tr>
+
+            `
+        ).join("");
+
 }
+
 </script>
 
 
