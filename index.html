@@ -4,13 +4,15 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>STARK QR - W2R Control Center</title>
 
 <link
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-rel="stylesheet">
+rel="stylesheet"
+>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -145,9 +147,12 @@ body{
     align-items:center;
     justify-content:space-between;
     padding:0 22px;
-    background:rgba(7,17,31,.95);
-    border-bottom:1px solid rgba(70,170,255,.25);
-    box-shadow:0 4px 25px rgba(0,0,0,.35);
+    background:
+        rgba(7,17,31,.95);
+    border-bottom:
+        1px solid rgba(70,170,255,.25);
+    box-shadow:
+        0 4px 25px rgba(0,0,0,.35);
     backdrop-filter:blur(10px);
 }
 
@@ -172,7 +177,8 @@ body{
         );
     color:white;
     font-size:20px;
-    box-shadow:0 0 18px rgba(0,150,255,.45);
+    box-shadow:
+        0 0 18px rgba(0,150,255,.45);
 }
 
 .brand-title{
@@ -195,9 +201,7 @@ body{
 }
 
 
-/* =========================================================
-   SYSTEM STATUS
-========================================================= */
+/* SYSTEM STATUS */
 
 .system-status{
     display:flex;
@@ -213,7 +217,8 @@ body{
     height:8px;
     background:#21e67a;
     border-radius:50%;
-    box-shadow:0 0 10px #21e67a;
+    box-shadow:
+        0 0 10px #21e67a;
 }
 
 .user-box{
@@ -241,29 +246,8 @@ body{
 
 .logout-btn:hover{
     background:#e12638;
-    box-shadow:0 0 12px rgba(225,38,56,.4);
-}
-
-
-/* =========================================================
-   HEADER QR
-========================================================= */
-
-#headerQR{
-    width:40px;
-    height:40px;
-    background:white;
-    padding:2px;
-    border-radius:5px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-#headerQR img,
-#headerQR canvas{
-    max-width:36px;
-    max-height:36px;
+    box-shadow:
+        0 0 12px rgba(225,38,56,.4);
 }
 
 
@@ -283,7 +267,8 @@ body{
             #0b1a2b,
             #07111f
         );
-    border-right:1px solid rgba(70,170,255,.18);
+    border-right:
+        1px solid rgba(70,170,255,.18);
     padding:18px 12px;
     z-index:900;
 }
@@ -320,7 +305,8 @@ body{
 }
 
 .menu li:hover{
-    background:rgba(32,126,219,.16);
+    background:
+        rgba(32,126,219,.16);
     color:white;
     transform:translateX(3px);
 }
@@ -333,7 +319,8 @@ body{
             rgba(0,126,255,.05)
         );
     color:white;
-    border-left:3px solid #28aaff;
+    border-left:
+        3px solid #28aaff;
 }
 
 .sidebar-footer{
@@ -342,7 +329,8 @@ body{
     left:15px;
     right:15px;
     padding:12px;
-    border:1px solid rgba(75,160,220,.15);
+    border:
+        1px solid rgba(75,160,220,.15);
     border-radius:9px;
     background:rgba(20,50,75,.3);
     text-align:center;
@@ -357,7 +345,10 @@ body{
 
 .main{
     margin-left:220px;
-    padding:92px 24px 30px;
+    padding:
+        92px
+        24px
+        30px;
     min-height:100vh;
 }
 
@@ -401,111 +392,6 @@ body{
 
 
 /* =========================================================
-   COMPLETION & ARCHIVE BANNER
-========================================================= */
-
-.completion-banner-card{
-    background:
-        linear-gradient(
-            135deg,
-            rgba(16,185,129,.10),
-            rgba(6,95,70,.20)
-        );
-    border:1px solid rgba(16,185,129,.40);
-    border-radius:12px;
-    padding:20px;
-    margin-bottom:24px;
-    transition:all .3s ease;
-    box-shadow:0 8px 25px rgba(0,0,0,.15);
-}
-
-.completion-banner-card:hover{
-    border-color:rgba(16,185,129,.65);
-    box-shadow:0 10px 30px rgba(16,185,129,.12);
-}
-
-.completion-banner-card.hidden{
-    display:none;
-}
-
-.completion-banner-content{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:16px;
-}
-
-.completion-banner-left{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.completion-banner-icon{
-    background:#10B981;
-    color:#fff;
-    width:48px;
-    height:48px;
-    min-width:48px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    box-shadow:0 4px 12px rgba(16,185,129,.4);
-}
-
-.completion-banner-title{
-    color:#10B981;
-    margin:0 0 4px 0;
-    font-size:18px;
-    font-weight:700;
-}
-
-.completion-banner-message{
-    color:#9CA3AF;
-    margin:0;
-    font-size:13px;
-    line-height:1.5;
-}
-
-.completion-banner-actions{
-    display:flex;
-    gap:10px;
-}
-
-.completion-banner-btn{
-    padding:8px 16px;
-    border-radius:6px;
-    cursor:pointer;
-    font-size:13px;
-    font-weight:600;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    transition:all .2s ease;
-}
-
-.completion-banner-btn:hover{
-    opacity:.9;
-    transform:translateY(-1px);
-}
-
-.completion-export-btn{
-    background:rgba(255,255,255,.05);
-    color:#E5E7EB;
-    border:1px solid rgba(255,255,255,.15);
-}
-
-.completion-new-btn{
-    background:#10B981;
-    color:#fff;
-    border:none;
-}
-
-
-/* =========================================================
    STATUS HERO
 ========================================================= */
 
@@ -523,8 +409,10 @@ body{
             #0b1d32 55%,
             #09253e
         );
-    border:1px solid rgba(62,175,255,.25);
-    box-shadow:0 10px 35px rgba(0,0,0,.25);
+    border:
+        1px solid rgba(62,175,255,.25);
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.25);
 }
 
 .status-panel::before{
@@ -535,7 +423,8 @@ body{
     right:-100px;
     top:-140px;
     border-radius:50%;
-    background:rgba(0,160,255,.08);
+    background:
+        rgba(0,160,255,.08);
 }
 
 .status-panel::after{
@@ -546,7 +435,8 @@ body{
     right:100px;
     bottom:-120px;
     border-radius:50%;
-    border:1px solid rgba(50,180,255,.12);
+    border:
+        1px solid rgba(50,180,255,.12);
 }
 
 .status-content{
@@ -571,9 +461,12 @@ body{
     display:flex;
     align-items:center;
     justify-content:center;
-    background:rgba(21,220,118,.08);
-    border:2px solid #27e47c;
-    box-shadow:0 0 25px rgba(39,228,124,.2);
+    background:
+        rgba(21,220,118,.08);
+    border:
+        2px solid #27e47c;
+    box-shadow:
+        0 0 25px rgba(39,228,124,.2);
     color:#27e47c;
     font-size:30px;
 }
@@ -639,8 +532,10 @@ body{
             #087eff,
             #00caff
         );
-    box-shadow:0 0 12px rgba(0,181,255,.6);
-    transition:width .7s ease;
+    box-shadow:
+        0 0 12px rgba(0,181,255,.6);
+    transition:
+        width .7s ease;
 }
 
 .progress-numbers{
@@ -658,7 +553,8 @@ body{
 
 .kpi-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:
+        repeat(4,1fr);
     gap:16px;
     margin-bottom:20px;
 }
@@ -673,16 +569,19 @@ body{
             #0d1e31,
             #091625
         );
-    border:1px solid rgba(78,159,218,.16);
+    border:
+        1px solid rgba(78,159,218,.16);
     border-radius:13px;
     padding:18px;
-    box-shadow:0 7px 25px rgba(0,0,0,.18);
+    box-shadow:
+        0 7px 25px rgba(0,0,0,.18);
     transition:.25s;
 }
 
 .kpi-card:hover{
     transform:translateY(-3px);
-    border-color:rgba(60,177,255,.4);
+    border-color:
+        rgba(60,177,255,.4);
 }
 
 .kpi-icon{
@@ -692,7 +591,8 @@ body{
     align-items:center;
     justify-content:center;
     border-radius:9px;
-    background:rgba(40,150,255,.12);
+    background:
+        rgba(40,150,255,.12);
     color:#45baff;
     font-size:17px;
 }
@@ -764,10 +664,12 @@ body{
             #0d1d2e,
             #091523
         );
-    border:1px solid rgba(78,159,218,.15);
+    border:
+        1px solid rgba(78,159,218,.15);
     border-radius:14px;
     overflow:hidden;
-    box-shadow:0 7px 25px rgba(0,0,0,.18);
+    box-shadow:
+        0 7px 25px rgba(0,0,0,.18);
 }
 
 .panel-header{
@@ -775,7 +677,8 @@ body{
     align-items:center;
     justify-content:space-between;
     padding:15px 17px;
-    border-bottom:1px solid rgba(78,159,218,.12);
+    border-bottom:
+        1px solid rgba(78,159,218,.12);
 }
 
 .panel-title{
@@ -793,7 +696,8 @@ body{
 .panel-badge{
     padding:4px 8px;
     border-radius:5px;
-    background:rgba(48,172,255,.1);
+    background:
+        rgba(48,172,255,.1);
     color:#51bfff;
     font-size:10px;
     font-weight:bold;
@@ -810,10 +714,6 @@ body{
 
 .team-item{
     margin-bottom:13px;
-}
-
-.team-item:last-child{
-    margin-bottom:0;
 }
 
 .team-top{
@@ -852,18 +752,6 @@ body{
         );
 }
 
-.team-progress-bar-complete{
-    background:
-        linear-gradient(
-            90deg,
-            #3B82F6,
-            #10B981
-        ) !important;
-
-    box-shadow:
-        0 0 10px rgba(16,185,129,.3);
-}
-
 .team-empty{
     padding:30px;
     text-align:center;
@@ -878,15 +766,18 @@ body{
 
 .quick-actions{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:
+        repeat(2,1fr);
     gap:10px;
     padding:15px;
 }
 
 .quick-btn{
     padding:15px 10px;
-    background:rgba(22,54,80,.45);
-    border:1px solid rgba(65,150,210,.13);
+    background:
+        rgba(22,54,80,.45);
+    border:
+        1px solid rgba(65,150,210,.13);
     border-radius:9px;
     color:#a9c7dd;
     cursor:pointer;
@@ -907,8 +798,10 @@ body{
 }
 
 .quick-btn:hover{
-    background:rgba(31,121,188,.18);
-    border-color:rgba(70,185,255,.35);
+    background:
+        rgba(31,121,188,.18);
+    border-color:
+        rgba(70,185,255,.35);
     color:white;
 }
 
@@ -942,18 +835,21 @@ thead th{
     text-transform:uppercase;
     letter-spacing:1px;
     text-align:left;
-    border-bottom:1px solid rgba(70,150,210,.18);
+    border-bottom:
+        1px solid rgba(70,150,210,.18);
 }
 
 tbody td{
     padding:12px;
     font-size:12px;
     color:#b7cee0;
-    border-bottom:1px solid rgba(70,150,210,.08);
+    border-bottom:
+        1px solid rgba(70,150,210,.08);
 }
 
 tbody tr:hover{
-    background:rgba(42,139,211,.07);
+    background:
+        rgba(42,139,211,.07);
 }
 
 .item-code{
@@ -969,7 +865,8 @@ tbody tr:hover{
     display:inline-block;
     padding:4px 7px;
     border-radius:5px;
-    background:rgba(72,157,216,.1);
+    background:
+        rgba(72,157,216,.1);
     color:#73c2ef;
     font-size:10px;
 }
@@ -981,7 +878,8 @@ tbody tr:hover{
 }
 
 .critical-row{
-    background:rgba(214,40,40,.12) !important;
+    background:
+        rgba(214,40,40,.12) !important;
 }
 
 .critical-row td{
@@ -1028,7 +926,31 @@ tbody tr:hover{
     height:6px;
     border-radius:50%;
     background:#20e27a;
-    box-shadow:0 0 7px #20e27a;
+    box-shadow:
+        0 0 7px #20e27a;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar{
+    width:7px;
+    height:7px;
+}
+
+::-webkit-scrollbar-track{
+    background:#07111f;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#1b4566;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#2876a7;
 }
 
 
@@ -1061,36 +983,14 @@ tbody tr:hover{
 
 
 /* =========================================================
-   SCROLLBAR
-========================================================= */
-
-::-webkit-scrollbar{
-    width:7px;
-    height:7px;
-}
-
-::-webkit-scrollbar-track{
-    background:#07111f;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#1b4566;
-    border-radius:10px;
-}
-
-::-webkit-scrollbar-thumb:hover{
-    background:#2876a7;
-}
-
-
-/* =========================================================
    RESPONSIVE
 ========================================================= */
 
 @media(max-width:1100px){
 
     .kpi-grid{
-        grid-template-columns:repeat(2,1fr);
+        grid-template-columns:
+            repeat(2,1fr);
     }
 
     .content-grid{
@@ -1098,7 +998,8 @@ tbody tr:hover{
     }
 
     .pending-grid{
-        grid-template-columns:minmax(0,1fr);
+        grid-template-columns:
+            minmax(0,1fr);
     }
 
 }
@@ -1156,19 +1057,6 @@ tbody tr:hover{
         display:none;
     }
 
-    .completion-banner-left{
-        width:100%;
-    }
-
-    .completion-banner-actions{
-        width:100%;
-    }
-
-    .completion-banner-btn{
-        flex:1;
-        justify-content:center;
-    }
-
 }
 
 @media(max-width:500px){
@@ -1207,38 +1095,12 @@ tbody tr:hover{
         min-width:360px;
     }
 
-    .completion-banner-card{
-        padding:15px;
-    }
-
-    .completion-banner-icon{
-        width:42px;
-        height:42px;
-        min-width:42px;
-        font-size:19px;
-    }
-
-    .completion-banner-title{
-        font-size:14px;
-    }
-
-    .completion-banner-message{
-        font-size:11px;
-    }
-
-    .completion-banner-actions{
-        flex-direction:column;
-    }
-
-    .completion-banner-btn{
-        width:100%;
-    }
-
 }
 
 </style>
 
 </head>
+
 
 <body>
 
@@ -1282,821 +1144,808 @@ tbody tr:hover{
 <div id="dashboard">
 
 
-<!-- =========================================================
-     TOP BAR
-========================================================= -->
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
 
-<div class="topbar">
+    <div class="topbar">
 
-    <div class="brand">
 
-        <div class="brand-icon">
+        <div class="brand">
 
-            <i class="fa fa-qrcode"></i>
+            <div class="brand-icon">
 
-        </div>
-
-        <div>
-
-            <div class="brand-title">
-                STARK QR
-            </div>
-
-            <div class="brand-subtitle">
-                W2R CONTROL SYSTEM
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="top-right">
-
-        <div class="system-status">
-
-            <span class="status-dot"></span>
-
-            SYSTEM ONLINE
-
-        </div>
-
-
-        <div
-            class="user-box"
-            id="userBox">
-        </div>
-
-
-        <div id="headerQR"></div>
-
-
-        <button
-            class="logout-btn"
-            onclick="logout()">
-
-            <i class="fa fa-sign-out-alt"></i>
-
-            Logout
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     SIDEBAR
-========================================================= -->
-
-<div class="sidebar">
-
-    <div class="menu-title">
-        OPERATIONS
-    </div>
-
-
-    <ul class="menu">
-
-        <li
-            class="active"
-            onclick="go('index.html')">
-
-            <i class="fa fa-chart-line"></i>
-
-            <span>
-                Dashboard
-            </span>
-
-        </li>
-
-
-        <li
-            onclick="go('S2W%20QR.html')">
-
-            <i class="fa fa-qrcode"></i>
-
-            <span>
-                S2W QR
-            </span>
-
-        </li>
-
-
-        <li
-            onclick="go('mit.html')">
-
-            <i class="fa fa-print"></i>
-
-            <span>
-                MIT
-            </span>
-
-        </li>
-
-
-        <li
-            onclick="go('serial.html')">
-
-            <i class="fa fa-box"></i>
-
-            <span>
-                Serial
-            </span>
-
-        </li>
-
-
-        <li
-            onclick="go('nonserial.html')">
-
-            <i class="fa fa-cubes"></i>
-
-            <span>
-                Non-Serial
-            </span>
-
-        </li>
-
-
-        <li
-            onclick="go('pdfexcel.html')">
-
-            <i class="fa fa-file-excel"></i>
-
-            <span>
-                PDF to Excel
-            </span>
-
-        </li>
-
-    </ul>
-
-
-    <div class="sidebar-footer">
-
-        STARK QR v1.0
-
-        <br>
-
-        W2R MONITORING
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     MAIN
-========================================================= -->
-
-<main class="main">
-
-
-<!-- =========================================================
-     PAGE HEADER
-========================================================= -->
-
-<div class="page-header">
-
-    <div>
-
-        <div class="page-title">
-
-            W2R
-            <span>
-                Dashboard
-            </span>
-
-        </div>
-
-        <div class="page-description">
-
-            Warehouse to Repair center scanning
-
-        </div>
-
-    </div>
-
-
-    <div class="refresh-info">
-
-        AUTO REFRESH
-
-        <br>
-
-        Every
-        <strong>
-            30 seconds
-        </strong>
-
-        <br>
-
-        Last update:
-        <strong id="lastUpdate">
-            --
-        </strong>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     COMPLETION & ARCHIVE BANNER
-========================================================= -->
-
-<div
-    id="completionBanner"
-    class="completion-banner-card hidden">
-
-    <div class="completion-banner-content">
-
-
-        <div class="completion-banner-left">
-
-            <div class="completion-banner-icon">
-
-                <i class="fa fa-check"></i>
+                <i class="fa fa-qrcode"></i>
 
             </div>
 
 
             <div>
 
-                <h3
-                    id="completionBannerTitle"
-                    class="completion-banner-title">
+                <div class="brand-title">
+                    STARK QR
+                </div>
 
-                    W2R BATCH COMPLETED
-
-                </h3>
-
-
-                <p
-                    id="completionBannerMessage"
-                    class="completion-banner-message">
-
-                    All items have been successfully processed
-                    across all teams and partners.
-
-                </p>
+                <div class="brand-subtitle">
+                    W2R CONTROL SYSTEM
+                </div>
 
             </div>
 
         </div>
 
 
-        <div class="completion-banner-actions">
+        <div class="top-right">
+
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                SYSTEM ONLINE
+
+            </div>
+
+
+            <div
+                class="user-box"
+                id="userBox">
+            </div>
+
+
+            <div id="headerQR"></div>
 
 
             <button
-                type="button"
-                class="completion-banner-btn completion-export-btn"
-                onclick="exportFinalAudit()">
+                class="logout-btn"
+                onclick="logout()">
 
-                <i class="fas fa-file-excel"></i>
+                <i class="fa fa-sign-out-alt"></i>
 
-                Export Final Audit
-
-            </button>
-
-
-            <button
-                type="button"
-                class="completion-banner-btn completion-new-btn"
-                onclick="startNewBatch()">
-
-                <i class="fas fa-plus-circle"></i>
-
-                Start New Batch
+                Logout
 
             </button>
+
 
         </div>
 
+
     </div>
 
-</div>
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <div class="sidebar">
 
 
-<!-- =========================================================
-     STATUS PANEL
-========================================================= -->
-
-<section class="status-panel">
-
-    <div class="status-content">
+        <div class="menu-title">
+            OPERATIONS
+        </div>
 
 
-        <div class="status-left">
+        <ul class="menu">
 
-            <div class="status-circle">
 
-                <i class="fa fa-check"></i>
+            <!-- DASHBOARD -->
+
+            <li
+                class="active"
+                onclick="go('index.html')">
+
+                <i class="fa fa-chart-line"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </li>
+
+
+            <!-- S2W QR -->
+
+            <li
+                onclick="go('S2W%20QR.html')">
+
+                <i class="fa fa-qrcode"></i>
+
+                <span>
+                    S2W QR
+                </span>
+
+            </li>
+
+
+            <!-- MIT -->
+
+            <li
+                onclick="go('mit.html')">
+
+                <i class="fa fa-print"></i>
+
+                <span>
+                    MIT
+                </span>
+
+            </li>
+
+
+            <!-- SERIAL -->
+
+            <li
+                onclick="go('serial.html')">
+
+                <i class="fa fa-box"></i>
+
+                <span>
+                    Serial
+                </span>
+
+            </li>
+
+
+            <!-- NON-SERIAL -->
+
+            <li
+                onclick="go('nonserial.html')">
+
+                <i class="fa fa-cubes"></i>
+
+                <span>
+                    Non-Serial
+                </span>
+
+            </li>
+
+
+            <!-- PDF TO EXCEL -->
+
+            <li
+                onclick="go('pdfexcel.html')">
+
+                <i class="fa fa-file-excel"></i>
+
+                <span>
+                    PDF to Excel
+                </span>
+
+            </li>
+
+
+        </ul>
+
+
+        <div class="sidebar-footer">
+
+            STARK QR v1.0
+
+            <br>
+
+            W2R MONITORING
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+
+            <div>
+
+                <div class="page-title">
+
+                    W2R
+                    <span>
+                        Dashboard
+                    </span>
+
+                </div>
+
+                <div class="page-description">
+
+                    Warehouse to Repair center scanning
+
+                </div>
+
+            </div>
+
+
+            <div class="refresh-info">
+
+                AUTO REFRESH
+
+                <br>
+
+                Every
+                <strong>
+                    30 seconds
+                </strong>
+
+                <br>
+
+                Last update:
+                <strong id="lastUpdate">
+                    --
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             STATUS PANEL
+        ================================================== -->
+
+        <section class="status-panel">
+
+
+            <div class="status-content">
+
+
+                <div class="status-left">
+
+
+                    <div class="status-circle">
+
+                        <i class="fa fa-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="status-label">
+                            SCANNING SYSTEM STATUS
+                        </div>
+
+                        <div
+                            id="systemStatus"
+                            class="status-ready">
+
+                            READY
+
+                        </div>
+
+                        <div class="status-message">
+
+                            W2R operations are being monitored in real time.
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="progress-area">
+
+
+                    <div class="progress-top">
+
+                        <span>
+                            OVERALL SCANNING PROGRESS
+                        </span>
+
+                        <span
+                            id="progressPercent"
+                            class="progress-percent">
+
+                            0%
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="progress-bar">
+
+                        <div
+                            id="progressFill"
+                            class="progress-fill">
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-numbers">
+
+                        <span>
+
+                            Scanned:
+                            <strong id="progressScanned">
+                                0
+                            </strong>
+
+                        </span>
+
+
+                        <span>
+
+                            Required:
+                            <strong id="progressRequired">
+                                0
+                            </strong>
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =================================================
+             KPI CARDS
+        ================================================== -->
+
+        <div class="kpi-grid">
+
+
+            <!-- REQUIRED -->
+
+            <div class="kpi-card">
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-list-check"></i>
+
+                </div>
+
+                <div class="kpi-label">
+
+                    Quantity Required
+
+                </div>
+
+                <div
+                    id="qtyRequired"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <!-- SCANNED -->
+
+            <div class="kpi-card scanned">
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-circle-check"></i>
+
+                </div>
+
+                <div class="kpi-label">
+
+                    Total Scanned
+
+                </div>
+
+                <div
+                    id="totalScannedBox"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <!-- TODAY -->
+
+            <div class="kpi-card today">
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-calendar-day"></i>
+
+                </div>
+
+                <div class="kpi-label">
+
+                    Today Scanned
+
+                </div>
+
+                <div
+                    id="qtyScanned"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <!-- PENDING -->
+
+            <div class="kpi-card pending">
+
+                <div class="kpi-icon">
+
+                    <i class="fa fa-triangle-exclamation"></i>
+
+                </div>
+
+                <div class="kpi-label">
+
+                    Total Pending
+
+                </div>
+
+                <div
+                    id="pendingQty"
+                    class="kpi-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             TWO COLUMN CONTENT
+        ================================================== -->
+
+        <div class="content-grid">
+
+
+            <!-- TEAM PERFORMANCE -->
+
+            <section class="panel">
+
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-users"></i>
+
+                        Team Performance
+
+                    </div>
+
+                    <div class="panel-badge">
+
+                        LIVE
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="teamBox"
+                    class="team-list">
+
+                    <div class="team-empty">
+
+                        Loading team data...
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- QUICK OPERATIONS -->
+
+            <section class="panel">
+
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-bolt"></i>
+
+                        Quick Operations
+
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+
+                    <!-- S2W QR -->
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('S2W%20QR.html')">
+
+                        <i class="fa fa-qrcode"></i>
+
+                        <span>
+                            S2W QR
+                        </span>
+
+                    </div>
+
+
+                    <!-- MIT -->
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('mit.html')">
+
+                        <i class="fa fa-print"></i>
+
+                        <span>
+                            MIT
+                        </span>
+
+                    </div>
+
+
+                    <!-- SERIAL -->
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('serial.html')">
+
+                        <i class="fa fa-barcode"></i>
+
+                        <span>
+                            SERIAL
+                        </span>
+
+                    </div>
+
+
+                    <!-- NON-SERIAL -->
+
+                    <div
+                        class="quick-btn"
+                        onclick="go('nonserial.html')">
+
+                        <i class="fa fa-qrcode"></i>
+
+                        <span>
+                            NON-SERIAL
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+
+        <!-- =================================================
+             ITEM-WISE AND PARTNER-WISE PENDING
+        ================================================== -->
+
+        <div class="content-grid pending-grid">
+
+
+            <!-- ITEM-WISE PENDING -->
+
+            <section class="panel table-panel">
+
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-boxes-stacked"></i>
+
+                        Item-wise Pending
+
+                    </div>
+
+                    <div
+                        id="pendingBadge"
+                        class="panel-badge">
+
+                        0 ITEMS
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Item Code
+                                </th>
+
+                                <th>
+                                    Pending Qty
+                                </th>
+
+                                <th>
+                                    Partner
+                                </th>
+
+                                <th>
+                                    Team
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="pendingTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="no-data">
+
+                                    Loading pending items...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- PARTNER-WISE PENDING -->
+
+            <section class="panel table-panel">
+
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+
+                        <i class="fa fa-handshake"></i>
+
+                        Partner-wise Pending
+
+                    </div>
+
+                    <div
+                        id="partnerPendingBadge"
+                        class="panel-badge">
+
+                        0 PARTNERS
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Partner
+                                </th>
+
+                                <th>
+                                    Pending Qty
+                                </th>
+
+                                <th>
+                                    Items
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="partnerPendingTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="3"
+                                    class="no-data">
+
+                                    Loading partner data...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+
+        <!-- =================================================
+             BOTTOM INFO
+        ================================================== -->
+
+        <div class="bottom-info">
+
+
+            <div class="live-indicator">
+
+                <span class="live-dot"></span>
+
+                LIVE DATA CONNECTION
 
             </div>
 
 
             <div>
 
-                <div class="status-label">
-                    SCANNING SYSTEM STATUS
-                </div>
-
-
-                <div
-                    id="systemStatus"
-                    class="status-ready">
-
-                    READY
-
-                </div>
-
-
-                <div class="status-message">
-
-                    W2R operations are being monitored in real time.
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="progress-area">
-
-
-            <div class="progress-top">
-
-                <span>
-                    OVERALL SCANNING PROGRESS
-                </span>
-
-
-                <span
-                    id="progressPercent"
-                    class="progress-percent">
-
-                    0%
-
-                </span>
+                STARK QR W2R MONITOR
 
             </div>
 
 
-            <div class="progress-bar">
-
-                <div
-                    id="progressFill"
-                    class="progress-fill">
-                </div>
-
-            </div>
-
-
-            <div class="progress-numbers">
-
-                <span>
-
-                    Scanned:
-                    <strong id="progressScanned">
-                        0
-                    </strong>
-
-                </span>
-
-
-                <span>
-
-                    Required:
-                    <strong id="progressRequired">
-                        0
-                    </strong>
-
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     KPI CARDS
-========================================================= -->
-
-<div class="kpi-grid">
-
-
-    <div class="kpi-card">
-
-        <div class="kpi-icon">
-
-            <i class="fa fa-list-check"></i>
-
-        </div>
-
-        <div class="kpi-label">
-            Quantity Required
-        </div>
-
-        <div
-            id="qtyRequired"
-            class="kpi-value">
-
-            0
-
-        </div>
-
-    </div>
-
-
-    <div class="kpi-card scanned">
-
-        <div class="kpi-icon">
-
-            <i class="fa fa-circle-check"></i>
-
-        </div>
-
-        <div class="kpi-label">
-            Total Scanned
-        </div>
-
-        <div
-            id="totalScannedBox"
-            class="kpi-value">
-
-            0
-
-        </div>
-
-    </div>
-
-
-    <div class="kpi-card today">
-
-        <div class="kpi-icon">
-
-            <i class="fa fa-calendar-day"></i>
-
-        </div>
-
-        <div class="kpi-label">
-            Today Scanned
-        </div>
-
-        <div
-            id="qtyScanned"
-            class="kpi-value">
-
-            0
-
-        </div>
-
-    </div>
-
-
-    <div class="kpi-card pending">
-
-        <div class="kpi-icon">
-
-            <i class="fa fa-triangle-exclamation"></i>
-
-        </div>
-
-        <div class="kpi-label">
-            Total Pending
-        </div>
-
-        <div
-            id="pendingQty"
-            class="kpi-value">
-
-            0
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     TWO COLUMN CONTENT
-========================================================= -->
-
-<div class="content-grid">
-
-
-<!-- TEAM PERFORMANCE -->
-
-<section class="panel">
-
-    <div class="panel-header">
-
-        <div class="panel-title">
-
-            <i class="fa fa-users"></i>
-
-            Team Performance
-
-        </div>
-
-        <div class="panel-badge">
-            LIVE
-        </div>
-
-    </div>
-
-
-    <div
-        id="teamBox"
-        class="team-list">
-
-        <div class="team-empty">
-
-            Loading team data...
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- QUICK OPERATIONS -->
-
-<section class="panel">
-
-    <div class="panel-header">
-
-        <div class="panel-title">
-
-            <i class="fa fa-bolt"></i>
-
-            Quick Operations
-
-        </div>
-
-    </div>
-
-
-    <div class="quick-actions">
-
-
-        <div
-            class="quick-btn"
-            onclick="go('S2W%20QR.html')">
-
-            <i class="fa fa-qrcode"></i>
-
-            <span>
-                S2W QR
-            </span>
-
         </div>
 
 
-        <div
-            class="quick-btn"
-            onclick="go('mit.html')">
+    </main>
 
-            <i class="fa fa-print"></i>
-
-            <span>
-                MIT
-            </span>
-
-        </div>
-
-
-        <div
-            class="quick-btn"
-            onclick="go('serial.html')">
-
-            <i class="fa fa-barcode"></i>
-
-            <span>
-                SERIAL
-            </span>
-
-        </div>
-
-
-        <div
-            class="quick-btn"
-            onclick="go('nonserial.html')">
-
-            <i class="fa fa-qrcode"></i>
-
-            <span>
-                NON-SERIAL
-            </span>
-
-        </div>
-
-    </div>
-
-</section>
-
-</div>
-
-
-<!-- =========================================================
-     ITEM + PARTNER PENDING
-========================================================= -->
-
-<div class="content-grid pending-grid">
-
-
-<!-- ITEM-WISE PENDING -->
-
-<section class="panel table-panel">
-
-    <div class="panel-header">
-
-        <div class="panel-title">
-
-            <i class="fa fa-boxes-stacked"></i>
-
-            Item-wise Pending
-
-        </div>
-
-
-        <div
-            id="pendingBadge"
-            class="panel-badge">
-
-            0 ITEMS
-
-        </div>
-
-    </div>
-
-
-    <div class="table-wrapper">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Item Code
-                    </th>
-
-                    <th>
-                        Pending Qty
-                    </th>
-
-                    <th>
-                        Partner
-                    </th>
-
-                    <th>
-                        Team
-                    </th>
-
-                    <th>
-                        Status
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="pendingTable">
-
-                <tr>
-
-                    <td
-                        colspan="5"
-                        class="no-data">
-
-                        Loading pending items...
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-
-<!-- PARTNER-WISE PENDING -->
-
-<section class="panel table-panel">
-
-    <div class="panel-header">
-
-        <div class="panel-title">
-
-            <i class="fa fa-handshake"></i>
-
-            Partner-wise Pending
-
-        </div>
-
-
-        <div
-            id="partnerPendingBadge"
-            class="panel-badge">
-
-            0 PARTNERS
-
-        </div>
-
-    </div>
-
-
-    <div class="table-wrapper">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Partner
-                    </th>
-
-                    <th>
-                        Pending Qty
-                    </th>
-
-                    <th>
-                        Items
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="partnerPendingTable">
-
-                <tr>
-
-                    <td
-                        colspan="3"
-                        class="no-data">
-
-                        Loading partner data...
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-</div>
-
-
-<!-- =========================================================
-     BOTTOM INFO
-========================================================= -->
-
-<div class="bottom-info">
-
-    <div class="live-indicator">
-
-        <span class="live-dot"></span>
-
-        LIVE DATA CONNECTION
-
-    </div>
-
-
-    <div>
-        STARK QR W2R MONITOR
-    </div>
-
-</div>
-
-
-</main>
 
 </div>
 
@@ -2126,32 +1975,24 @@ tbody tr:hover{
 
     let percent = 0;
 
-
     const loadingTimer =
         setInterval(function(){
 
             percent += 2;
 
-
             if(percent > 100){
                 percent = 100;
             }
 
-
             loadingBar.style.width =
                 percent + "%";
-
 
             loadingPercent.innerText =
                 percent + "%";
 
-
             if(percent >= 100){
 
-                clearInterval(
-                    loadingTimer
-                );
-
+                clearInterval(loadingTimer);
 
                 setTimeout(function(){
 
@@ -2165,18 +2006,13 @@ tbody tr:hover{
 
                     }
 
-
                     loadingScreen.style.display =
                         "none";
-
 
                     dashboard.style.display =
                         "block";
 
-
-                    initializeDashboard(
-                        user
-                    );
+                    initializeDashboard(user);
 
                 },300);
 
@@ -2193,22 +2029,20 @@ tbody tr:hover{
 
 function initializeDashboard(user){
 
-    document.getElementById(
-        "userBox"
-    ).innerHTML =
+    document.getElementById("userBox").innerHTML =
 
         `<i class="fa fa-user"></i>
          ${escapeHTML(user)}`;
 
 
-    const headerQR =
-        document.getElementById(
-            "headerQR"
-        );
+    /*
+     * Header QR
+     */
 
+    const headerQR =
+        document.getElementById("headerQR");
 
     headerQR.innerHTML = "";
-
 
     try{
 
@@ -2216,8 +2050,8 @@ function initializeDashboard(user){
             headerQR,
             {
                 text:"OWNED BY SHARATH",
-                width:36,
-                height:36
+                width:40,
+                height:40
             }
         );
 
@@ -2232,8 +2066,16 @@ function initializeDashboard(user){
     }
 
 
+    /*
+     * First dashboard load
+     */
+
     loadDashboard();
 
+
+    /*
+     * Automatic refresh
+     */
 
     setInterval(
         loadDashboard,
@@ -2285,7 +2127,6 @@ function logout(){
         "wms_user"
     );
 
-
     window.location.replace(
         "login.html"
     );
@@ -2302,153 +2143,8 @@ function formatNumber(value){
     const number =
         Number(value) || 0;
 
-
     return number.toLocaleString(
         "en-IN"
-    );
-
-}
-
-
-/* =========================================================
-   COMPLETION BANNER
-========================================================= */
-
-function updateCompletionBanner(
-    totalScanned,
-    totalRequired,
-    batchNumber
-){
-
-    const banner =
-        document.getElementById(
-            "completionBanner"
-        );
-
-    const title =
-        document.getElementById(
-            "completionBannerTitle"
-        );
-
-    const message =
-        document.getElementById(
-            "completionBannerMessage"
-        );
-
-
-    /*
-     * Show only when all required
-     * quantity has been scanned.
-     */
-
-    if(
-        totalRequired > 0 &&
-        totalScanned >= totalRequired
-    ){
-
-        const batch =
-            batchNumber ||
-            totalRequired;
-
-
-        title.innerText =
-            `W2R BATCH #${formatNumber(batch)} COMPLETED`;
-
-
-        message.innerText =
-            `All ${formatNumber(totalRequired)} items successfully processed across all teams and partners. Ready for sign-off or export.`;
-
-
-        banner.classList.remove(
-            "hidden"
-        );
-
-    }
-    else{
-
-        banner.classList.add(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   EXPORT FINAL AUDIT
-========================================================= */
-
-function exportFinalAudit(){
-
-    /*
-     * If your Google Apps Script provides
-     * an export endpoint, place it here.
-     */
-
-    alert(
-        "Final Audit export is ready to be connected."
-    );
-
-}
-
-
-/* =========================================================
-   START NEW BATCH
-========================================================= */
-
-function startNewBatch(){
-
-    const confirmNewBatch =
-        confirm(
-            "Are you sure you want to start a new W2R batch?"
-        );
-
-
-    if(!confirmNewBatch){
-        return;
-    }
-
-
-    document.getElementById(
-        "completionBanner"
-    ).classList.add(
-        "hidden"
-    );
-
-
-    document.getElementById(
-        "systemStatus"
-    ).innerText =
-        "READY";
-
-
-    document.getElementById(
-        "systemStatus"
-    ).style.color =
-        "#43e890";
-
-
-    document.getElementById(
-        "progressFill"
-    ).style.width =
-        "0%";
-
-
-    document.getElementById(
-        "progressPercent"
-    ).innerText =
-        "0%";
-
-
-    document.getElementById(
-        "progressScanned"
-    ).innerText =
-        "0";
-
-
-    alert(
-        "New batch screen is ready."
     );
 
 }
@@ -2461,6 +2157,10 @@ function startNewBatch(){
 async function loadDashboard(){
 
     try{
+
+        /*
+         * Google Apps Script endpoint
+         */
 
         const url =
             "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
@@ -2492,29 +2192,14 @@ async function loadDashboard(){
         const totalPending =
             Number(data.totalPending) || 0;
 
-
         const totalRequired =
             Number(data.totalRequired) || 0;
-
 
         const totalTodayScanned =
             Number(data.totalTodayScanned) || 0;
 
-
         const totalScanned =
             Number(data.totalScanned) || 0;
-
-
-        /*
-         * Supports different possible API
-         * batch number field names.
-         */
-
-        const batchNumber =
-            data.batchNumber ??
-            data.batchNo ??
-            data.batch ??
-            totalRequired;
 
 
         /* =================================================
@@ -2524,33 +2209,25 @@ async function loadDashboard(){
         document.getElementById(
             "pendingQty"
         ).innerText =
-            formatNumber(
-                totalPending
-            );
+            formatNumber(totalPending);
 
 
         document.getElementById(
             "qtyRequired"
         ).innerText =
-            formatNumber(
-                totalRequired
-            );
+            formatNumber(totalRequired);
 
 
         document.getElementById(
             "qtyScanned"
         ).innerText =
-            formatNumber(
-                totalTodayScanned
-            );
+            formatNumber(totalTodayScanned);
 
 
         document.getElementById(
             "totalScannedBox"
         ).innerText =
-            formatNumber(
-                totalScanned
-            );
+            formatNumber(totalScanned);
 
 
         /* =================================================
@@ -2559,17 +2236,13 @@ async function loadDashboard(){
 
         let progress = 0;
 
-
         if(totalRequired > 0){
 
             progress =
-                (
-                    totalScanned /
-                    totalRequired
-                ) * 100;
+                (totalScanned /
+                totalRequired) * 100;
 
         }
-
 
         progress =
             Math.max(
@@ -2584,42 +2257,25 @@ async function loadDashboard(){
         document.getElementById(
             "progressFill"
         ).style.width =
-            progress.toFixed(1) +
-            "%";
+            progress.toFixed(1) + "%";
 
 
         document.getElementById(
             "progressPercent"
         ).innerText =
-            progress.toFixed(1) +
-            "%";
+            progress.toFixed(1) + "%";
 
 
         document.getElementById(
             "progressScanned"
         ).innerText =
-            formatNumber(
-                totalScanned
-            );
+            formatNumber(totalScanned);
 
 
         document.getElementById(
             "progressRequired"
         ).innerText =
-            formatNumber(
-                totalRequired
-            );
-
-
-        /* =================================================
-           COMPLETION BANNER
-        ================================================== */
-
-        updateCompletionBanner(
-            totalScanned,
-            totalRequired,
-            batchNumber
-        );
+            formatNumber(totalRequired);
 
 
         /* =================================================
@@ -2632,15 +2288,10 @@ async function loadDashboard(){
             );
 
 
-        if(
-            totalPending <= 0 &&
-            totalRequired > 0 &&
-            totalScanned >= totalRequired
-        ){
+        if(totalPending <= 0){
 
             statusElement.innerText =
                 "COMPLETED";
-
 
             statusElement.style.color =
                 "#43e890";
@@ -2651,7 +2302,6 @@ async function loadDashboard(){
             statusElement.innerText =
                 "CRITICAL";
 
-
             statusElement.style.color =
                 "#ff5b66";
 
@@ -2660,7 +2310,6 @@ async function loadDashboard(){
 
             statusElement.innerText =
                 "READY";
-
 
             statusElement.style.color =
                 "#43e890";
@@ -2776,9 +2425,7 @@ function renderTeams(
     teamNames.forEach(function(team){
 
         const count =
-            Number(
-                teams[team]
-            ) || 0;
+            Number(teams[team]) || 0;
 
 
         let percentage = 0;
@@ -2787,10 +2434,8 @@ function renderTeams(
         if(totalScanned > 0){
 
             percentage =
-                (
-                    count /
-                    totalScanned
-                ) * 100;
+                (count /
+                totalScanned) * 100;
 
         }
 
@@ -2805,12 +2450,6 @@ function renderTeams(
             );
 
 
-        const completeClass =
-            percentage >= 100
-                ? "team-progress-bar-complete"
-                : "";
-
-
         html += `
 
             <div class="team-item">
@@ -2822,7 +2461,6 @@ function renderTeams(
                         ${escapeHTML(team)}
 
                     </span>
-
 
                     <span class="team-count">
 
@@ -2836,7 +2474,7 @@ function renderTeams(
                 <div class="team-progress">
 
                     <div
-                        class="team-fill ${completeClass}"
+                        class="team-fill"
                         style="
                             width:${percentage.toFixed(1)}%;
                         ">
@@ -2869,18 +2507,15 @@ function renderPendingItems(items){
             "pendingTable"
         );
 
-
     const badge =
         document.getElementById(
             "pendingBadge"
         );
 
-
     const partnerTable =
         document.getElementById(
             "partnerPendingTable"
         );
-
 
     const partnerBadge =
         document.getElementById(
@@ -2909,7 +2544,6 @@ function renderPendingItems(items){
             row.PARTNER ??
             row["Partner Name"] ??
             row["PARTNER NAME"];
-
 
         return String(
             value ?? ""
@@ -2948,7 +2582,6 @@ function renderPendingItems(items){
             row["Pending Qty"] ??
             row["PENDING QTY"] ??
             0;
-
 
         return Math.max(
             0,
@@ -3006,18 +2639,14 @@ function renderPendingItems(items){
                     const pending =
                         getPending(row);
 
-
                     const critical =
                         pending > 1000;
-
 
                     const partner =
                         getPartner(row);
 
-
                     const item =
                         getItem(row);
-
 
                     const team =
                         row.team ??
@@ -3122,7 +2751,6 @@ function renderPendingItems(items){
             const partner =
                 getPartner(row);
 
-
             const pending =
                 getPending(row);
 
@@ -3142,7 +2770,6 @@ function renderPendingItems(items){
 
             partners[partner].pending +=
                 pending;
-
 
             partners[partner].items +=
                 1;
@@ -3238,6 +2865,7 @@ function renderPendingItems(items){
 }
 
 </script>
+
 
 </body>
 
