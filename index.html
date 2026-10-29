@@ -1,2872 +1,1314 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="theme-color" content="#0b0f19">
 <title>STARK QR - W2R Control Center</title>
 
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-rel="stylesheet"
->
-
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                darkBg: "#0b0f19",
+                cardBg: "#131b2e",
+                cardHover: "#1a2540",
+                accentBlue: "#3b82f6",
+                accentGreen: "#10b981",
+                accentYellow: "#f59e0b",
+                borderSubtle: "#263248"
+            }
+        }
+    }
+};
+</script>
+
 <style>
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 3px;
+}
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 13px;
+    border-radius: 10px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
+    transition: .2s;
+}
+.sidebar-link i { width: 20px; text-align: center; }
+.sidebar-link:hover { background: #1a2540; color: white; }
+.sidebar-link.active {
+    background: linear-gradient(100deg, #2563eb, #1d4ed8);
+    color: white;
+    box-shadow: 0 5px 18px #2563eb25;
+}
+.panel {
+    background: linear-gradient(145deg, #131b2e, #101827);
+    border: 1px solid #263248;
+    border-radius: 16px;
+    min-width: 0;
+}
+.kpi-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, border-color .2s;
+}
+.kpi-card:hover { transform: translateY(-3px); }
+.kpi-card::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    right: -38px;
+    bottom: -45px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .035;
+    pointer-events: none;
+}
+.progress-track {
+    height: 7px;
+    background: #0b1220;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    transition: width .5s ease;
+}
+.table-scroll {
+    max-height: 410px;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #334155 #0b0f19;
+}
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    white-space: nowrap;
+}
+.data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #101827;
+    color: #94a3b8;
+    padding: 13px 15px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    font-weight: 700;
+    border-bottom: 1px solid #263248;
+}
+.data-table td {
+    padding: 12px 15px;
+    font-size: 12px;
+    border-bottom: 1px solid #26324880;
+    color: #cbd5e1;
+}
+.data-table tbody tr:hover { background: #1a254080; }
+.data-table tbody tr:last-child td { border-bottom: 0; }
+.critical-row { background: #7f1d1d20 !important; }
+.critical-row td { color: #fda4af; }
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.empty-state {
+    padding: 32px 15px;
+    text-align: center;
+    color: #64748b;
+    font-size: 12px;
+}
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: radial-gradient(circle at center, #17294a, #0b0f19 65%);
+}
+.loading-bar {
+    width: 260px;
+    max-width: 75vw;
+    height: 5px;
+    background: #263248;
+    border-radius: 20px;
+    overflow: hidden;
+}
+#loadingFill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2563eb, #22d3ee);
+    transition: width .08s linear;
+}
+#headerQR img, #headerQR canvas {
+    display: block;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 4px;
+    background: white;
+    padding: 2px;
+}
+#toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 20000;
+    max-width: calc(100vw - 40px);
+    transform: translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+.mobile-nav { display: none; }
+@media (max-width: 1023px) {
+    .desktop-sidebar { display: none; }
+    .mobile-nav { display: block; }
+}
+@media (max-width: 640px) {
+    .header-user { display: none; }
+    .header-qr { display: none; }
+    .main-content { padding: 16px !important; }
+    .page-heading { font-size: 22px !important; }
+    .data-table th, .data-table td { padding: 11px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}
+</style>
+</head>
+
+<body class="bg-darkBg text-slate-100 antialiased min-h-screen">
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+    <div class="text-4xl sm:text-5xl font-black tracking-[.18em] text-sky-400"
+         style="text-shadow:0 0 25px #168cff70">
+        STARK QR
+    </div>
+    <div class="text-xs tracking-[.25em] text-slate-400 mt-3 mb-7">
+        W2R CONTROL CENTER
+    </div>
+    <div class="loading-bar">
+        <div id="loadingFill"></div>
+    </div>
+    <div id="loadingPercent" class="text-xs text-sky-400 mt-3">0%</div>
+    <div class="text-[10px] tracking-widest text-slate-600 mt-8">
+        INITIALIZING SYSTEM
+    </div>
+</div>
+
+<!-- APPLICATION -->
+<div id="app" class="hidden min-h-screen">
+
+    <!-- TOP BAR -->
+    <header class="fixed top-0 left-0 right-0 z-50 h-[68px]
+                   bg-cardBg/95 backdrop-blur-xl border-b border-borderSubtle
+                   flex items-center justify-between px-4 sm:px-6">
+        <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 shrink-0 rounded-xl bg-blue-500/15 border border-blue-400/30
+                        flex items-center justify-center text-sky-400">
+                <i class="fa-solid fa-qrcode text-xl"></i>
+            </div>
+            <div class="min-w-0">
+                <h1 class="text-lg font-extrabold tracking-wider text-white">STARK QR</h1>
+                <p class="text-[10px] text-slate-500 tracking-[.16em] uppercase">
+                    W2R Control System
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 sm:gap-5">
+            <div class="hidden md:flex items-center gap-2 rounded-full px-3 py-2
+                        bg-emerald-500/10 border border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-[10px] font-bold tracking-wider text-emerald-400">
+                    SYSTEM ONLINE
+                </span>
+            </div>
+
+            <div class="header-user flex items-center gap-2 border-l border-borderSubtle pl-4 text-sm">
+                <i class="fa-regular fa-user text-sky-400"></i>
+                <span id="userName" class="text-slate-300 font-medium">User</span>
+            </div>
+
+            <div id="headerQR" class="header-qr"></div>
+
+            <button onclick="logout()"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg
+                           bg-red-500/10 hover:bg-red-500/20
+                           border border-red-500/25 text-red-400 text-xs font-bold transition">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="hidden sm:inline">Logout</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MOBILE NAVIGATION -->
+    <nav class="mobile-nav fixed top-[68px] left-0 right-0 z-40
+                bg-cardBg border-b border-borderSubtle px-3 py-2 overflow-x-auto">
+        <div class="flex gap-2 min-w-max">
+            <a href="index.html" class="sidebar-link active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="S2W%20QR.html" class="sidebar-link"><i class="fa-solid fa-qrcode"></i> S2W QR</a>
+            <a href="mit.html" class="sidebar-link"><i class="fa-solid fa-boxes-stacked"></i> MIT</a>
+            <a href="serial.html" class="sidebar-link"><i class="fa-solid fa-barcode"></i> Serial</a>
+            <a href="nonserial.html" class="sidebar-link"><i class="fa-solid fa-cube"></i> Non-Serial</a>
+            <a href="pdfexcel.html" class="sidebar-link"><i class="fa-solid fa-file-excel"></i> PDF to Excel</a>
+        </div>
+    </nav>
+
+    <div class="flex min-h-screen pt-[68px]">
+
+        <!-- DESKTOP SIDEBAR -->
+        <aside class="desktop-sidebar fixed left-0 top-[68px] bottom-0 w-60
+                      bg-cardBg border-r border-borderSubtle p-4">
+            <div class="flex flex-col h-full">
+                <div>
+                    <p class="text-[10px] font-bold tracking-[.2em] uppercase
+                              text-slate-500 px-3 mb-4 mt-2">Operations</p>
+
+                    <nav class="space-y-1">
+                        <a href="index.html" class="sidebar-link active">
+                            <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+                        </a>
+                        <a href="S2W%20QR.html" class="sidebar-link">
+                            <i class="fa-solid fa-qrcode"></i><span>S2W QR</span>
+                        </a>
+                        <a href="mit.html" class="sidebar-link">
+                            <i class="fa-solid fa-boxes-stacked"></i><span>MIT</span>
+                        </a>
+                        <a href="serial.html" class="sidebar-link">
+                            <i class="fa-solid fa-barcode"></i><span>Serial</span>
+                        </a>
+                        <a href="nonserial.html" class="sidebar-link">
+                            <i class="fa-solid fa-cube"></i><span>Non-Serial</span>
+                        </a>
+                        <a href="pdfexcel.html" class="sidebar-link">
+                            <i class="fa-solid fa-file-excel"></i><span>PDF to Excel</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="mt-auto bg-darkBg/70 border border-borderSubtle rounded-xl p-3">
+                    <p class="text-[11px] font-bold text-slate-400">STARK QR v1.0</p>
+                    <p class="text-[10px] text-slate-600 mt-1">W2R MONITORING</p>
+                    <div class="flex items-center gap-2 mt-3 text-[10px] text-emerald-400">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Dashboard active
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content flex-1 min-w-0 lg:ml-60 p-5 sm:p-7 space-y-6">
+
+            <!-- PAGE HEADER -->
+            <section class="panel p-5 sm:p-6 flex flex-col xl:flex-row
+                            xl:items-center justify-between gap-5">
+                <div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <h2 class="page-heading text-2xl sm:text-3xl font-extrabold tracking-tight">
+                            W2R <span class="text-sky-400">Dashboard</span>
+                        </h2>
+                        <span class="text-[10px] font-semibold px-3 py-1.5 rounded-full
+                                     bg-blue-500/10 border border-blue-500/25 text-blue-300">
+                            Warehouse to Repair Center
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">
+                        Real-time scanning and warehouse movement monitoring
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 bg-darkBg/60
+                            border border-borderSubtle rounded-xl px-4 py-3">
+                    <div class="text-xs text-slate-400">
+                        <i class="fa-solid fa-rotate text-sky-400 mr-1"></i>
+                        Auto-refresh
+                        <span class="text-white font-bold">30s</span>
+                    </div>
+                    <div class="hidden sm:block h-5 w-px bg-borderSubtle"></div>
+                    <div class="text-xs text-slate-400">
+                        Last update
+                        <span id="lastUpdate" class="block sm:inline text-white font-semibold mt-1 sm:mt-0">
+                            Waiting for data...
+                        </span>
+                    </div>
+                    <button id="refreshButton" onclick="loadDashboard(true)"
+                            class="w-8 h-8 rounded-lg border border-borderSubtle
+                                   hover:bg-cardHover text-sky-400 transition"
+                            title="Refresh dashboard" aria-label="Refresh dashboard">
+                        <i id="refreshIcon" class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- STATUS BANNER -->
+            <section id="statusBanner"
+                     class="rounded-2xl border border-sky-500/25
+                            bg-gradient-to-r from-blue-950/50 via-cardBg to-cardBg
+                            p-5 flex flex-col sm:flex-row sm:items-center
+                            justify-between gap-5">
+                <div class="flex items-center gap-4">
+                    <div id="statusIconBox"
+                         class="w-12 h-12 shrink-0 rounded-xl bg-sky-500/10
+                                border border-sky-500/25 flex items-center justify-center
+                                text-sky-400 text-xl">
+                        <i id="statusIcon" class="fa-solid fa-satellite-dish"></i>
+                    </div>
+                    <div>
+                        <p id="statusLabel" class="text-xs font-extrabold tracking-widest text-sky-400 uppercase">
+                            Scanning Status: Connecting
+                        </p>
+                        <p id="statusMessage" class="text-xs text-slate-400 mt-2">
+                            Connecting to the W2R monitoring service...
+                        </p>
+                    </div>
+                </div>
+                <div class="sm:min-w-[220px]">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider">Overall Progress</span>
+                        <span id="progressPercent" class="text-lg font-extrabold text-sky-400">0.0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="progressFill" class="progress-fill bg-gradient-to-r from-blue-600 to-cyan-400" style="width:0%"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-500 mt-2">
+                        <span>Scanned: <b id="progressScanned" class="text-slate-300">0</b></span>
+                        <span>Required: <b id="progressRequired" class="text-slate-300">0</b></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KPI CARDS -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+
+                <article class="panel kpi-card p-5 text-blue-400">
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                            <i class="fa-solid fa-list-check text-lg"></i>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-md bg-blue-500/10 text-blue-300">
+                            REQUIRED
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-4">Quantity Required</p>
+                    <p id="qtyRequired" class="text-3xl font-extrabold text-white mt-1 tabular-nums">0</p>
+                    <div class="progress-track mt-4">
+                        <div id="requiredBar" class="progress-fill bg-blue-500" style="width:100%"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2">Total quantity planned</p>
+                </article>
+
+                <article class="panel kpi-card p-5 text-emerald-400">
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                            <i class="fa-solid fa-circle-check text-lg"></i>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-300">
+                            SCANNED
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-4">Total Scanned</p>
+                    <p id="totalScannedBox" class="text-3xl font-extrabold text-white mt-1 tabular-nums">0</p>
+                    <div class="progress-track mt-4">
+                        <div id="scannedBar" class="progress-fill bg-emerald-500" style="width:0%"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2">Total scanned quantity</p>
+                </article>
+
+                <article class="panel kpi-card p-5 text-amber-400">
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-day text-lg"></i>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-md bg-amber-500/10 text-amber-300">
+                            TODAY
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-4">Today Scanned</p>
+                    <p id="qtyScanned" class="text-3xl font-extrabold text-white mt-1 tabular-nums">0</p>
+                    <div class="progress-track mt-4">
+                        <div id="todayBar" class="progress-fill bg-amber-500" style="width:0%"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2">Scanned today</p>
+                </article>
+
+                <article class="panel kpi-card p-5 text-rose-400">
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                        </div>
+                        <span id="pendingBadgeKpi" class="text-[10px] font-bold px-2 py-1 rounded-md bg-rose-500/10 text-rose-300">
+                            PENDING
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-4">Total Pending</p>
+                    <p id="pendingQty" class="text-3xl font-extrabold text-white mt-1 tabular-nums">0</p>
+                    <div class="progress-track mt-4">
+                        <div id="pendingBar" class="progress-fill bg-rose-500" style="width:0%"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2">Quantity remaining</p>
+                </article>
+
+            </section>
+
+            <!-- TEAM PERFORMANCE AND QUICK OPERATIONS -->
+            <section class="grid grid-cols-1 xl:grid-cols-3 gap-5 items-stretch">
+
+                <!-- TEAM PERFORMANCE -->
+                <article class="panel xl:col-span-2 p-5 sm:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold uppercase tracking-wider">Team Performance</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Scanned quantity by team</p>
+                            </div>
+                        </div>
+                        <span class="tag bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> LIVE
+                        </span>
+                    </div>
+                    <div id="teamBox" class="space-y-5">
+                        <div class="empty-state">Waiting for team data...</div>
+                    </div>
+                </article>
+
+                <!-- QUICK OPERATIONS -->
+                <article class="panel p-5 sm:p-6">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-extrabold uppercase tracking-wider">Quick Operations</h3>
+                            <p class="text-[10px] text-slate-500 mt-1">Open a module</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="S2W%20QR.html"
+                           class="group min-h-[105px] rounded-xl bg-darkBg/70 border border-borderSubtle
+                                  hover:border-blue-500/50 hover:bg-cardHover transition
+                                  flex flex-col items-center justify-center gap-3">
+                            <i class="fa-solid fa-qrcode text-2xl text-blue-400 group-hover:scale-110 transition"></i>
+                            <span class="text-xs font-bold text-slate-300">S2W QR</span>
+                        </a>
+                        <a href="mit.html"
+                           class="group min-h-[105px] rounded-xl bg-darkBg/70 border border-borderSubtle
+                                  hover:border-blue-500/50 hover:bg-cardHover transition
+                                  flex flex-col items-center justify-center gap-3">
+                            <i class="fa-solid fa-boxes-stacked text-2xl text-blue-400 group-hover:scale-110 transition"></i>
+                            <span class="text-xs font-bold text-slate-300">MIT</span>
+                        </a>
+                        <a href="serial.html"
+                           class="group min-h-[105px] rounded-xl bg-darkBg/70 border border-borderSubtle
+                                  hover:border-blue-500/50 hover:bg-cardHover transition
+                                  flex flex-col items-center justify-center gap-3">
+                            <i class="fa-solid fa-barcode text-2xl text-blue-400 group-hover:scale-110 transition"></i>
+                            <span class="text-xs font-bold text-slate-300">SERIAL</span>
+                        </a>
+                        <a href="nonserial.html"
+                           class="group min-h-[105px] rounded-xl bg-darkBg/70 border border-borderSubtle
+                                  hover:border-blue-500/50 hover:bg-cardHover transition
+                                  flex flex-col items-center justify-center gap-3">
+                            <i class="fa-solid fa-cube text-2xl text-blue-400 group-hover:scale-110 transition"></i>
+                            <span class="text-xs font-bold text-slate-300">NON-SERIAL</span>
+                        </a>
+                        <a href="pdfexcel.html"
+                           class="col-span-2 group min-h-[65px] rounded-xl bg-darkBg/70 border border-borderSubtle
+                                  hover:border-emerald-500/40 hover:bg-cardHover transition
+                                  flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-file-excel text-xl text-emerald-400 group-hover:scale-110 transition"></i>
+                            <span class="text-xs font-bold text-slate-300">PDF TO EXCEL</span>
+                        </a>
+                    </div>
+                </article>
+            </section>
+
+            <!-- PENDING TABLES -->
+            <section class="grid grid-cols-1 2xl:grid-cols-5 gap-5 items-start">
+
+                <!-- ITEM-WISE PENDING -->
+                <article class="panel 2xl:col-span-3 overflow-hidden">
+                    <div class="p-5 border-b border-borderSubtle flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold uppercase tracking-wider">Item-wise Pending</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Pending quantity by item</p>
+                            </div>
+                        </div>
+                        <span id="pendingBadge"
+                              class="text-[10px] font-bold bg-blue-500/10 text-blue-300 border border-blue-500/20 px-3 py-1.5 rounded-lg">
+                            0 ITEMS
+                        </span>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Code</th>
+                                    <th>Pending Qty</th>
+                                    <th>Partner</th>
+                                    <th>Team</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingTable">
+                                <tr><td colspan="5" class="empty-state">Loading pending items...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-4 py-3 border-t border-borderSubtle text-[10px] text-slate-500">
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        Items with pending quantity above 1,000 are marked critical.
+                    </div>
+                </article>
+
+                <!-- PARTNER-WISE PENDING -->
+                <article class="panel 2xl:col-span-2 overflow-hidden">
+                    <div class="p-5 border-b border-borderSubtle flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-violet-500/10 text-violet-400 flex items-center justify-center">
+                                <i class="fa-solid fa-handshake"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-extrabold uppercase tracking-wider">Partner-wise Pending</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Pending summary by partner</p>
+                            </div>
+                        </div>
+                        <span id="partnerPendingBadge"
+                              class="text-[10px] font-bold bg-violet-500/10 text-violet-300 border border-violet-500/20 px-3 py-1.5 rounded-lg">
+                            0 PARTNERS
+                        </span>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Partner</th>
+                                    <th>Pending Qty</th>
+                                    <th>Items</th>
+                                </tr>
+                            </thead>
+                            <tbody id="partnerPendingTable">
+                                <tr><td colspan="3" class="empty-state">Loading partner data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-4 py-3 border-t border-borderSubtle text-[10px] text-slate-500">
+                        Partners are sorted by pending quantity, highest first.
+                    </div>
+                </article>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="flex flex-col sm:flex-row justify-between gap-3 py-2 text-[10px] text-slate-600">
+                <div class="flex items-center gap-2">
+                    <span id="connectionDot" class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    <span id="connectionText">Connecting to live data...</span>
+                </div>
+                <div>STARK QR W2R MONITOR &copy; <span id="currentYear"></span></div>
+            </footer>
+
+        </main>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="rounded-xl border border-borderSubtle bg-cardBg shadow-2xl px-4 py-3 text-xs text-slate-200">
+    <i id="toastIcon" class="fa-solid fa-circle-info mr-2 text-sky-400"></i>
+    <span id="toastMessage">Message</span>
+</div>
+
+<script>
+"use strict";
 
 /* =========================================================
-   GLOBAL
+   CONFIGURATION
 ========================================================= */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
-}
+const API_BASE =
+    "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec";
 
-html,
-body{
-    width:100%;
-    min-height:100%;
-    background:#07111f;
-    color:#eaf4ff;
-}
+const REFRESH_INTERVAL = 30000;
+const CRITICAL_PENDING = 1000;
 
-body{
-    overflow-x:hidden;
-}
-
+let refreshTimer = null;
+let requestInProgress = false;
+let toastTimer = null;
+let lastGoodData = null;
 
 /* =========================================================
-   LOADING SCREEN
+   HELPERS
 ========================================================= */
 
-#loadingScreen{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    background:
-        radial-gradient(
-            circle at center,
-            #12345a 0%,
-            #07111f 45%,
-            #020812 100%
-        );
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    z-index:999999;
+function byId(id) {
+    return document.getElementById(id);
 }
 
-.loading-logo{
-    font-size:46px;
-    font-weight:900;
-    letter-spacing:6px;
-    color:#52b7ff;
-    text-shadow:
-        0 0 10px #168cff,
-        0 0 25px rgba(22,140,255,.7),
-        3px 3px #003b69;
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
-.loading-subtitle{
-    margin-top:12px;
-    font-size:13px;
-    letter-spacing:3px;
-    color:#8fb9d9;
+function formatNumber(value) {
+    const n = Number(value);
+    return (Number.isFinite(n) ? n : 0).toLocaleString("en-IN", {
+        maximumFractionDigits: 2
+    });
 }
 
-.loading-bar-container{
-    width:280px;
-    height:6px;
-    margin-top:28px;
-    background:#17283b;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:
-        0 0 10px rgba(0,150,255,.2);
+function safeNumber(value) {
+    if (value === null || value === undefined || value === "") return 0;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
 }
 
-.loading-bar{
-    width:0%;
-    height:100%;
-    background:
-        linear-gradient(
-            90deg,
-            #006eff,
-            #00c6ff
-        );
-    box-shadow:
-        0 0 12px #00aaff;
-    transition:width .08s linear;
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
 }
 
-.loading-percent{
-    margin-top:12px;
-    color:#67c7ff;
-    font-size:13px;
+function setText(id, value) {
+    byId(id).textContent = String(value ?? "");
 }
 
+function setWidth(id, percentage) {
+    byId(id).style.width = clamp(percentage, 0, 100) + "%";
+}
+
+function showToast(message, type = "info") {
+    const icon = byId("toastIcon");
+    const toast = byId("toast");
+
+    const icons = {
+        info: ["fa-circle-info", "text-sky-400"],
+        success: ["fa-circle-check", "text-emerald-400"],
+        error: ["fa-circle-exclamation", "text-rose-400"]
+    };
+
+    const chosen = icons[type] || icons.info;
+
+    icon.className = "fa-solid " + chosen[0] + " mr-2 " + chosen[1];
+    setText("toastMessage", message);
+
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3500);
+}
+
+function updateConnection(online, message) {
+    const dot = byId("connectionDot");
+
+    dot.className = "w-1.5 h-1.5 rounded-full " +
+        (online ? "bg-emerald-400" : "bg-rose-400");
+
+    setText("connectionText", message);
+}
 
 /* =========================================================
-   MAIN APP
+   LOGIN AND INITIALIZATION
 ========================================================= */
 
-#dashboard{
-    display:none;
-    min-height:100vh;
-    background:
-        radial-gradient(
-            circle at 75% 20%,
-            rgba(0,119,255,.08),
-            transparent 30%
-        ),
-        #07111f;
+function startApplication() {
+    const user = sessionStorage.getItem("wms_user");
+
+    if (!user) {
+        window.location.replace("login.html");
+        return;
+    }
+
+    setText("userName", user);
+    setText("currentYear", new Date().getFullYear());
+
+    byId("loadingScreen").style.display = "none";
+    byId("app").classList.remove("hidden");
+
+    try {
+        const qrContainer = byId("headerQR");
+        qrContainer.innerHTML = "";
+
+        if (typeof QRCode !== "undefined") {
+            new QRCode(qrContainer, {
+                text: "OWNED BY SHARATH",
+                width: 38,
+                height: 38,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    } catch (error) {
+        console.warn("Header QR could not be generated:", error);
+    }
+
+    loadDashboard();
+
+    refreshTimer = setInterval(() => {
+        loadDashboard(false);
+    }, REFRESH_INTERVAL);
 }
 
+function runLoadingScreen() {
+    let progress = 0;
+
+    const bar = byId("loadingFill");
+    const label = byId("loadingPercent");
+
+    const timer = setInterval(() => {
+        progress = Math.min(progress + 4, 100);
+
+        bar.style.width = progress + "%";
+        label.textContent = progress + "%";
+
+        if (progress >= 100) {
+            clearInterval(timer);
+            startApplication();
+        }
+    }, 18);
+}
+
+function logout() {
+    if (refreshTimer) clearInterval(refreshTimer);
+
+    sessionStorage.removeItem("wms_user");
+    window.location.replace("login.html");
+}
 
 /* =========================================================
-   TOP BAR
+   NORMALIZE API DATA
 ========================================================= */
 
-.topbar{
-    height:68px;
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    z-index:1000;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 22px;
-    background:
-        rgba(7,17,31,.95);
-    border-bottom:
-        1px solid rgba(70,170,255,.25);
-    box-shadow:
-        0 4px 25px rgba(0,0,0,.35);
-    backdrop-filter:blur(10px);
+function getPartner(row) {
+    return String(
+        row.partner ??
+        row.partnerName ??
+        row.partner_name ??
+        row.Partner ??
+        row.PARTNER ??
+        row["Partner Name"] ??
+        row["PARTNER NAME"] ??
+        "Unassigned"
+    ).trim() || "Unassigned";
 }
 
-.brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
+function getItem(row) {
+    return String(
+        row.item ??
+        row.itemCode ??
+        row.item_code ??
+        row.Item ??
+        row["Item Code"] ??
+        row["ITEM CODE"] ??
+        "-"
+    ).trim() || "-";
 }
 
-.brand-icon{
-    width:40px;
-    height:40px;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-        linear-gradient(
-            135deg,
-            #087eff,
-            #00b8ff
-        );
-    color:white;
-    font-size:20px;
-    box-shadow:
-        0 0 18px rgba(0,150,255,.45);
+function getPending(row) {
+    return Math.max(0, safeNumber(
+        row.pending ??
+        row.pendingQty ??
+        row.pending_qty ??
+        row["Pending Qty"] ??
+        row["PENDING QTY"] ??
+        0
+    ));
 }
 
-.brand-title{
-    font-size:20px;
-    font-weight:800;
-    letter-spacing:1px;
+function getTeam(row) {
+    return String(
+        row.team ??
+        row.Team ??
+        row.teamName ??
+        row.team_name ??
+        "-"
+    ).trim() || "-";
 }
 
-.brand-subtitle{
-    font-size:10px;
-    color:#6fa9d3;
-    letter-spacing:2px;
-    margin-top:2px;
+function normalizeItems(items) {
+    if (!Array.isArray(items)) return [];
+
+    return items.map(row => {
+        const source = row && typeof row === "object" ? row : {};
+
+        return {
+            item: getItem(source),
+            partner: getPartner(source),
+            team: getTeam(source),
+            pending: getPending(source)
+        };
+    }).sort((a, b) => b.pending - a.pending);
 }
-
-.top-right{
-    display:flex;
-    align-items:center;
-    gap:18px;
-}
-
-
-/* SYSTEM STATUS */
-
-.system-status{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    color:#76e6a5;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.status-dot{
-    width:8px;
-    height:8px;
-    background:#21e67a;
-    border-radius:50%;
-    box-shadow:
-        0 0 10px #21e67a;
-}
-
-.user-box{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    color:#b8d8f0;
-    font-size:13px;
-}
-
-.user-box i{
-    color:#43b8ff;
-}
-
-.logout-btn{
-    border:none;
-    background:#b91c2c;
-    color:white;
-    padding:9px 14px;
-    border-radius:7px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:.2s;
-}
-
-.logout-btn:hover{
-    background:#e12638;
-    box-shadow:
-        0 0 12px rgba(225,38,56,.4);
-}
-
 
 /* =========================================================
-   SIDEBAR
+   LOAD DASHBOARD FROM GOOGLE APPS SCRIPT
 ========================================================= */
 
-.sidebar{
-    position:fixed;
-    left:0;
-    top:68px;
-    bottom:0;
-    width:220px;
-    background:
-        linear-gradient(
-            180deg,
-            #0b1a2b,
-            #07111f
-        );
-    border-right:
-        1px solid rgba(70,170,255,.18);
-    padding:18px 12px;
-    z-index:900;
+async function loadDashboard(manual = false) {
+    if (requestInProgress) {
+        if (manual) showToast("A refresh is already in progress.");
+        return;
+    }
+
+    requestInProgress = true;
+
+    const refreshIcon = byId("refreshIcon");
+    const refreshButton = byId("refreshButton");
+
+    refreshIcon.classList.add("fa-spin");
+    refreshButton.disabled = true;
+
+    if (manual) {
+        refreshButton.classList.add("opacity-60");
+    }
+
+    try {
+        const url = API_BASE + "?nocache=" + Date.now();
+
+        const response = await fetch(url, {
+            method: "GET",
+            cache: "no-store",
+            redirect: "follow"
+        });
+
+        if (!response.ok) {
+            throw new Error("HTTP error " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+            throw new Error("Invalid API response.");
+        }
+
+        /*
+         * These fields follow the response structure
+         * used by your original Google Apps Script.
+         */
+        const totalPending = Math.max(0, safeNumber(data.totalPending));
+        const totalRequired = Math.max(0, safeNumber(data.totalRequired));
+        const totalTodayScanned = Math.max(0, safeNumber(data.totalTodayScanned));
+        const totalScanned = Math.max(0, safeNumber(data.totalScanned));
+
+        renderKPIs({
+            totalPending,
+            totalRequired,
+            totalTodayScanned,
+            totalScanned
+        });
+
+        renderStatus(totalPending, totalRequired, totalScanned);
+
+        renderTeams(data.teamWise || {}, totalScanned);
+
+        renderPendingItems(data.itemList || []);
+
+        setText("lastUpdate", new Date().toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        }));
+
+        updateConnection(true, "Live data connected · Auto-refresh every 30 seconds");
+
+        lastGoodData = data;
+
+        if (manual) showToast("Dashboard refreshed successfully.", "success");
+
+    } catch (error) {
+        console.error("Dashboard loading error:", error);
+
+        updateConnection(false, "Connection failed · Retrying automatically");
+
+        setText("lastUpdate", "Connection failed");
+
+        setStatusConnectionError();
+
+        if (manual) {
+            showToast("Unable to load dashboard data. Check your connection or Apps Script deployment.", "error");
+        }
+
+    } finally {
+        requestInProgress = false;
+        refreshIcon.classList.remove("fa-spin");
+        refreshButton.disabled = false;
+        refreshButton.classList.remove("opacity-60");
+    }
 }
-
-.menu-title{
-    color:#547b9c;
-    font-size:10px;
-    font-weight:bold;
-    letter-spacing:2px;
-    padding:8px 12px 12px;
-}
-
-.menu{
-    list-style:none;
-}
-
-.menu li{
-    margin-bottom:6px;
-    padding:13px 14px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    color:#a8c2d9;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:14px;
-    transition:.2s;
-}
-
-.menu li i{
-    width:20px;
-    text-align:center;
-    color:#55baff;
-}
-
-.menu li:hover{
-    background:
-        rgba(32,126,219,.16);
-    color:white;
-    transform:translateX(3px);
-}
-
-.menu li.active{
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,126,255,.28),
-            rgba(0,126,255,.05)
-        );
-    color:white;
-    border-left:
-        3px solid #28aaff;
-}
-
-.sidebar-footer{
-    position:absolute;
-    bottom:20px;
-    left:15px;
-    right:15px;
-    padding:12px;
-    border:
-        1px solid rgba(75,160,220,.15);
-    border-radius:9px;
-    background:rgba(20,50,75,.3);
-    text-align:center;
-    font-size:10px;
-    color:#557894;
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-.main{
-    margin-left:220px;
-    padding:
-        92px
-        24px
-        30px;
-    min-height:100vh;
-}
-
-
-/* =========================================================
-   PAGE HEADER
-========================================================= */
-
-.page-header{
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    margin-bottom:20px;
-}
-
-.page-title{
-    font-size:27px;
-    font-weight:800;
-    letter-spacing:.5px;
-}
-
-.page-title span{
-    color:#32b8ff;
-}
-
-.page-description{
-    margin-top:5px;
-    color:#6e91ad;
-    font-size:12px;
-}
-
-.refresh-info{
-    text-align:right;
-    color:#66859e;
-    font-size:11px;
-}
-
-.refresh-info strong{
-    color:#72bdf0;
-}
-
-
-/* =========================================================
-   STATUS HERO
-========================================================= */
-
-.status-panel{
-    position:relative;
-    overflow:hidden;
-    min-height:185px;
-    border-radius:16px;
-    padding:25px;
-    margin-bottom:20px;
-    background:
-        linear-gradient(
-            120deg,
-            #0d2945,
-            #0b1d32 55%,
-            #09253e
-        );
-    border:
-        1px solid rgba(62,175,255,.25);
-    box-shadow:
-        0 10px 35px rgba(0,0,0,.25);
-}
-
-.status-panel::before{
-    content:"";
-    position:absolute;
-    width:300px;
-    height:300px;
-    right:-100px;
-    top:-140px;
-    border-radius:50%;
-    background:
-        rgba(0,160,255,.08);
-}
-
-.status-panel::after{
-    content:"";
-    position:absolute;
-    width:180px;
-    height:180px;
-    right:100px;
-    bottom:-120px;
-    border-radius:50%;
-    border:
-        1px solid rgba(50,180,255,.12);
-}
-
-.status-content{
-    position:relative;
-    z-index:2;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:30px;
-}
-
-.status-left{
-    display:flex;
-    align-items:center;
-    gap:20px;
-}
-
-.status-circle{
-    width:85px;
-    height:85px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-        rgba(21,220,118,.08);
-    border:
-        2px solid #27e47c;
-    box-shadow:
-        0 0 25px rgba(39,228,124,.2);
-    color:#27e47c;
-    font-size:30px;
-}
-
-.status-label{
-    color:#7fa8c6;
-    font-size:11px;
-    letter-spacing:2px;
-}
-
-.status-ready{
-    margin-top:5px;
-    font-size:30px;
-    font-weight:900;
-    color:#43e890;
-    letter-spacing:1px;
-}
-
-.status-message{
-    margin-top:7px;
-    color:#7195af;
-    font-size:12px;
-}
-
-.progress-area{
-    min-width:300px;
-    width:45%;
-}
-
-.progress-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:9px;
-}
-
-.progress-top span:first-child{
-    color:#83a7c0;
-    font-size:12px;
-}
-
-.progress-percent{
-    color:#42c3ff;
-    font-size:20px;
-    font-weight:bold;
-}
-
-.progress-bar{
-    height:11px;
-    width:100%;
-    background:#142a3e;
-    border-radius:20px;
-    overflow:hidden;
-}
-
-.progress-fill{
-    width:0%;
-    height:100%;
-    border-radius:20px;
-    background:
-        linear-gradient(
-            90deg,
-            #087eff,
-            #00caff
-        );
-    box-shadow:
-        0 0 12px rgba(0,181,255,.6);
-    transition:
-        width .7s ease;
-}
-
-.progress-numbers{
-    margin-top:8px;
-    display:flex;
-    justify-content:space-between;
-    color:#56758e;
-    font-size:11px;
-}
-
 
 /* =========================================================
    KPI CARDS
 ========================================================= */
 
-.kpi-grid{
-    display:grid;
-    grid-template-columns:
-        repeat(4,1fr);
-    gap:16px;
-    margin-bottom:20px;
-}
+function renderKPIs(stats) {
+    const {
+        totalPending,
+        totalRequired,
+        totalTodayScanned,
+        totalScanned
+    } = stats;
 
-.kpi-card{
-    position:relative;
-    overflow:hidden;
-    min-height:125px;
-    background:
-        linear-gradient(
-            145deg,
-            #0d1e31,
-            #091625
-        );
-    border:
-        1px solid rgba(78,159,218,.16);
-    border-radius:13px;
-    padding:18px;
-    box-shadow:
-        0 7px 25px rgba(0,0,0,.18);
-    transition:.25s;
-}
+    setText("qtyRequired", formatNumber(totalRequired));
+    setText("totalScannedBox", formatNumber(totalScanned));
+    setText("qtyScanned", formatNumber(totalTodayScanned));
+    setText("pendingQty", formatNumber(totalPending));
 
-.kpi-card:hover{
-    transform:translateY(-3px);
-    border-color:
-        rgba(60,177,255,.4);
-}
+    const progress = totalRequired > 0
+        ? clamp((totalScanned / totalRequired) * 100, 0, 100)
+        : 0;
 
-.kpi-icon{
-    width:38px;
-    height:38px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:9px;
-    background:
-        rgba(40,150,255,.12);
-    color:#45baff;
-    font-size:17px;
-}
+    const pendingPercent = totalRequired > 0
+        ? clamp((totalPending / totalRequired) * 100, 0, 100)
+        : 0;
 
-.kpi-label{
-    margin-top:12px;
-    color:#63849d;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-}
+    setWidth("requiredBar", 100);
+    setWidth("scannedBar", progress);
+    setWidth("todayBar", totalRequired > 0
+        ? clamp((totalTodayScanned / totalRequired) * 100, 0, 100)
+        : 0);
+    setWidth("pendingBar", pendingPercent);
 
-.kpi-value{
-    margin-top:3px;
-    color:#e8f5ff;
-    font-size:29px;
-    font-weight:800;
+    setText("pendingBadgeKpi", totalPending > 0 ? "ACTION NEEDED" : "CLEARED");
 }
-
-.kpi-card.pending .kpi-icon{
-    background:rgba(255,62,77,.1);
-    color:#ff5360;
-}
-
-.kpi-card.pending .kpi-value{
-    color:#ff6670;
-}
-
-.kpi-card.scanned .kpi-icon{
-    background:rgba(32,225,125,.1);
-    color:#36e58a;
-}
-
-.kpi-card.scanned .kpi-value{
-    color:#48e999;
-}
-
-.kpi-card.today .kpi-icon{
-    background:rgba(255,194,59,.1);
-    color:#ffc43d;
-}
-
-.kpi-card.today .kpi-value{
-    color:#ffd05d;
-}
-
 
 /* =========================================================
-   CONTENT GRID
+   STATUS AND OVERALL PROGRESS
 ========================================================= */
 
-.content-grid{
-    display:grid;
-    grid-template-columns:
-        minmax(0,1.1fr)
-        minmax(0,.9fr);
-    gap:18px;
+function renderStatus(totalPending, totalRequired, totalScanned) {
+    const progress = totalRequired > 0
+        ? clamp((totalScanned / totalRequired) * 100, 0, 100)
+        : 0;
+
+    setText("progressPercent", progress.toFixed(1) + "%");
+    setWidth("progressFill", progress);
+    setText("progressScanned", formatNumber(totalScanned));
+    setText("progressRequired", formatNumber(totalRequired));
+
+    const banner = byId("statusBanner");
+    const iconBox = byId("statusIconBox");
+    const icon = byId("statusIcon");
+    const label = byId("statusLabel");
+    const message = byId("statusMessage");
+
+    banner.className =
+        "rounded-2xl border p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-5";
+
+    if (totalPending <= 0 && totalRequired > 0 && totalScanned >= totalRequired) {
+        banner.classList.add("border-emerald-500/30", "bg-gradient-to-r",
+            "from-emerald-950/40", "via-cardBg", "to-cardBg");
+
+        iconBox.className =
+            "w-12 h-12 shrink-0 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 text-xl";
+
+        icon.className = "fa-solid fa-circle-check";
+        label.className = "text-xs font-extrabold tracking-widest text-emerald-400 uppercase";
+        label.textContent = "Scanning Status: Completed";
+        message.textContent = "All required quantities are scanned. W2R progress is complete.";
+
+    } else if (totalPending > CRITICAL_PENDING) {
+        banner.classList.add("border-rose-500/30", "bg-gradient-to-r",
+            "from-rose-950/40", "via-cardBg", "to-cardBg");
+
+        iconBox.className =
+            "w-12 h-12 shrink-0 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-400 text-xl";
+
+        icon.className = "fa-solid fa-triangle-exclamation";
+        label.className = "text-xs font-extrabold tracking-widest text-rose-400 uppercase";
+        label.textContent = "Scanning Status: Critical";
+        message.textContent = formatNumber(totalPending) + " units remain pending. Immediate attention is required.";
+
+    } else if (totalPending > 0) {
+        banner.classList.add("border-amber-500/30", "bg-gradient-to-r",
+            "from-amber-950/30", "via-cardBg", "to-cardBg");
+
+        iconBox.className =
+            "w-12 h-12 shrink-0 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 text-xl";
+
+        icon.className = "fa-solid fa-clock";
+        label.className = "text-xs font-extrabold tracking-widest text-amber-400 uppercase";
+        label.textContent = "Scanning Status: In Progress";
+        message.textContent = formatNumber(totalPending) + " units remain pending. Continue scanning to complete W2R.";
+
+    } else {
+        banner.classList.add("border-sky-500/25", "bg-gradient-to-r",
+            "from-blue-950/40", "via-cardBg", "to-cardBg");
+
+        iconBox.className =
+            "w-12 h-12 shrink-0 rounded-xl bg-sky-500/10 border border-sky-500/25 flex items-center justify-center text-sky-400 text-xl";
+
+        icon.className = "fa-solid fa-circle-info";
+        label.className = "text-xs font-extrabold tracking-widest text-sky-400 uppercase";
+        label.textContent = "Scanning Status: Awaiting Data";
+        message.textContent = "Required quantity is zero or has not yet been configured.";
+    }
 }
 
+function setStatusConnectionError() {
+    byId("statusBanner").className =
+        "rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/30 via-cardBg to-cardBg p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-5";
 
-/* =========================================================
-   PANEL
-========================================================= */
+    byId("statusIconBox").className =
+        "w-12 h-12 shrink-0 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-400 text-xl";
 
-.panel{
-    background:
-        linear-gradient(
-            145deg,
-            #0d1d2e,
-            #091523
+    byId("statusIcon").className = "fa-solid fa-plug-circle-xmark";
+    byId("statusLabel").className = "text-xs font-extrabold tracking-widest text-rose-400 uppercase";
+    setText("statusLabel", "Scanning Status: Connection Error");
+    setText("statusMessage", lastGoodData
+        ? "Unable to refresh. Displaying the last successfully loaded figures."
+        : "Unable to connect to the monitoring service. The dashboard will retry automatically.");
+
+    if (lastGoodData) {
+        renderKPIs({
+            totalPending: safeNumber(lastGoodData.totalPending),
+            totalRequired: safeNumber(lastGoodData.totalRequired),
+            totalTodayScanned: safeNumber(lastGoodData.totalTodayScanned),
+            totalScanned: safeNumber(lastGoodData.totalScanned)
+        });
+
+        renderStatus(
+            safeNumber(lastGoodData.totalPending),
+            safeNumber(lastGoodData.totalRequired),
+            safeNumber(lastGoodData.totalScanned)
         );
-    border:
-        1px solid rgba(78,159,218,.15);
-    border-radius:14px;
-    overflow:hidden;
-    box-shadow:
-        0 7px 25px rgba(0,0,0,.18);
-}
 
-.panel-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:15px 17px;
-    border-bottom:
-        1px solid rgba(78,159,218,.12);
+        /*
+         * Restore the connection error label after displaying
+         * the last successful data and its normal status.
+         */
+        byId("statusLabel").className = "text-xs font-extrabold tracking-widest text-rose-400 uppercase";
+        setText("statusLabel", "Scanning Status: Connection Error");
+        setText("statusMessage", "Unable to refresh. Displaying the last successfully loaded figures.");
+        byId("statusIconBox").className =
+            "w-12 h-12 shrink-0 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-400 text-xl";
+        byId("statusIcon").className = "fa-solid fa-plug-circle-xmark";
+    }
 }
-
-.panel-title{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    font-size:14px;
-    font-weight:bold;
-}
-
-.panel-title i{
-    color:#38b8ff;
-}
-
-.panel-badge{
-    padding:4px 8px;
-    border-radius:5px;
-    background:
-        rgba(48,172,255,.1);
-    color:#51bfff;
-    font-size:10px;
-    font-weight:bold;
-}
-
 
 /* =========================================================
    TEAM PERFORMANCE
 ========================================================= */
 
-.team-list{
-    padding:12px 15px 15px;
-}
-
-.team-item{
-    margin-bottom:13px;
-}
-
-.team-top{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:6px;
-}
-
-.team-name{
-    color:#c1d9eb;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.team-count{
-    color:#54bdff;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.team-progress{
-    height:7px;
-    background:#162b3f;
-    border-radius:10px;
-    overflow:hidden;
-}
-
-.team-fill{
-    height:100%;
-    border-radius:10px;
-    background:
-        linear-gradient(
-            90deg,
-            #087eff,
-            #20c5ff
-        );
-}
-
-.team-empty{
-    padding:30px;
-    text-align:center;
-    color:#526f86;
-    font-size:12px;
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-========================================================= */
-
-.quick-actions{
-    display:grid;
-    grid-template-columns:
-        repeat(2,1fr);
-    gap:10px;
-    padding:15px;
-}
-
-.quick-btn{
-    padding:15px 10px;
-    background:
-        rgba(22,54,80,.45);
-    border:
-        1px solid rgba(65,150,210,.13);
-    border-radius:9px;
-    color:#a9c7dd;
-    cursor:pointer;
-    text-align:center;
-    transition:.2s;
-}
-
-.quick-btn i{
-    display:block;
-    color:#46b9ff;
-    font-size:20px;
-    margin-bottom:7px;
-}
-
-.quick-btn span{
-    font-size:11px;
-    font-weight:bold;
-}
-
-.quick-btn:hover{
-    background:
-        rgba(31,121,188,.18);
-    border-color:
-        rgba(70,185,255,.35);
-    color:white;
-}
-
-
-/* =========================================================
-   PENDING TABLE
-========================================================= */
-
-.table-panel{
-    margin-top:18px;
-}
-
-.table-wrapper{
-    max-height:390px;
-    overflow:auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-thead th{
-    position:sticky;
-    top:0;
-    z-index:5;
-    background:#0b1c2d;
-    color:#6fa4c8;
-    padding:11px 12px;
-    font-size:10px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    text-align:left;
-    border-bottom:
-        1px solid rgba(70,150,210,.18);
-}
-
-tbody td{
-    padding:12px;
-    font-size:12px;
-    color:#b7cee0;
-    border-bottom:
-        1px solid rgba(70,150,210,.08);
-}
-
-tbody tr:hover{
-    background:
-        rgba(42,139,211,.07);
-}
-
-.item-code{
-    color:#53baff;
-    font-weight:bold;
-}
-
-.pending-number{
-    font-weight:bold;
-}
-
-.team-tag{
-    display:inline-block;
-    padding:4px 7px;
-    border-radius:5px;
-    background:
-        rgba(72,157,216,.1);
-    color:#73c2ef;
-    font-size:10px;
-}
-
-.normal-status{
-    color:#45df8d;
-    font-size:10px;
-    font-weight:bold;
-}
-
-.critical-row{
-    background:
-        rgba(214,40,40,.12) !important;
-}
-
-.critical-row td{
-    color:#ff717a;
-}
-
-.critical-row .item-code{
-    color:#ff626c;
-}
-
-.critical-status{
-    color:#ff555f;
-    font-size:10px;
-    font-weight:bold;
-}
-
-.no-data{
-    text-align:center;
-    padding:35px !important;
-    color:#526f86 !important;
-}
-
-
-/* =========================================================
-   LAST UPDATE
-========================================================= */
-
-.bottom-info{
-    margin-top:14px;
-    display:flex;
-    justify-content:space-between;
-    color:#4e6d84;
-    font-size:10px;
-}
-
-.live-indicator{
-    display:flex;
-    align-items:center;
-    gap:6px;
-}
-
-.live-dot{
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:#20e27a;
-    box-shadow:
-        0 0 7px #20e27a;
-}
-
-
-/* =========================================================
-   SCROLLBAR
-========================================================= */
-
-::-webkit-scrollbar{
-    width:7px;
-    height:7px;
-}
-
-::-webkit-scrollbar-track{
-    background:#07111f;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#1b4566;
-    border-radius:10px;
-}
-
-::-webkit-scrollbar-thumb:hover{
-    background:#2876a7;
-}
-
-
-/* =========================================================
-   PENDING GRID
-========================================================= */
-
-.pending-grid{
-    grid-template-columns:
-        minmax(0,1.1fr)
-        minmax(0,.9fr);
-    gap:18px;
-    margin-top:18px;
-    align-items:start;
-}
-
-.pending-grid .table-panel{
-    margin-top:0;
-    min-width:0;
-}
-
-.pending-grid .table-wrapper{
-    max-height:390px;
-    overflow:auto;
-}
-
-.pending-grid table{
-    min-width:420px;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:1100px){
-
-    .kpi-grid{
-        grid-template-columns:
-            repeat(2,1fr);
-    }
-
-    .content-grid{
-        grid-template-columns:1fr;
-    }
-
-    .pending-grid{
-        grid-template-columns:
-            minmax(0,1fr);
-    }
-
-}
-
-@media(max-width:750px){
-
-    .sidebar{
-        width:65px;
-        padding:15px 8px;
-    }
-
-    .menu-title,
-    .menu li span,
-    .sidebar-footer{
-        display:none;
-    }
-
-    .menu li{
-        justify-content:center;
-        padding:14px 5px;
-    }
-
-    .main{
-        margin-left:65px;
-        padding:85px 12px 20px;
-    }
-
-    .brand-subtitle{
-        display:none;
-    }
-
-    .brand-title{
-        font-size:16px;
-    }
-
-    .system-status{
-        display:none;
-    }
-
-    .status-content{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .progress-area{
-        width:100%;
-        min-width:0;
-    }
-
-    .page-header{
-        align-items:flex-start;
-    }
-
-    .refresh-info{
-        display:none;
-    }
-
-}
-
-@media(max-width:500px){
-
-    .kpi-grid{
-        grid-template-columns:1fr;
-    }
-
-    .topbar{
-        padding:0 10px;
-    }
-
-    .user-box{
-        display:none;
-    }
-
-    .status-left{
-        gap:12px;
-    }
-
-    .status-circle{
-        width:65px;
-        height:65px;
-        font-size:22px;
-    }
-
-    .status-ready{
-        font-size:23px;
-    }
-
-    .page-title{
-        font-size:22px;
-    }
-
-    .pending-grid table{
-        min-width:360px;
-    }
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-
-<!-- =========================================================
-     LOADING SCREEN
-========================================================= -->
-
-<div id="loadingScreen">
-
-    <div class="loading-logo">
-        STARK QR
-    </div>
-
-    <div class="loading-subtitle">
-        W2R CONTROL CENTER
-    </div>
-
-    <div class="loading-bar-container">
-
-        <div
-            id="loadingBar"
-            class="loading-bar">
-        </div>
-
-    </div>
-
-    <div
-        id="loadingPercent"
-        class="loading-percent">
-        0%
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     DASHBOARD
-========================================================= -->
-
-<div id="dashboard">
-
-
-    <!-- =====================================================
-         TOP BAR
-    ====================================================== -->
-
-    <div class="topbar">
-
-
-        <div class="brand">
-
-            <div class="brand-icon">
-
-                <i class="fa fa-qrcode"></i>
-
-            </div>
-
-
-            <div>
-
-                <div class="brand-title">
-                    STARK QR
-                </div>
-
-                <div class="brand-subtitle">
-                    W2R CONTROL SYSTEM
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="top-right">
-
-
-            <div class="system-status">
-
-                <span class="status-dot"></span>
-
-                SYSTEM ONLINE
-
-            </div>
-
-
-            <div
-                class="user-box"
-                id="userBox">
-            </div>
-
-
-            <div id="headerQR"></div>
-
-
-            <button
-                class="logout-btn"
-                onclick="logout()">
-
-                <i class="fa fa-sign-out-alt"></i>
-
-                Logout
-
-            </button>
-
-
-        </div>
-
-
-    </div>
-
-
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
-
-    <div class="sidebar">
-
-
-        <div class="menu-title">
-            OPERATIONS
-        </div>
-
-
-        <ul class="menu">
-
-
-            <!-- DASHBOARD -->
-
-            <li
-                class="active"
-                onclick="go('index.html')">
-
-                <i class="fa fa-chart-line"></i>
-
-                <span>
-                    Dashboard
-                </span>
-
-            </li>
-
-
-            <!-- S2W QR -->
-
-            <li
-                onclick="go('S2W%20QR.html')">
-
-                <i class="fa fa-qrcode"></i>
-
-                <span>
-                    S2W QR
-                </span>
-
-            </li>
-
-
-            <!-- MIT -->
-
-            <li
-                onclick="go('mit.html')">
-
-                <i class="fa fa-print"></i>
-
-                <span>
-                    MIT
-                </span>
-
-            </li>
-
-
-            <!-- SERIAL -->
-
-            <li
-                onclick="go('serial.html')">
-
-                <i class="fa fa-box"></i>
-
-                <span>
-                    Serial
-                </span>
-
-            </li>
-
-
-            <!-- NON-SERIAL -->
-
-            <li
-                onclick="go('nonserial.html')">
-
-                <i class="fa fa-cubes"></i>
-
-                <span>
-                    Non-Serial
-                </span>
-
-            </li>
-
-
-            <!-- PDF TO EXCEL -->
-
-            <li
-                onclick="go('pdfexcel.html')">
-
-                <i class="fa fa-file-excel"></i>
-
-                <span>
-                    PDF to Excel
-                </span>
-
-            </li>
-
-
-        </ul>
-
-
-        <div class="sidebar-footer">
-
-            STARK QR v1.0
-
-            <br>
-
-            W2R MONITORING
-
-        </div>
-
-
-    </div>
-
-
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-
-    <main class="main">
-
-
-        <!-- PAGE HEADER -->
-
-        <div class="page-header">
-
-
-            <div>
-
-                <div class="page-title">
-
-                    W2R
-                    <span>
-                        Dashboard
-                    </span>
-
-                </div>
-
-                <div class="page-description">
-
-                    Warehouse to Repair center scanning
-
-                </div>
-
-            </div>
-
-
-            <div class="refresh-info">
-
-                AUTO REFRESH
-
-                <br>
-
-                Every
-                <strong>
-                    30 seconds
-                </strong>
-
-                <br>
-
-                Last update:
-                <strong id="lastUpdate">
-                    --
-                </strong>
-
-            </div>
-
-
-        </div>
-
-
-        <!-- =================================================
-             STATUS PANEL
-        ================================================== -->
-
-        <section class="status-panel">
-
-
-            <div class="status-content">
-
-
-                <div class="status-left">
-
-
-                    <div class="status-circle">
-
-                        <i class="fa fa-check"></i>
-
-                    </div>
-
-
-                    <div>
-
-                        <div class="status-label">
-                            SCANNING SYSTEM STATUS
-                        </div>
-
-                        <div
-                            id="systemStatus"
-                            class="status-ready">
-
-                            READY
-
-                        </div>
-
-                        <div class="status-message">
-
-                            W2R operations are being monitored in real time.
-
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-
-                <div class="progress-area">
-
-
-                    <div class="progress-top">
-
-                        <span>
-                            OVERALL SCANNING PROGRESS
-                        </span>
-
-                        <span
-                            id="progressPercent"
-                            class="progress-percent">
-
-                            0%
-
-                        </span>
-
-                    </div>
-
-
-                    <div class="progress-bar">
-
-                        <div
-                            id="progressFill"
-                            class="progress-fill">
-                        </div>
-
-                    </div>
-
-
-                    <div class="progress-numbers">
-
-                        <span>
-
-                            Scanned:
-                            <strong id="progressScanned">
-                                0
-                            </strong>
-
-                        </span>
-
-
-                        <span>
-
-                            Required:
-                            <strong id="progressRequired">
-                                0
-                            </strong>
-
-                        </span>
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
-        </section>
-
-
-        <!-- =================================================
-             KPI CARDS
-        ================================================== -->
-
-        <div class="kpi-grid">
-
-
-            <!-- REQUIRED -->
-
-            <div class="kpi-card">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-list-check"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Quantity Required
-
-                </div>
-
-                <div
-                    id="qtyRequired"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
-            </div>
-
-
-            <!-- SCANNED -->
-
-            <div class="kpi-card scanned">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-circle-check"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Total Scanned
-
-                </div>
-
-                <div
-                    id="totalScannedBox"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
-            </div>
-
-
-            <!-- TODAY -->
-
-            <div class="kpi-card today">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-calendar-day"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Today Scanned
-
-                </div>
-
-                <div
-                    id="qtyScanned"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
-            </div>
-
-
-            <!-- PENDING -->
-
-            <div class="kpi-card pending">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-triangle-exclamation"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Total Pending
-
-                </div>
-
-                <div
-                    id="pendingQty"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-        <!-- =================================================
-             TWO COLUMN CONTENT
-        ================================================== -->
-
-        <div class="content-grid">
-
-
-            <!-- TEAM PERFORMANCE -->
-
-            <section class="panel">
-
-
-                <div class="panel-header">
-
-                    <div class="panel-title">
-
-                        <i class="fa fa-users"></i>
-
-                        Team Performance
-
-                    </div>
-
-                    <div class="panel-badge">
-
-                        LIVE
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    id="teamBox"
-                    class="team-list">
-
-                    <div class="team-empty">
-
-                        Loading team data...
-
-                    </div>
-
-                </div>
-
-
-            </section>
-
-
-            <!-- QUICK OPERATIONS -->
-
-            <section class="panel">
-
-
-                <div class="panel-header">
-
-                    <div class="panel-title">
-
-                        <i class="fa fa-bolt"></i>
-
-                        Quick Operations
-
-                    </div>
-
-                </div>
-
-
-                <div class="quick-actions">
-
-
-                    <!-- S2W QR -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('S2W%20QR.html')">
-
-                        <i class="fa fa-qrcode"></i>
-
-                        <span>
-                            S2W QR
-                        </span>
-
-                    </div>
-
-
-                    <!-- MIT -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('mit.html')">
-
-                        <i class="fa fa-print"></i>
-
-                        <span>
-                            MIT
-                        </span>
-
-                    </div>
-
-
-                    <!-- SERIAL -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('serial.html')">
-
-                        <i class="fa fa-barcode"></i>
-
-                        <span>
-                            SERIAL
-                        </span>
-
-                    </div>
-
-
-                    <!-- NON-SERIAL -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('nonserial.html')">
-
-                        <i class="fa fa-qrcode"></i>
-
-                        <span>
-                            NON-SERIAL
-                        </span>
-
-                    </div>
-
-
-                </div>
-
-
-            </section>
-
-
-        </div>
-
-
-        <!-- =================================================
-             ITEM-WISE AND PARTNER-WISE PENDING
-        ================================================== -->
-
-        <div class="content-grid pending-grid">
-
-
-            <!-- ITEM-WISE PENDING -->
-
-            <section class="panel table-panel">
-
-
-                <div class="panel-header">
-
-                    <div class="panel-title">
-
-                        <i class="fa fa-boxes-stacked"></i>
-
-                        Item-wise Pending
-
-                    </div>
-
-                    <div
-                        id="pendingBadge"
-                        class="panel-badge">
-
-                        0 ITEMS
-
-                    </div>
-
-                </div>
-
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Item Code
-                                </th>
-
-                                <th>
-                                    Pending Qty
-                                </th>
-
-                                <th>
-                                    Partner
-                                </th>
-
-                                <th>
-                                    Team
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="pendingTable">
-
-                            <tr>
-
-                                <td
-                                    colspan="5"
-                                    class="no-data">
-
-                                    Loading pending items...
-
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-            </section>
-
-
-            <!-- PARTNER-WISE PENDING -->
-
-            <section class="panel table-panel">
-
-
-                <div class="panel-header">
-
-                    <div class="panel-title">
-
-                        <i class="fa fa-handshake"></i>
-
-                        Partner-wise Pending
-
-                    </div>
-
-                    <div
-                        id="partnerPendingBadge"
-                        class="panel-badge">
-
-                        0 PARTNERS
-
-                    </div>
-
-                </div>
-
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Partner
-                                </th>
-
-                                <th>
-                                    Pending Qty
-                                </th>
-
-                                <th>
-                                    Items
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="partnerPendingTable">
-
-                            <tr>
-
-                                <td
-                                    colspan="3"
-                                    class="no-data">
-
-                                    Loading partner data...
-
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-            </section>
-
-
-        </div>
-
-
-        <!-- =================================================
-             BOTTOM INFO
-        ================================================== -->
-
-        <div class="bottom-info">
-
-
-            <div class="live-indicator">
-
-                <span class="live-dot"></span>
-
-                LIVE DATA CONNECTION
-
-            </div>
-
-
-            <div>
-
-                STARK QR W2R MONITOR
-
-            </div>
-
-
-        </div>
-
-
-    </main>
-
-
-</div>
-
-
-<script>
-
-/* =========================================================
-   LOGIN + LOADING
-========================================================= */
-
-(function(){
-
-    const loadingScreen =
-        document.getElementById("loadingScreen");
-
-    const loadingBar =
-        document.getElementById("loadingBar");
-
-    const loadingPercent =
-        document.getElementById("loadingPercent");
-
-    const dashboard =
-        document.getElementById("dashboard");
-
-    const user =
-        sessionStorage.getItem("wms_user");
-
-    let percent = 0;
-
-    const loadingTimer =
-        setInterval(function(){
-
-            percent += 2;
-
-            if(percent > 100){
-                percent = 100;
-            }
-
-            loadingBar.style.width =
-                percent + "%";
-
-            loadingPercent.innerText =
-                percent + "%";
-
-            if(percent >= 100){
-
-                clearInterval(loadingTimer);
-
-                setTimeout(function(){
-
-                    if(!user){
-
-                        window.location.replace(
-                            "login.html"
-                        );
-
-                        return;
-
-                    }
-
-                    loadingScreen.style.display =
-                        "none";
-
-                    dashboard.style.display =
-                        "block";
-
-                    initializeDashboard(user);
-
-                },300);
-
-            }
-
-        },25);
-
-})();
-
-
-/* =========================================================
-   INITIALIZE DASHBOARD
-========================================================= */
-
-function initializeDashboard(user){
-
-    document.getElementById("userBox").innerHTML =
-
-        `<i class="fa fa-user"></i>
-         ${escapeHTML(user)}`;
-
-
-    /*
-     * Header QR
-     */
-
-    const headerQR =
-        document.getElementById("headerQR");
-
-    headerQR.innerHTML = "";
-
-    try{
-
-        new QRCode(
-            headerQR,
-            {
-                text:"OWNED BY SHARATH",
-                width:40,
-                height:40
-            }
-        );
-
-    }
-    catch(error){
-
-        console.log(
-            "QR error:",
-            error
-        );
-
-    }
-
-
-    /*
-     * First dashboard load
-     */
-
-    loadDashboard();
-
-
-    /*
-     * Automatic refresh
-     */
-
-    setInterval(
-        loadDashboard,
-        30000
-    );
-
-}
-
-
-/* =========================================================
-   HTML SECURITY
-========================================================= */
-
-function escapeHTML(value){
-
-    return String(value ?? "")
-
-        .replace(/&/g,"&amp;")
-
-        .replace(/</g,"&lt;")
-
-        .replace(/>/g,"&gt;")
-
-        .replace(/"/g,"&quot;")
-
-        .replace(/'/g,"&#039;");
-
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function go(page){
-
-    window.location.href = page;
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-function logout(){
-
-    sessionStorage.removeItem(
-        "wms_user"
-    );
-
-    window.location.replace(
-        "login.html"
-    );
-
-}
-
-
-/* =========================================================
-   NUMBER FORMAT
-========================================================= */
-
-function formatNumber(value){
-
-    const number =
-        Number(value) || 0;
-
-    return number.toLocaleString(
-        "en-IN"
-    );
-
-}
-
-
-/* =========================================================
-   LOAD DASHBOARD
-========================================================= */
-
-async function loadDashboard(){
-
-    try{
-
-        /*
-         * Google Apps Script endpoint
-         */
-
-        const url =
-            "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
-            Date.now();
-
-
-        const response =
-            await fetch(url);
-
-
-        if(!response.ok){
-
-            throw new Error(
-                "HTTP Error " +
-                response.status
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        /* =================================================
-           VALUES
-        ================================================== */
-
-        const totalPending =
-            Number(data.totalPending) || 0;
-
-        const totalRequired =
-            Number(data.totalRequired) || 0;
-
-        const totalTodayScanned =
-            Number(data.totalTodayScanned) || 0;
-
-        const totalScanned =
-            Number(data.totalScanned) || 0;
-
-
-        /* =================================================
-           KPI
-        ================================================== */
-
-        document.getElementById(
-            "pendingQty"
-        ).innerText =
-            formatNumber(totalPending);
-
-
-        document.getElementById(
-            "qtyRequired"
-        ).innerText =
-            formatNumber(totalRequired);
-
-
-        document.getElementById(
-            "qtyScanned"
-        ).innerText =
-            formatNumber(totalTodayScanned);
-
-
-        document.getElementById(
-            "totalScannedBox"
-        ).innerText =
-            formatNumber(totalScanned);
-
-
-        /* =================================================
-           PROGRESS
-        ================================================== */
-
-        let progress = 0;
-
-        if(totalRequired > 0){
-
-            progress =
-                (totalScanned /
-                totalRequired) * 100;
-
-        }
-
-        progress =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    progress
-                )
-            );
-
-
-        document.getElementById(
-            "progressFill"
-        ).style.width =
-            progress.toFixed(1) + "%";
-
-
-        document.getElementById(
-            "progressPercent"
-        ).innerText =
-            progress.toFixed(1) + "%";
-
-
-        document.getElementById(
-            "progressScanned"
-        ).innerText =
-            formatNumber(totalScanned);
-
-
-        document.getElementById(
-            "progressRequired"
-        ).innerText =
-            formatNumber(totalRequired);
-
-
-        /* =================================================
-           SYSTEM STATUS
-        ================================================== */
-
-        const statusElement =
-            document.getElementById(
-                "systemStatus"
-            );
-
-
-        if(totalPending <= 0){
-
-            statusElement.innerText =
-                "COMPLETED";
-
-            statusElement.style.color =
-                "#43e890";
-
-        }
-        else if(totalPending > 1000){
-
-            statusElement.innerText =
-                "CRITICAL";
-
-            statusElement.style.color =
-                "#ff5b66";
-
-        }
-        else{
-
-            statusElement.innerText =
-                "READY";
-
-            statusElement.style.color =
-                "#43e890";
-
-        }
-
-
-        /* =================================================
-           TEAM DATA
-        ================================================== */
-
-        renderTeams(
-            data.teamWise || {},
-            totalScanned
-        );
-
-
-        /* =================================================
-           PENDING ITEMS
-        ================================================== */
-
-        renderPendingItems(
-            data.itemList || []
-        );
-
-
-        /* =================================================
-           LAST UPDATE
-        ================================================== */
-
-        document.getElementById(
-            "lastUpdate"
-        ).innerText =
-            new Date().toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit"
-                }
-            );
-
-    }
-    catch(error){
-
-        console.error(
-            "Dashboard loading error:",
-            error
-        );
-
-
-        document.getElementById(
-            "systemStatus"
-        ).innerText =
-            "CONNECTION ERROR";
-
-
-        document.getElementById(
-            "systemStatus"
-        ).style.color =
-            "#ff5b66";
-
-
-        document.getElementById(
-            "lastUpdate"
-        ).innerText =
-            "Connection failed";
-
-    }
-
-}
-
-
-/* =========================================================
-   TEAM RENDER
-========================================================= */
-
-function renderTeams(
-    teams,
-    totalScanned
-){
-
-    const teamBox =
-        document.getElementById(
-            "teamBox"
-        );
-
-
-    const teamNames =
-        Object.keys(teams);
-
-
-    if(teamNames.length === 0){
-
-        teamBox.innerHTML = `
-
-            <div class="team-empty">
-
-                No team data available.
-
-            </div>
-
-        `;
-
+function renderTeams(teams, totalScanned) {
+    const box = byId("teamBox");
+
+    if (!teams || typeof teams !== "object" || Array.isArray(teams)) {
+        box.innerHTML = '<div class="empty-state">No team data available.</div>';
         return;
-
     }
 
+    const entries = Object.entries(teams)
+        .map(([name, value]) => [name, Math.max(0, safeNumber(value))])
+        .sort((a, b) => b[1] - a[1]);
 
-    let html = "";
+    if (entries.length === 0) {
+        box.innerHTML = '<div class="empty-state">No team data available.</div>';
+        return;
+    }
 
+    const denominator = totalScanned > 0
+        ? totalScanned
+        : entries.reduce((sum, entry) => sum + entry[1], 0);
 
-    teamNames.forEach(function(team){
+    box.innerHTML = entries.map(([name, count]) => {
+        const percentage = denominator > 0
+            ? clamp((count / denominator) * 100, 0, 100)
+            : 0;
 
-        const count =
-            Number(teams[team]) || 0;
-
-
-        let percentage = 0;
-
-
-        if(totalScanned > 0){
-
-            percentage =
-                (count /
-                totalScanned) * 100;
-
-        }
-
-
-        percentage =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    percentage
-                )
-            );
-
-
-        html += `
-
+        return `
             <div class="team-item">
-
-                <div class="team-top">
-
-                    <span class="team-name">
-
-                        ${escapeHTML(team)}
-
+                <div class="flex items-center justify-between gap-3 mb-2">
+                    <span class="text-xs font-semibold text-slate-200 break-words min-w-0">
+                        ${escapeHTML(name)}
                     </span>
-
-                    <span class="team-count">
-
-                        ${formatNumber(count)}
-
-                    </span>
-
-                </div>
-
-
-                <div class="team-progress">
-
-                    <div
-                        class="team-fill"
-                        style="
-                            width:${percentage.toFixed(1)}%;
-                        ">
-
+                    <div class="flex items-center gap-3 shrink-0">
+                        <span class="text-[10px] text-slate-500">${percentage.toFixed(1)}%</span>
+                        <span class="text-xs font-extrabold text-sky-400 tabular-nums">
+                            ${formatNumber(count)}
+                        </span>
                     </div>
-
                 </div>
-
+                <div class="progress-track border border-borderSubtle">
+                    <div class="progress-fill bg-gradient-to-r from-blue-600 to-cyan-400"
+                         style="width:${percentage.toFixed(2)}%"></div>
+                </div>
             </div>
-
         `;
-
-    });
-
-
-    teamBox.innerHTML =
-        html;
-
+    }).join("");
 }
-
 
 /* =========================================================
    ITEM-WISE AND PARTNER-WISE PENDING
 ========================================================= */
 
-function renderPendingItems(items){
+function renderPendingItems(items) {
+    const table = byId("pendingTable");
+    const badge = byId("pendingBadge");
+    const partnerTable = byId("partnerPendingTable");
+    const partnerBadge = byId("partnerPendingBadge");
 
-    const table =
-        document.getElementById(
-            "pendingTable"
-        );
+    const sortedItems = normalizeItems(items);
 
-    const badge =
-        document.getElementById(
-            "pendingBadge"
-        );
+    setText("pendingBadge", sortedItems.length + " ITEMS");
 
-    const partnerTable =
-        document.getElementById(
-            "partnerPendingTable"
-        );
-
-    const partnerBadge =
-        document.getElementById(
-            "partnerPendingBadge"
-        );
-
-
-    if(!Array.isArray(items)){
-
-        items = [];
-
-    }
-
-
-    /* =====================================================
-       GET PARTNER
-    ===================================================== */
-
-    function getPartner(row){
-
-        const value =
-            row.partner ??
-            row.partnerName ??
-            row.partner_name ??
-            row.Partner ??
-            row.PARTNER ??
-            row["Partner Name"] ??
-            row["PARTNER NAME"];
-
-        return String(
-            value ?? ""
-        ).trim() || "Unassigned";
-
-    }
-
-
-    /* =====================================================
-       GET ITEM
-    ===================================================== */
-
-    function getItem(row){
-
-        return row.item ??
-            row.itemCode ??
-            row.item_code ??
-            row.Item ??
-            row["Item Code"] ??
-            row["ITEM CODE"] ??
-            "-";
-
-    }
-
-
-    /* =====================================================
-       GET PENDING
-    ===================================================== */
-
-    function getPending(row){
-
-        const value =
-            row.pending ??
-            row.pendingQty ??
-            row.pending_qty ??
-            row["Pending Qty"] ??
-            row["PENDING QTY"] ??
-            0;
-
-        return Math.max(
-            0,
-            Number(value) || 0
-        );
-
-    }
-
-
-    /* =====================================================
-       SORT ITEMS
-    ===================================================== */
-
-    const sortedItems =
-        [...items].sort(
-            (a,b) =>
-                getPending(b) -
-                getPending(a)
-        );
-
-
-    badge.textContent =
-        `${sortedItems.length} ITEMS`;
-
-
-    /* =====================================================
-       ITEM-WISE TABLE
-    ===================================================== */
-
-    if(sortedItems.length === 0){
-
+    if (sortedItems.length === 0) {
         table.innerHTML = `
-
             <tr>
-
-                <td
-                    colspan="5"
-                    class="no-data">
-
+                <td colspan="5" class="empty-state">
+                    <i class="fa-solid fa-circle-check text-emerald-400 text-xl block mb-3"></i>
                     No pending items available
-
                 </td>
-
             </tr>
-
         `;
-
-    }
-    else{
-
-        table.innerHTML =
-            sortedItems.map(
-                row => {
-
-                    const pending =
-                        getPending(row);
-
-                    const critical =
-                        pending > 1000;
-
-                    const partner =
-                        getPartner(row);
-
-                    const item =
-                        getItem(row);
-
-                    const team =
-                        row.team ??
-                        row.Team ??
-                        "-";
-
-
-                    return `
-
-                        <tr
-                            class="${
-                                critical
-                                    ? "critical-row"
-                                    : ""
-                            }">
-
-                            <td>
-
-                                <span class="item-code">
-
-                                    ${escapeHTML(item)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span class="pending-number">
-
-                                    ${formatNumber(pending)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span class="team-tag">
-
-                                    ${escapeHTML(partner)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span class="team-tag">
-
-                                    ${escapeHTML(team)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="${
-                                        critical
-                                            ? "critical-status"
-                                            : "normal-status"
-                                    }">
-
-                                    ${
-                                        critical
-
-                                        ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
-
-                                        : '<i class="fa fa-circle-check"></i> NORMAL'
-                                    }
-
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
-            ).join("");
-
-    }
-
-
-    /* =====================================================
-       GROUP BY PARTNER
-    ===================================================== */
-
-    const partners = {};
-
-
-    sortedItems.forEach(
-        row => {
-
-            const partner =
-                getPartner(row);
-
-            const pending =
-                getPending(row);
-
-
-            if(!partners[partner]){
-
-                partners[partner] = {
-
-                    pending:0,
-
-                    items:0
-
-                };
-
-            }
-
-
-            partners[partner].pending +=
-                pending;
-
-            partners[partner].items +=
-                1;
-
-        }
-    );
-
-
-    const sortedPartners =
-        Object.entries(
-            partners
-        ).sort(
-            (a,b) =>
-                b[1].pending -
-                a[1].pending
-        );
-
-
-    partnerBadge.textContent =
-        `${sortedPartners.length} PARTNERS`;
-
-
-    /* =====================================================
-       PARTNER TABLE
-    ===================================================== */
-
-    if(sortedPartners.length === 0){
-
-        partnerTable.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="3"
-                    class="no-data">
-
-                    No partner pending data available
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    partnerTable.innerHTML =
-        sortedPartners.map(
-            ([partner,data]) => `
-
-                <tr>
-
+    } else {
+        table.innerHTML = sortedItems.map(row => {
+            const critical = row.pending > CRITICAL_PENDING;
+
+            return `
+                <tr class="${critical ? "critical-row" : ""}">
                     <td>
-
-                        <span class="item-code">
-
-                            ${escapeHTML(partner)}
-
+                        <span class="font-mono font-bold ${critical ? "text-rose-300" : "text-sky-400"}">
+                            ${escapeHTML(row.item)}
                         </span>
-
                     </td>
-
-
                     <td>
-
-                        <span class="pending-number">
-
-                            ${formatNumber(
-                                data.pending
-                            )}
-
+                        <span class="font-bold tabular-nums">
+                            ${formatNumber(row.pending)}
                         </span>
-
                     </td>
-
-
                     <td>
-
-                        ${formatNumber(
-                            data.items
-                        )}
-
+                        <span class="inline-flex rounded-md bg-slate-700/40 px-2 py-1 text-[10px] text-slate-300">
+                            ${escapeHTML(row.partner)}
+                        </span>
                     </td>
-
+                    <td>
+                        <span class="inline-flex rounded-md bg-blue-500/10 px-2 py-1 text-[10px] text-blue-300">
+                            ${escapeHTML(row.team)}
+                        </span>
+                    </td>
+                    <td>
+                        ${critical
+                            ? `<span class="tag bg-rose-500/10 text-rose-400"><i class="fa-solid fa-triangle-exclamation"></i> CRITICAL</span>`
+                            : `<span class="tag bg-emerald-500/10 text-emerald-400"><i class="fa-solid fa-circle-check"></i> NORMAL</span>`
+                        }
+                    </td>
                 </tr>
+            `;
+        }).join("");
+    }
 
-            `
-        ).join("");
+    /* Group by partner */
+    const partners = new Map();
 
+    sortedItems.forEach(row => {
+        if (!partners.has(row.partner)) {
+            partners.set(row.partner, {
+                pending: 0,
+                items: 0
+            });
+        }
+
+        const partner = partners.get(row.partner);
+        partner.pending += row.pending;
+        partner.items += 1;
+    });
+
+    const sortedPartners = Array.from(partners.entries())
+        .sort((a, b) => b[1].pending - a[1].pending);
+
+    setText("partnerPendingBadge", sortedPartners.length + " PARTNERS");
+
+    if (sortedPartners.length === 0) {
+        partnerTable.innerHTML = `
+            <tr>
+                <td colspan="3" class="empty-state">
+                    No partner pending data available
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    partnerTable.innerHTML = sortedPartners.map(([partner, info]) => {
+        const critical = info.pending > CRITICAL_PENDING;
+
+        return `
+            <tr class="${critical ? "critical-row" : ""}">
+                <td>
+                    <span class="font-semibold ${critical ? "text-rose-300" : "text-slate-200"}">
+                        ${escapeHTML(partner)}
+                    </span>
+                </td>
+                <td>
+                    <span class="font-extrabold tabular-nums ${info.pending > 0 ? "text-amber-400" : "text-emerald-400"}">
+                        ${formatNumber(info.pending)}
+                    </span>
+                </td>
+                <td>
+                    <span class="text-slate-400">${formatNumber(info.items)}</span>
+                </td>
+            </tr>
+        `;
+    }).join("");
 }
 
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", runLoadingScreen);
+
+/* Stop automatic refresh when the page is being unloaded. */
+window.addEventListener("pagehide", () => {
+    if (refreshTimer) clearInterval(refreshTimer);
+    clearTimeout(toastTimer);
+});
 </script>
 
-
 </body>
-
 </html>
