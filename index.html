@@ -1611,7 +1611,22 @@ function renderPendingItems(items){
     ).join("");
 
 }
+function openScanner() {
 
+    const user = sessionStorage.getItem("wms_user") || "";
+
+    if (!user) {
+        alert("Please login first.");
+        return;
+    }
+
+    const scannerURL =
+        "PASTE_YOUR_CURRENT_WEB_APP_URL_HERE?page=scanner&user=" +
+        encodeURIComponent(user);
+
+    window.open(scannerURL, "_blank");
+
+}
 </script>
 
 </body>
