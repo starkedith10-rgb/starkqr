@@ -1,27 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>STARK QR - W2R Control Center</title>
 
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-rel="stylesheet"
->
-
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-
-/* =========================================================
-   GLOBAL
-========================================================= */
-
 *{
     margin:0;
     padding:0;
@@ -29,35 +17,19 @@ rel="stylesheet"
     font-family:Arial,Helvetica,sans-serif;
 }
 
-html,
-body{
+html,body{
     width:100%;
     min-height:100%;
     background:#07111f;
     color:#eaf4ff;
 }
 
-body{
-    overflow-x:hidden;
-}
-
-
-/* =========================================================
-   LOADING SCREEN
-========================================================= */
+body{overflow-x:hidden;}
 
 #loadingScreen{
     position:fixed;
     inset:0;
-    width:100%;
-    height:100%;
-    background:
-        radial-gradient(
-            circle at center,
-            #12345a 0%,
-            #07111f 45%,
-            #020812 100%
-        );
+    background:radial-gradient(circle at center,#12345a 0%,#07111f 45%,#020812 100%);
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -70,10 +42,7 @@ body{
     font-weight:900;
     letter-spacing:6px;
     color:#52b7ff;
-    text-shadow:
-        0 0 10px #168cff,
-        0 0 25px rgba(22,140,255,.7),
-        3px 3px #003b69;
+    text-shadow:0 0 10px #168cff,0 0 25px rgba(22,140,255,.7);
 }
 
 .loading-subtitle{
@@ -90,21 +59,12 @@ body{
     background:#17283b;
     border-radius:20px;
     overflow:hidden;
-    box-shadow:
-        0 0 10px rgba(0,150,255,.2);
 }
 
 .loading-bar{
     width:0%;
     height:100%;
-    background:
-        linear-gradient(
-            90deg,
-            #006eff,
-            #00c6ff
-        );
-    box-shadow:
-        0 0 12px #00aaff;
+    background:linear-gradient(90deg,#006eff,#00c6ff);
     transition:width .08s linear;
 }
 
@@ -114,27 +74,11 @@ body{
     font-size:13px;
 }
 
-
-/* =========================================================
-   MAIN APP
-========================================================= */
-
 #dashboard{
     display:none;
     min-height:100vh;
-    background:
-        radial-gradient(
-            circle at 75% 20%,
-            rgba(0,119,255,.08),
-            transparent 30%
-        ),
-        #07111f;
+    background:radial-gradient(circle at 75% 20%,rgba(0,119,255,.08),transparent 30%),#07111f;
 }
-
-
-/* =========================================================
-   TOP BAR
-========================================================= */
 
 .topbar{
     height:68px;
@@ -147,12 +91,9 @@ body{
     align-items:center;
     justify-content:space-between;
     padding:0 22px;
-    background:
-        rgba(7,17,31,.95);
-    border-bottom:
-        1px solid rgba(70,170,255,.25);
-    box-shadow:
-        0 4px 25px rgba(0,0,0,.35);
+    background:rgba(7,17,31,.95);
+    border-bottom:1px solid rgba(70,170,255,.25);
+    box-shadow:0 4px 25px rgba(0,0,0,.35);
     backdrop-filter:blur(10px);
 }
 
@@ -169,16 +110,9 @@ body{
     display:flex;
     align-items:center;
     justify-content:center;
-    background:
-        linear-gradient(
-            135deg,
-            #087eff,
-            #00b8ff
-        );
+    background:linear-gradient(135deg,#087eff,#00b8ff);
     color:white;
     font-size:20px;
-    box-shadow:
-        0 0 18px rgba(0,150,255,.45);
 }
 
 .brand-title{
@@ -200,9 +134,6 @@ body{
     gap:18px;
 }
 
-
-/* SYSTEM STATUS */
-
 .system-status{
     display:flex;
     align-items:center;
@@ -217,8 +148,7 @@ body{
     height:8px;
     background:#21e67a;
     border-radius:50%;
-    box-shadow:
-        0 0 10px #21e67a;
+    box-shadow:0 0 10px #21e67a;
 }
 
 .user-box{
@@ -229,9 +159,7 @@ body{
     font-size:13px;
 }
 
-.user-box i{
-    color:#43b8ff;
-}
+.user-box i{color:#43b8ff;}
 
 .logout-btn{
     border:none;
@@ -241,19 +169,26 @@ body{
     border-radius:7px;
     cursor:pointer;
     font-weight:bold;
-    transition:.2s;
 }
 
-.logout-btn:hover{
-    background:#e12638;
-    box-shadow:
-        0 0 12px rgba(225,38,56,.4);
+.logout-btn:hover{background:#e12638;}
+
+#headerQR{
+    width:40px;
+    height:40px;
+    background:white;
+    padding:2px;
+    border-radius:4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
+#headerQR img,
+#headerQR canvas{
+    width:36px!important;
+    height:36px!important;
+}
 
 .sidebar{
     position:fixed;
@@ -261,14 +196,8 @@ body{
     top:68px;
     bottom:0;
     width:220px;
-    background:
-        linear-gradient(
-            180deg,
-            #0b1a2b,
-            #07111f
-        );
-    border-right:
-        1px solid rgba(70,170,255,.18);
+    background:linear-gradient(180deg,#0b1a2b,#07111f);
+    border-right:1px solid rgba(70,170,255,.18);
     padding:18px 12px;
     z-index:900;
 }
@@ -281,9 +210,7 @@ body{
     padding:8px 12px 12px;
 }
 
-.menu{
-    list-style:none;
-}
+.menu{list-style:none;}
 
 .menu li{
     margin-bottom:6px;
@@ -305,22 +232,15 @@ body{
 }
 
 .menu li:hover{
-    background:
-        rgba(32,126,219,.16);
+    background:rgba(32,126,219,.16);
     color:white;
     transform:translateX(3px);
 }
 
 .menu li.active{
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,126,255,.28),
-            rgba(0,126,255,.05)
-        );
+    background:linear-gradient(90deg,rgba(0,126,255,.28),rgba(0,126,255,.05));
     color:white;
-    border-left:
-        3px solid #28aaff;
+    border-left:3px solid #28aaff;
 }
 
 .sidebar-footer{
@@ -329,8 +249,7 @@ body{
     left:15px;
     right:15px;
     padding:12px;
-    border:
-        1px solid rgba(75,160,220,.15);
+    border:1px solid rgba(75,160,220,.15);
     border-radius:9px;
     background:rgba(20,50,75,.3);
     text-align:center;
@@ -338,24 +257,11 @@ body{
     color:#557894;
 }
 
-
-/* =========================================================
-   MAIN
-========================================================= */
-
 .main{
     margin-left:220px;
-    padding:
-        92px
-        24px
-        30px;
+    padding:92px 24px 30px;
     min-height:100vh;
 }
-
-
-/* =========================================================
-   PAGE HEADER
-========================================================= */
 
 .page-header{
     display:flex;
@@ -370,9 +276,7 @@ body{
     letter-spacing:.5px;
 }
 
-.page-title span{
-    color:#32b8ff;
-}
+.page-title span{color:#32b8ff;}
 
 .page-description{
     margin-top:5px;
@@ -386,14 +290,7 @@ body{
     font-size:11px;
 }
 
-.refresh-info strong{
-    color:#72bdf0;
-}
-
-
-/* =========================================================
-   STATUS HERO
-========================================================= */
+.refresh-info strong{color:#72bdf0;}
 
 .status-panel{
     position:relative;
@@ -402,41 +299,9 @@ body{
     border-radius:16px;
     padding:25px;
     margin-bottom:20px;
-    background:
-        linear-gradient(
-            120deg,
-            #0d2945,
-            #0b1d32 55%,
-            #09253e
-        );
-    border:
-        1px solid rgba(62,175,255,.25);
-    box-shadow:
-        0 10px 35px rgba(0,0,0,.25);
-}
-
-.status-panel::before{
-    content:"";
-    position:absolute;
-    width:300px;
-    height:300px;
-    right:-100px;
-    top:-140px;
-    border-radius:50%;
-    background:
-        rgba(0,160,255,.08);
-}
-
-.status-panel::after{
-    content:"";
-    position:absolute;
-    width:180px;
-    height:180px;
-    right:100px;
-    bottom:-120px;
-    border-radius:50%;
-    border:
-        1px solid rgba(50,180,255,.12);
+    background:linear-gradient(120deg,#0d2945,#0b1d32 55%,#09253e);
+    border:1px solid rgba(62,175,255,.25);
+    box-shadow:0 10px 35px rgba(0,0,0,.25);
 }
 
 .status-content{
@@ -461,12 +326,8 @@ body{
     display:flex;
     align-items:center;
     justify-content:center;
-    background:
-        rgba(21,220,118,.08);
-    border:
-        2px solid #27e47c;
-    box-shadow:
-        0 0 25px rgba(39,228,124,.2);
+    background:rgba(21,220,118,.08);
+    border:2px solid #27e47c;
     color:#27e47c;
     font-size:30px;
 }
@@ -482,7 +343,6 @@ body{
     font-size:30px;
     font-weight:900;
     color:#43e890;
-    letter-spacing:1px;
 }
 
 .status-message{
@@ -499,7 +359,6 @@ body{
 .progress-top{
     display:flex;
     justify-content:space-between;
-    align-items:center;
     margin-bottom:9px;
 }
 
@@ -525,17 +384,8 @@ body{
 .progress-fill{
     width:0%;
     height:100%;
-    border-radius:20px;
-    background:
-        linear-gradient(
-            90deg,
-            #087eff,
-            #00caff
-        );
-    box-shadow:
-        0 0 12px rgba(0,181,255,.6);
-    transition:
-        width .7s ease;
+    background:linear-gradient(90deg,#087eff,#00caff);
+    transition:width .7s ease;
 }
 
 .progress-numbers{
@@ -546,42 +396,26 @@ body{
     font-size:11px;
 }
 
-
-/* =========================================================
-   KPI CARDS
-========================================================= */
-
 .kpi-grid{
     display:grid;
-    grid-template-columns:
-        repeat(4,1fr);
+    grid-template-columns:repeat(4,1fr);
     gap:16px;
     margin-bottom:20px;
 }
 
 .kpi-card{
-    position:relative;
-    overflow:hidden;
     min-height:125px;
-    background:
-        linear-gradient(
-            145deg,
-            #0d1e31,
-            #091625
-        );
-    border:
-        1px solid rgba(78,159,218,.16);
+    background:linear-gradient(145deg,#0d1e31,#091625);
+    border:1px solid rgba(78,159,218,.16);
     border-radius:13px;
     padding:18px;
-    box-shadow:
-        0 7px 25px rgba(0,0,0,.18);
+    box-shadow:0 7px 25px rgba(0,0,0,.18);
     transition:.25s;
 }
 
 .kpi-card:hover{
     transform:translateY(-3px);
-    border-color:
-        rgba(60,177,255,.4);
+    border-color:rgba(60,177,255,.4);
 }
 
 .kpi-icon{
@@ -591,8 +425,7 @@ body{
     align-items:center;
     justify-content:center;
     border-radius:9px;
-    background:
-        rgba(40,150,255,.12);
+    background:rgba(40,150,255,.12);
     color:#45baff;
     font-size:17px;
 }
@@ -612,64 +445,26 @@ body{
     font-weight:800;
 }
 
-.kpi-card.pending .kpi-icon{
-    background:rgba(255,62,77,.1);
-    color:#ff5360;
-}
-
-.kpi-card.pending .kpi-value{
-    color:#ff6670;
-}
-
-.kpi-card.scanned .kpi-icon{
-    background:rgba(32,225,125,.1);
-    color:#36e58a;
-}
-
-.kpi-card.scanned .kpi-value{
-    color:#48e999;
-}
-
-.kpi-card.today .kpi-icon{
-    background:rgba(255,194,59,.1);
-    color:#ffc43d;
-}
-
-.kpi-card.today .kpi-value{
-    color:#ffd05d;
-}
-
-
-/* =========================================================
-   CONTENT GRID
-========================================================= */
+.pending .kpi-icon{background:rgba(255,62,77,.1);color:#ff5360;}
+.pending .kpi-value{color:#ff6670;}
+.scanned .kpi-icon{background:rgba(32,225,125,.1);color:#36e58a;}
+.scanned .kpi-value{color:#48e999;}
+.today .kpi-icon{background:rgba(255,194,59,.1);color:#ffc43d;}
+.today .kpi-value{color:#ffd05d;}
 
 .content-grid{
     display:grid;
-    grid-template-columns:
-        minmax(0,1.1fr)
-        minmax(0,.9fr);
+    grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
     gap:18px;
 }
 
-
-/* =========================================================
-   PANEL
-========================================================= */
-
 .panel{
-    background:
-        linear-gradient(
-            145deg,
-            #0d1d2e,
-            #091523
-        );
-    border:
-        1px solid rgba(78,159,218,.15);
+    background:linear-gradient(145deg,#0d1d2e,#091523);
+    border:1px solid rgba(78,159,218,.15);
     border-radius:14px;
     overflow:hidden;
-    box-shadow:
-        0 7px 25px rgba(0,0,0,.18);
+    box-shadow:0 7px 25px rgba(0,0,0,.18);
+    min-width:0;
 }
 
 .panel-header{
@@ -677,8 +472,7 @@ body{
     align-items:center;
     justify-content:space-between;
     padding:15px 17px;
-    border-bottom:
-        1px solid rgba(78,159,218,.12);
+    border-bottom:1px solid rgba(78,159,218,.12);
 }
 
 .panel-title{
@@ -689,32 +483,19 @@ body{
     font-weight:bold;
 }
 
-.panel-title i{
-    color:#38b8ff;
-}
+.panel-title i{color:#38b8ff;}
 
 .panel-badge{
     padding:4px 8px;
     border-radius:5px;
-    background:
-        rgba(48,172,255,.1);
+    background:rgba(48,172,255,.1);
     color:#51bfff;
     font-size:10px;
     font-weight:bold;
 }
 
-
-/* =========================================================
-   TEAM PERFORMANCE
-========================================================= */
-
-.team-list{
-    padding:12px 15px 15px;
-}
-
-.team-item{
-    margin-bottom:13px;
-}
+.team-list{padding:12px 15px 15px;}
+.team-item{margin-bottom:13px;}
 
 .team-top{
     display:flex;
@@ -722,17 +503,8 @@ body{
     margin-bottom:6px;
 }
 
-.team-name{
-    color:#c1d9eb;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.team-count{
-    color:#54bdff;
-    font-size:12px;
-    font-weight:bold;
-}
+.team-name{color:#c1d9eb;font-size:12px;font-weight:bold;}
+.team-count{color:#54bdff;font-size:12px;font-weight:bold;}
 
 .team-progress{
     height:7px;
@@ -744,12 +516,7 @@ body{
 .team-fill{
     height:100%;
     border-radius:10px;
-    background:
-        linear-gradient(
-            90deg,
-            #087eff,
-            #20c5ff
-        );
+    background:linear-gradient(90deg,#087eff,#20c5ff);
 }
 
 .team-empty{
@@ -759,25 +526,17 @@ body{
     font-size:12px;
 }
 
-
-/* =========================================================
-   QUICK ACTIONS
-========================================================= */
-
 .quick-actions{
     display:grid;
-    grid-template-columns:
-        repeat(2,1fr);
+    grid-template-columns:repeat(2,1fr);
     gap:10px;
     padding:15px;
 }
 
 .quick-btn{
     padding:15px 10px;
-    background:
-        rgba(22,54,80,.45);
-    border:
-        1px solid rgba(65,150,210,.13);
+    background:rgba(22,54,80,.45);
+    border:1px solid rgba(65,150,210,.13);
     border-radius:9px;
     color:#a9c7dd;
     cursor:pointer;
@@ -792,27 +551,15 @@ body{
     margin-bottom:7px;
 }
 
-.quick-btn span{
-    font-size:11px;
-    font-weight:bold;
-}
+.quick-btn span{font-size:11px;font-weight:bold;}
 
 .quick-btn:hover{
-    background:
-        rgba(31,121,188,.18);
-    border-color:
-        rgba(70,185,255,.35);
+    background:rgba(31,121,188,.18);
+    border-color:rgba(70,185,255,.35);
     color:white;
 }
 
-
-/* =========================================================
-   PENDING TABLE
-========================================================= */
-
-.table-panel{
-    margin-top:18px;
-}
+.table-panel{margin-top:18px;}
 
 .table-wrapper{
     max-height:390px;
@@ -835,77 +582,46 @@ thead th{
     text-transform:uppercase;
     letter-spacing:1px;
     text-align:left;
-    border-bottom:
-        1px solid rgba(70,150,210,.18);
+    border-bottom:1px solid rgba(70,150,210,.18);
 }
 
 tbody td{
     padding:12px;
     font-size:12px;
     color:#b7cee0;
-    border-bottom:
-        1px solid rgba(70,150,210,.08);
+    border-bottom:1px solid rgba(70,150,210,.08);
 }
 
-tbody tr:hover{
-    background:
-        rgba(42,139,211,.07);
-}
-
-.item-code{
-    color:#53baff;
-    font-weight:bold;
-}
-
-.pending-number{
-    font-weight:bold;
-}
+tbody tr:hover{background:rgba(42,139,211,.07);}
+.item-code{color:#53baff;font-weight:bold;}
+.pending-number{font-weight:bold;}
 
 .team-tag{
     display:inline-block;
     padding:4px 7px;
     border-radius:5px;
-    background:
-        rgba(72,157,216,.1);
+    background:rgba(72,157,216,.1);
     color:#73c2ef;
     font-size:10px;
 }
 
-.normal-status{
-    color:#45df8d;
-    font-size:10px;
-    font-weight:bold;
+.normal-status{color:#45df8d;font-size:10px;font-weight:bold;}
+.critical-row{background:rgba(214,40,40,.12)!important;}
+.critical-row td{color:#ff717a;}
+.critical-row .item-code{color:#ff626c;}
+.critical-status{color:#ff555f;font-size:10px;font-weight:bold;}
+.no-data{text-align:center;padding:35px!important;color:#526f86!important;}
+
+.pending-grid{
+    grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+    gap:18px;
+    margin-top:18px;
+    align-items:start;
 }
 
-.critical-row{
-    background:
-        rgba(214,40,40,.12) !important;
-}
-
-.critical-row td{
-    color:#ff717a;
-}
-
-.critical-row .item-code{
-    color:#ff626c;
-}
-
-.critical-status{
-    color:#ff555f;
-    font-size:10px;
-    font-weight:bold;
-}
-
-.no-data{
-    text-align:center;
-    padding:35px !important;
-    color:#526f86 !important;
-}
-
-
-/* =========================================================
-   LAST UPDATE
-========================================================= */
+.pending-grid .table-panel{margin-top:0;min-width:0;}
+.pending-grid .table-wrapper{max-height:390px;overflow:auto;}
+.pending-grid table{min-width:420px;}
 
 .bottom-info{
     margin-top:14px;
@@ -915,1041 +631,371 @@ tbody tr:hover{
     font-size:10px;
 }
 
-.live-indicator{
-    display:flex;
-    align-items:center;
-    gap:6px;
-}
-
+.live-indicator{display:flex;align-items:center;gap:6px;}
 .live-dot{
     width:6px;
     height:6px;
     border-radius:50%;
     background:#20e27a;
-    box-shadow:
-        0 0 7px #20e27a;
+    box-shadow:0 0 7px #20e27a;
 }
 
-
-/* =========================================================
-   SCROLLBAR
-========================================================= */
-
-::-webkit-scrollbar{
-    width:7px;
-    height:7px;
-}
-
-::-webkit-scrollbar-track{
-    background:#07111f;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#1b4566;
-    border-radius:10px;
-}
-
-::-webkit-scrollbar-thumb:hover{
-    background:#2876a7;
-}
-
-
-/* =========================================================
-   PENDING GRID
-========================================================= */
-
-.pending-grid{
-    grid-template-columns:
-        minmax(0,1.1fr)
-        minmax(0,.9fr);
-    gap:18px;
-    margin-top:18px;
-    align-items:start;
-}
-
-.pending-grid .table-panel{
-    margin-top:0;
-    min-width:0;
-}
-
-.pending-grid .table-wrapper{
-    max-height:390px;
-    overflow:auto;
-}
-
-.pending-grid table{
-    min-width:420px;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track{background:#07111f;}
+::-webkit-scrollbar-thumb{background:#1b4566;border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:#2876a7;}
 
 @media(max-width:1100px){
-
-    .kpi-grid{
-        grid-template-columns:
-            repeat(2,1fr);
-    }
-
-    .content-grid{
-        grid-template-columns:1fr;
-    }
-
-    .pending-grid{
-        grid-template-columns:
-            minmax(0,1fr);
-    }
-
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .content-grid,.pending-grid{grid-template-columns:1fr;}
 }
 
 @media(max-width:750px){
-
-    .sidebar{
-        width:65px;
-        padding:15px 8px;
-    }
-
-    .menu-title,
-    .menu li span,
-    .sidebar-footer{
-        display:none;
-    }
-
-    .menu li{
-        justify-content:center;
-        padding:14px 5px;
-    }
-
-    .main{
-        margin-left:65px;
-        padding:85px 12px 20px;
-    }
-
-    .brand-subtitle{
-        display:none;
-    }
-
-    .brand-title{
-        font-size:16px;
-    }
-
-    .system-status{
-        display:none;
-    }
-
-    .status-content{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .progress-area{
-        width:100%;
-        min-width:0;
-    }
-
-    .page-header{
-        align-items:flex-start;
-    }
-
-    .refresh-info{
-        display:none;
-    }
-
+    .sidebar{width:65px;padding:15px 8px;}
+    .menu-title,.menu li span,.sidebar-footer{display:none;}
+    .menu li{justify-content:center;padding:14px 5px;}
+    .main{margin-left:65px;padding:85px 12px 20px;}
+    .brand-subtitle{display:none;}
+    .brand-title{font-size:16px;}
+    .system-status{display:none;}
+    .status-content{flex-direction:column;align-items:flex-start;}
+    .progress-area{width:100%;min-width:0;}
+    .page-header{align-items:flex-start;}
+    .refresh-info{display:none;}
 }
 
 @media(max-width:500px){
-
-    .kpi-grid{
-        grid-template-columns:1fr;
-    }
-
-    .topbar{
-        padding:0 10px;
-    }
-
-    .user-box{
-        display:none;
-    }
-
-    .status-left{
-        gap:12px;
-    }
-
-    .status-circle{
-        width:65px;
-        height:65px;
-        font-size:22px;
-    }
-
-    .status-ready{
-        font-size:23px;
-    }
-
-    .page-title{
-        font-size:22px;
-    }
-
-    .pending-grid table{
-        min-width:360px;
-    }
-
+    .kpi-grid{grid-template-columns:1fr;}
+    .topbar{padding:0 10px;}
+    .user-box{display:none;}
+    #headerQR{display:none;}
+    .status-left{gap:12px;}
+    .status-circle{width:65px;height:65px;font-size:22px;}
+    .status-ready{font-size:23px;}
+    .page-title{font-size:22px;}
+    .pending-grid table{min-width:360px;}
 }
-
 </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =========================================================
-     LOADING SCREEN
-========================================================= -->
-
 <div id="loadingScreen">
-
-    <div class="loading-logo">
-        STARK QR
-    </div>
-
-    <div class="loading-subtitle">
-        W2R CONTROL CENTER
-    </div>
-
+    <div class="loading-logo">STARK QR</div>
+    <div class="loading-subtitle">W2R CONTROL CENTER</div>
     <div class="loading-bar-container">
-
-        <div
-            id="loadingBar"
-            class="loading-bar">
-        </div>
-
+        <div id="loadingBar" class="loading-bar"></div>
     </div>
-
-    <div
-        id="loadingPercent"
-        class="loading-percent">
-        0%
-    </div>
-
+    <div id="loadingPercent" class="loading-percent">0%</div>
 </div>
-
-
-<!-- =========================================================
-     DASHBOARD
-========================================================= -->
 
 <div id="dashboard">
 
-
-    <!-- =====================================================
-         TOP BAR
-    ====================================================== -->
-
     <div class="topbar">
 
-
         <div class="brand">
-
-            <div class="brand-icon">
-
-                <i class="fa fa-qrcode"></i>
-
-            </div>
-
-
+            <div class="brand-icon"><i class="fa fa-qrcode"></i></div>
             <div>
-
-                <div class="brand-title">
-                    STARK QR
-                </div>
-
-                <div class="brand-subtitle">
-                    W2R CONTROL SYSTEM
-                </div>
-
+                <div class="brand-title">STARK QR</div>
+                <div class="brand-subtitle">W2R CONTROL SYSTEM</div>
             </div>
-
         </div>
-
 
         <div class="top-right">
-
-
             <div class="system-status">
-
                 <span class="status-dot"></span>
-
                 SYSTEM ONLINE
-
             </div>
 
-
-            <div
-                class="user-box"
-                id="userBox">
-            </div>
-
-
+            <div class="user-box" id="userBox"></div>
             <div id="headerQR"></div>
 
-
-            <button
-                class="logout-btn"
-                onclick="logout()">
-
-                <i class="fa fa-sign-out-alt"></i>
-
-                Logout
-
+            <button class="logout-btn" onclick="logout()">
+                <i class="fa fa-sign-out-alt"></i> Logout
             </button>
-
-
         </div>
 
-
     </div>
-
-
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
 
     <div class="sidebar">
 
-
-        <div class="menu-title">
-            OPERATIONS
-        </div>
-
+        <div class="menu-title">OPERATIONS</div>
 
         <ul class="menu">
 
-
-            <!-- DASHBOARD -->
-
-            <li
-                class="active"
-                onclick="go('index.html')">
-
+            <li class="active" onclick="go('index.html')">
                 <i class="fa fa-chart-line"></i>
-
-                <span>
-                    Dashboard
-                </span>
-
+                <span>Dashboard</span>
             </li>
 
-
-            <!-- S2W QR -->
-
-            <li
-                onclick="go('S2W%20QR.html')">
-
+            <li onclick="go('S2W%20QR.html')">
                 <i class="fa fa-qrcode"></i>
-
-                <span>
-                    S2W QR
-                </span>
-
+                <span>S2W QR</span>
             </li>
 
-
-            <!-- MIT -->
-
-            <li
-                onclick="go('mit.html')">
-
+            <li onclick="go('mit.html')">
                 <i class="fa fa-print"></i>
-
-                <span>
-                    MIT
-                </span>
-
+                <span>MIT</span>
             </li>
 
-
-            <!-- SERIAL -->
-
-            <li
-                onclick="go('serial.html')">
-
+            <li onclick="go('serial.html')">
                 <i class="fa fa-box"></i>
-
-                <span>
-                    Serial
-                </span>
-
+                <span>Serial</span>
             </li>
 
-
-            <!-- NON-SERIAL -->
-
-            <li
-                onclick="go('nonserial.html')">
-
+            <li onclick="go('nonserial.html')">
                 <i class="fa fa-cubes"></i>
-
-                <span>
-                    Non-Serial
-                </span>
-
+                <span>Non-Serial</span>
             </li>
 
-
-           <!-- W2R SCANNING -->
-
-<li onclick="go('box-scanner.html')">
-
-    <i class="fa fa-barcode"></i>
-
-    <span>
-        W2R Scanning
-    </span>
-
-</li>
-
+            <li onclick="openScanner()">
+                <i class="fa fa-barcode"></i>
+                <span>W2R Scanning</span>
+            </li>
 
         </ul>
 
-
         <div class="sidebar-footer">
-
             STARK QR v1.0
-
             <br>
-
             W2R MONITORING
-
         </div>
-
 
     </div>
 
-
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-
     <main class="main">
 
-
-        <!-- PAGE HEADER -->
-
         <div class="page-header">
-
-
             <div>
-
-                <div class="page-title">
-
-                    W2R
-                    <span>
-                        Dashboard
-                    </span>
-
-                </div>
-
-                <div class="page-description">
-
-                    Warehouse to Repair center scanning
-
-                </div>
-
+                <div class="page-title">W2R <span>Dashboard</span></div>
+                <div class="page-description">Warehouse to Repair center scanning</div>
             </div>
-
 
             <div class="refresh-info">
-
                 AUTO REFRESH
-
                 <br>
-
-                Every
-                <strong>
-                    30 seconds
-                </strong>
-
+                Every <strong>30 seconds</strong>
                 <br>
-
-                Last update:
-                <strong id="lastUpdate">
-                    --
-                </strong>
-
+                Last update: <strong id="lastUpdate">--</strong>
             </div>
-
-
         </div>
 
-
-        <!-- =================================================
-             STATUS PANEL
-        ================================================== -->
-
         <section class="status-panel">
-
-
             <div class="status-content">
 
-
                 <div class="status-left">
-
-
                     <div class="status-circle">
-
                         <i class="fa fa-check"></i>
-
                     </div>
-
 
                     <div>
-
-                        <div class="status-label">
-                            SCANNING SYSTEM STATUS
-                        </div>
-
-                        <div
-                            id="systemStatus"
-                            class="status-ready">
-
-                            READY
-
-                        </div>
-
+                        <div class="status-label">SCANNING SYSTEM STATUS</div>
+                        <div id="systemStatus" class="status-ready">READY</div>
                         <div class="status-message">
-
                             W2R operations are being monitored in real time.
-
                         </div>
-
                     </div>
-
-
                 </div>
-
 
                 <div class="progress-area">
-
-
                     <div class="progress-top">
-
-                        <span>
-                            OVERALL SCANNING PROGRESS
-                        </span>
-
-                        <span
-                            id="progressPercent"
-                            class="progress-percent">
-
-                            0%
-
-                        </span>
-
+                        <span>OVERALL SCANNING PROGRESS</span>
+                        <span id="progressPercent" class="progress-percent">0%</span>
                     </div>
-
 
                     <div class="progress-bar">
-
-                        <div
-                            id="progressFill"
-                            class="progress-fill">
-                        </div>
-
+                        <div id="progressFill" class="progress-fill"></div>
                     </div>
-
 
                     <div class="progress-numbers">
-
-                        <span>
-
-                            Scanned:
-                            <strong id="progressScanned">
-                                0
-                            </strong>
-
-                        </span>
-
-
-                        <span>
-
-                            Required:
-                            <strong id="progressRequired">
-                                0
-                            </strong>
-
-                        </span>
-
+                        <span>Scanned: <strong id="progressScanned">0</strong></span>
+                        <span>Required: <strong id="progressRequired">0</strong></span>
                     </div>
-
-
                 </div>
 
-
             </div>
-
-
         </section>
-
-
-        <!-- =================================================
-             KPI CARDS
-        ================================================== -->
 
         <div class="kpi-grid">
 
-
-            <!-- REQUIRED -->
-
             <div class="kpi-card">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-list-check"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Quantity Required
-
-                </div>
-
-                <div
-                    id="qtyRequired"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
+                <div class="kpi-icon"><i class="fa fa-list-check"></i></div>
+                <div class="kpi-label">Quantity Required</div>
+                <div id="qtyRequired" class="kpi-value">0</div>
             </div>
-
-
-            <!-- SCANNED -->
 
             <div class="kpi-card scanned">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-circle-check"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Total Scanned
-
-                </div>
-
-                <div
-                    id="totalScannedBox"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
+                <div class="kpi-icon"><i class="fa fa-circle-check"></i></div>
+                <div class="kpi-label">Total Scanned</div>
+                <div id="totalScannedBox" class="kpi-value">0</div>
             </div>
-
-
-            <!-- TODAY -->
 
             <div class="kpi-card today">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-calendar-day"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Today Scanned
-
-                </div>
-
-                <div
-                    id="qtyScanned"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
+                <div class="kpi-icon"><i class="fa fa-calendar-day"></i></div>
+                <div class="kpi-label">Today Scanned</div>
+                <div id="qtyScanned" class="kpi-value">0</div>
             </div>
-
-
-            <!-- PENDING -->
 
             <div class="kpi-card pending">
-
-                <div class="kpi-icon">
-
-                    <i class="fa fa-triangle-exclamation"></i>
-
-                </div>
-
-                <div class="kpi-label">
-
-                    Total Pending
-
-                </div>
-
-                <div
-                    id="pendingQty"
-                    class="kpi-value">
-
-                    0
-
-                </div>
-
+                <div class="kpi-icon"><i class="fa fa-triangle-exclamation"></i></div>
+                <div class="kpi-label">Total Pending</div>
+                <div id="pendingQty" class="kpi-value">0</div>
             </div>
 
-
         </div>
-
-
-        <!-- =================================================
-             TWO COLUMN CONTENT
-        ================================================== -->
 
         <div class="content-grid">
 
-
-            <!-- TEAM PERFORMANCE -->
-
             <section class="panel">
-
-
                 <div class="panel-header">
-
                     <div class="panel-title">
-
                         <i class="fa fa-users"></i>
-
                         Team Performance
-
                     </div>
-
-                    <div class="panel-badge">
-
-                        LIVE
-
-                    </div>
-
+                    <div class="panel-badge">LIVE</div>
                 </div>
 
-
-                <div
-                    id="teamBox"
-                    class="team-list">
-
-                    <div class="team-empty">
-
-                        Loading team data...
-
-                    </div>
-
+                <div id="teamBox" class="team-list">
+                    <div class="team-empty">Loading team data...</div>
                 </div>
-
-
             </section>
 
-
-            <!-- QUICK OPERATIONS -->
-
             <section class="panel">
-
-
                 <div class="panel-header">
-
                     <div class="panel-title">
-
                         <i class="fa fa-bolt"></i>
-
                         Quick Operations
-
                     </div>
-
                 </div>
-
 
                 <div class="quick-actions">
 
-
-                    <!-- S2W QR -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('S2W%20QR.html')">
-
+                    <div class="quick-btn" onclick="go('S2W%20QR.html')">
                         <i class="fa fa-qrcode"></i>
-
-                        <span>
-                            S2W QR
-                        </span>
-
+                        <span>S2W QR</span>
                     </div>
 
-
-                    <!-- MIT -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('mit.html')">
-
+                    <div class="quick-btn" onclick="go('mit.html')">
                         <i class="fa fa-print"></i>
-
-                        <span>
-                            MIT
-                        </span>
-
+                        <span>MIT</span>
                     </div>
 
-
-                    <!-- SERIAL -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('serial.html')">
-
+                    <div class="quick-btn" onclick="go('serial.html')">
                         <i class="fa fa-barcode"></i>
-
-                        <span>
-                            SERIAL
-                        </span>
-
+                        <span>SERIAL</span>
                     </div>
 
-
-                    <!-- NON-SERIAL -->
-
-                    <div
-                        class="quick-btn"
-                        onclick="go('nonserial.html')">
-
+                    <div class="quick-btn" onclick="go('nonserial.html')">
                         <i class="fa fa-qrcode"></i>
-
-                        <span>
-                            NON-SERIAL
-                        </span>
-
+                        <span>NON-SERIAL</span>
                     </div>
 
+                    <div class="quick-btn" onclick="openScanner()">
+                        <i class="fa fa-box-open"></i>
+                        <span>W2R SCANNING</span>
+                    </div>
 
                 </div>
-
-
             </section>
 
-
         </div>
-
-
-        <!-- =================================================
-             ITEM-WISE AND PARTNER-WISE PENDING
-        ================================================== -->
 
         <div class="content-grid pending-grid">
 
-
-            <!-- ITEM-WISE PENDING -->
-
             <section class="panel table-panel">
 
-
                 <div class="panel-header">
-
                     <div class="panel-title">
-
                         <i class="fa fa-boxes-stacked"></i>
-
                         Item-wise Pending
-
                     </div>
 
-                    <div
-                        id="pendingBadge"
-                        class="panel-badge">
-
-                        0 ITEMS
-
-                    </div>
-
+                    <div id="pendingBadge" class="panel-badge">0 ITEMS</div>
                 </div>
 
-
                 <div class="table-wrapper">
-
                     <table>
-
                         <thead>
-
                             <tr>
-
-                                <th>
-                                    Item Code
-                                </th>
-
-                                <th>
-                                    Pending Qty
-                                </th>
-
-                                <th>
-                                    Partner
-                                </th>
-
-                                <th>
-                                    Team
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
+                                <th>Item Code</th>
+                                <th>Pending Qty</th>
+                                <th>Partner</th>
+                                <th>Team</th>
+                                <th>Status</th>
                             </tr>
-
                         </thead>
-
 
                         <tbody id="pendingTable">
-
                             <tr>
-
-                                <td
-                                    colspan="5"
-                                    class="no-data">
-
+                                <td colspan="5" class="no-data">
                                     Loading pending items...
-
                                 </td>
-
                             </tr>
-
                         </tbody>
-
                     </table>
-
                 </div>
 
-
             </section>
-
-
-            <!-- PARTNER-WISE PENDING -->
 
             <section class="panel table-panel">
 
-
                 <div class="panel-header">
-
                     <div class="panel-title">
-
                         <i class="fa fa-handshake"></i>
-
                         Partner-wise Pending
-
                     </div>
 
-                    <div
-                        id="partnerPendingBadge"
-                        class="panel-badge">
-
-                        0 PARTNERS
-
-                    </div>
-
+                    <div id="partnerPendingBadge" class="panel-badge">0 PARTNERS</div>
                 </div>
-
 
                 <div class="table-wrapper">
-
                     <table>
-
                         <thead>
-
                             <tr>
-
-                                <th>
-                                    Partner
-                                </th>
-
-                                <th>
-                                    Pending Qty
-                                </th>
-
-                                <th>
-                                    Items
-                                </th>
-
+                                <th>Partner</th>
+                                <th>Pending Qty</th>
+                                <th>Items</th>
                             </tr>
-
                         </thead>
 
-
                         <tbody id="partnerPendingTable">
-
                             <tr>
-
-                                <td
-                                    colspan="3"
-                                    class="no-data">
-
+                                <td colspan="3" class="no-data">
                                     Loading partner data...
-
                                 </td>
-
                             </tr>
-
                         </tbody>
-
                     </table>
-
                 </div>
-
 
             </section>
 
-
         </div>
-
-
-        <!-- =================================================
-             BOTTOM INFO
-        ================================================== -->
 
         <div class="bottom-info">
-
-
             <div class="live-indicator">
-
                 <span class="live-dot"></span>
-
                 LIVE DATA CONNECTION
-
             </div>
-
-
-            <div>
-
-                STARK QR W2R MONITOR
-
-            </div>
-
-
+            <div>STARK QR W2R MONITOR</div>
         </div>
-
 
     </main>
 
-
 </div>
 
-
 <script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const SCANNER_WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec";
+
+let dashboardRefreshTimer = null;
+let dashboardLoading = false;
+
 
 /* =========================================================
    LOGIN + LOADING
@@ -1972,111 +1018,68 @@ tbody tr:hover{
     const user =
         sessionStorage.getItem("wms_user");
 
+    if(!user){
+        window.location.replace("login.html");
+        return;
+    }
+
     let percent = 0;
 
-    const loadingTimer =
-        setInterval(function(){
+    const loadingTimer = setInterval(function(){
 
-            percent += 2;
+        percent += 2;
 
-            if(percent > 100){
-                percent = 100;
-            }
+        if(percent > 100) percent = 100;
 
-            loadingBar.style.width =
-                percent + "%";
+        loadingBar.style.width = percent + "%";
+        loadingPercent.innerText = percent + "%";
 
-            loadingPercent.innerText =
-                percent + "%";
+        if(percent >= 100){
 
-            if(percent >= 100){
+            clearInterval(loadingTimer);
 
-                clearInterval(loadingTimer);
+            setTimeout(function(){
 
-                setTimeout(function(){
+                loadingScreen.style.display = "none";
+                dashboard.style.display = "block";
 
-                    if(!user){
+                initializeDashboard(user);
 
-                        window.location.replace(
-                            "login.html"
-                        );
+            },300);
 
-                        return;
+        }
 
-                    }
-
-                    loadingScreen.style.display =
-                        "none";
-
-                    dashboard.style.display =
-                        "block";
-
-                    initializeDashboard(user);
-
-                },300);
-
-            }
-
-        },25);
+    },25);
 
 })();
 
 
 /* =========================================================
-   INITIALIZE DASHBOARD
+   INITIALIZE
 ========================================================= */
 
 function initializeDashboard(user){
 
     document.getElementById("userBox").innerHTML =
+        `<i class="fa fa-user"></i> ${escapeHTML(user)}`;
 
-        `<i class="fa fa-user"></i>
-         ${escapeHTML(user)}`;
-
-
-    /*
-     * Header QR
-     */
-
-    const headerQR =
-        document.getElementById("headerQR");
-
+    const headerQR = document.getElementById("headerQR");
     headerQR.innerHTML = "";
 
     try{
-
-        new QRCode(
-            headerQR,
-            {
-                text:"OWNED BY SHARATH",
-                width:40,
-                height:40
-            }
-        );
-
+        new QRCode(headerQR,{
+            text:"OWNED BY SHARATH",
+            width:40,
+            height:40
+        });
     }
     catch(error){
-
-        console.log(
-            "QR error:",
-            error
-        );
-
+        console.error("QR error:",error);
     }
-
-
-    /*
-     * First dashboard load
-     */
 
     loadDashboard();
 
-
-    /*
-     * Automatic refresh
-     */
-
-    setInterval(
+    dashboardRefreshTimer = setInterval(
         loadDashboard,
         30000
     );
@@ -2085,21 +1088,16 @@ function initializeDashboard(user){
 
 
 /* =========================================================
-   HTML SECURITY
+   SECURITY
 ========================================================= */
 
 function escapeHTML(value){
 
     return String(value ?? "")
-
         .replace(/&/g,"&amp;")
-
         .replace(/</g,"&lt;")
-
         .replace(/>/g,"&gt;")
-
         .replace(/"/g,"&quot;")
-
         .replace(/'/g,"&#039;");
 
 }
@@ -2110,8 +1108,35 @@ function escapeHTML(value){
 ========================================================= */
 
 function go(page){
-
     window.location.href = page;
+}
+
+
+/* =========================================================
+   W2R SCANNER NAVIGATION
+========================================================= */
+
+function openScanner(){
+
+    const user = sessionStorage.getItem("wms_user");
+
+    if(!user){
+        alert("Please login again.");
+        window.location.replace("login.html");
+        return;
+    }
+
+    if(!SCANNER_WEB_APP_URL || !SCANNER_WEB_APP_URL.includes("/exec")){
+        alert("Scanner URL is not configured.");
+        return;
+    }
+
+    const scannerURL =
+        SCANNER_WEB_APP_URL +
+        "?page=scanner&user=" +
+        encodeURIComponent(user);
+
+    window.location.href = scannerURL;
 
 }
 
@@ -2122,13 +1147,13 @@ function go(page){
 
 function logout(){
 
-    sessionStorage.removeItem(
-        "wms_user"
-    );
+    if(dashboardRefreshTimer){
+        clearInterval(dashboardRefreshTimer);
+    }
 
-    window.location.replace(
-        "login.html"
-    );
+    sessionStorage.removeItem("wms_user");
+
+    window.location.replace("login.html");
 
 }
 
@@ -2139,12 +1164,9 @@ function logout(){
 
 function formatNumber(value){
 
-    const number =
-        Number(value) || 0;
+    const number = Number(value) || 0;
 
-    return number.toLocaleString(
-        "en-IN"
-    );
+    return number.toLocaleString("en-IN");
 
 }
 
@@ -2155,38 +1177,31 @@ function formatNumber(value){
 
 async function loadDashboard(){
 
+    if(dashboardLoading) return;
+
+    dashboardLoading = true;
+
     try{
 
-        /*
-         * Google Apps Script endpoint
-         */
-
         const url =
-            "https://script.google.com/macros/s/AKfycbwKXUz5jh8Nmmj2euxU0mp9X-_pxZMaXNNEghelnlXIKZg_yLgk16OGGNwew6WAbf_E1g/exec?nocache=" +
+            SCANNER_WEB_APP_URL +
+            "?action=dashboard&nocache=" +
             Date.now();
 
-
-        const response =
-            await fetch(url);
-
+        const response = await fetch(url,{
+            method:"GET",
+            cache:"no-store"
+        });
 
         if(!response.ok){
-
-            throw new Error(
-                "HTTP Error " +
-                response.status
-            );
-
+            throw new Error("HTTP Error " + response.status);
         }
 
+        const data = await response.json();
 
-        const data =
-            await response.json();
-
-
-        /* =================================================
-           VALUES
-        ================================================== */
+        if(data.success === false){
+            throw new Error(data.error || "Dashboard data unavailable.");
+        }
 
         const totalPending =
             Number(data.totalPending) || 0;
@@ -2201,124 +1216,70 @@ async function loadDashboard(){
             Number(data.totalScanned) || 0;
 
 
-        /* =================================================
-           KPI
-        ================================================== */
+        /* KPI */
 
-        document.getElementById(
-            "pendingQty"
-        ).innerText =
+        document.getElementById("pendingQty").innerText =
             formatNumber(totalPending);
 
-
-        document.getElementById(
-            "qtyRequired"
-        ).innerText =
+        document.getElementById("qtyRequired").innerText =
             formatNumber(totalRequired);
 
-
-        document.getElementById(
-            "qtyScanned"
-        ).innerText =
+        document.getElementById("qtyScanned").innerText =
             formatNumber(totalTodayScanned);
 
-
-        document.getElementById(
-            "totalScannedBox"
-        ).innerText =
+        document.getElementById("totalScannedBox").innerText =
             formatNumber(totalScanned);
 
 
-        /* =================================================
-           PROGRESS
-        ================================================== */
+        /* PROGRESS */
 
         let progress = 0;
 
         if(totalRequired > 0){
-
-            progress =
-                (totalScanned /
-                totalRequired) * 100;
-
+            progress = (totalScanned / totalRequired) * 100;
         }
 
-        progress =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    progress
-                )
-            );
+        progress = Math.max(0,Math.min(100,progress));
 
-
-        document.getElementById(
-            "progressFill"
-        ).style.width =
+        document.getElementById("progressFill").style.width =
             progress.toFixed(1) + "%";
 
-
-        document.getElementById(
-            "progressPercent"
-        ).innerText =
+        document.getElementById("progressPercent").innerText =
             progress.toFixed(1) + "%";
 
-
-        document.getElementById(
-            "progressScanned"
-        ).innerText =
+        document.getElementById("progressScanned").innerText =
             formatNumber(totalScanned);
 
-
-        document.getElementById(
-            "progressRequired"
-        ).innerText =
+        document.getElementById("progressRequired").innerText =
             formatNumber(totalRequired);
 
 
-        /* =================================================
-           SYSTEM STATUS
-        ================================================== */
+        /* SYSTEM STATUS */
 
         const statusElement =
-            document.getElementById(
-                "systemStatus"
-            );
-
+            document.getElementById("systemStatus");
 
         if(totalPending <= 0){
 
-            statusElement.innerText =
-                "COMPLETED";
-
-            statusElement.style.color =
-                "#43e890";
+            statusElement.innerText = "COMPLETED";
+            statusElement.style.color = "#43e890";
 
         }
         else if(totalPending > 1000){
 
-            statusElement.innerText =
-                "CRITICAL";
-
-            statusElement.style.color =
-                "#ff5b66";
+            statusElement.innerText = "CRITICAL";
+            statusElement.style.color = "#ff5b66";
 
         }
         else{
 
-            statusElement.innerText =
-                "READY";
-
-            statusElement.style.color =
-                "#43e890";
+            statusElement.innerText = "READY";
+            statusElement.style.color = "#43e890";
 
         }
 
 
-        /* =================================================
-           TEAM DATA
-        ================================================== */
+        /* TEAM */
 
         renderTeams(
             data.teamWise || {},
@@ -2326,56 +1287,40 @@ async function loadDashboard(){
         );
 
 
-        /* =================================================
-           PENDING ITEMS
-        ================================================== */
+        /* ITEM + PARTNER */
 
         renderPendingItems(
             data.itemList || []
         );
 
 
-        /* =================================================
-           LAST UPDATE
-        ================================================== */
+        /* LAST UPDATE */
 
-        document.getElementById(
-            "lastUpdate"
-        ).innerText =
-            new Date().toLocaleTimeString(
-                "en-IN",
-                {
-                    hour:"2-digit",
-                    minute:"2-digit",
-                    second:"2-digit"
-                }
-            );
+        document.getElementById("lastUpdate").innerText =
+            new Date().toLocaleTimeString("en-IN",{
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit"
+            });
 
     }
     catch(error){
 
-        console.error(
-            "Dashboard loading error:",
-            error
-        );
+        console.error("Dashboard loading error:",error);
 
-
-        document.getElementById(
-            "systemStatus"
-        ).innerText =
+        document.getElementById("systemStatus").innerText =
             "CONNECTION ERROR";
 
-
-        document.getElementById(
-            "systemStatus"
-        ).style.color =
+        document.getElementById("systemStatus").style.color =
             "#ff5b66";
 
-
-        document.getElementById(
-            "lastUpdate"
-        ).innerText =
+        document.getElementById("lastUpdate").innerText =
             "Connection failed";
+
+    }
+    finally{
+
+        dashboardLoading = false;
 
     }
 
@@ -2383,155 +1328,94 @@ async function loadDashboard(){
 
 
 /* =========================================================
-   TEAM RENDER
+   TEAM PERFORMANCE
 ========================================================= */
 
-function renderTeams(
-    teams,
-    totalScanned
-){
+function renderTeams(teams,totalScanned){
 
-    const teamBox =
-        document.getElementById(
-            "teamBox"
-        );
+    const teamBox = document.getElementById("teamBox");
 
-
-    const teamNames =
-        Object.keys(teams);
-
+    const teamNames = Object.keys(teams);
 
     if(teamNames.length === 0){
 
         teamBox.innerHTML = `
-
             <div class="team-empty">
-
                 No team data available.
-
             </div>
-
         `;
 
         return;
 
     }
 
-
     let html = "";
-
 
     teamNames.forEach(function(team){
 
-        const count =
-            Number(teams[team]) || 0;
-
+        const count = Number(teams[team]) || 0;
 
         let percentage = 0;
 
-
         if(totalScanned > 0){
-
-            percentage =
-                (count /
-                totalScanned) * 100;
-
+            percentage = (count / totalScanned) * 100;
         }
 
-
-        percentage =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    percentage
-                )
-            );
-
+        percentage = Math.max(0,Math.min(100,percentage));
 
         html += `
-
             <div class="team-item">
 
                 <div class="team-top">
 
                     <span class="team-name">
-
                         ${escapeHTML(team)}
-
                     </span>
 
                     <span class="team-count">
-
                         ${formatNumber(count)}
-
                     </span>
 
                 </div>
 
-
                 <div class="team-progress">
-
-                    <div
-                        class="team-fill"
-                        style="
-                            width:${percentage.toFixed(1)}%;
-                        ">
-
+                    <div class="team-fill"
+                         style="width:${percentage.toFixed(1)}%">
                     </div>
-
                 </div>
 
             </div>
-
         `;
 
     });
 
-
-    teamBox.innerHTML =
-        html;
+    teamBox.innerHTML = html;
 
 }
 
 
 /* =========================================================
-   ITEM-WISE AND PARTNER-WISE PENDING
+   ITEM-WISE + PARTNER-WISE PENDING
 ========================================================= */
 
 function renderPendingItems(items){
 
     const table =
-        document.getElementById(
-            "pendingTable"
-        );
+        document.getElementById("pendingTable");
 
     const badge =
-        document.getElementById(
-            "pendingBadge"
-        );
+        document.getElementById("pendingBadge");
 
     const partnerTable =
-        document.getElementById(
-            "partnerPendingTable"
-        );
+        document.getElementById("partnerPendingTable");
 
     const partnerBadge =
-        document.getElementById(
-            "partnerPendingBadge"
-        );
-
+        document.getElementById("partnerPendingBadge");
 
     if(!Array.isArray(items)){
-
         items = [];
-
     }
 
-
-    /* =====================================================
-       GET PARTNER
-    ===================================================== */
 
     function getPartner(row){
 
@@ -2544,16 +1428,10 @@ function renderPendingItems(items){
             row["Partner Name"] ??
             row["PARTNER NAME"];
 
-        return String(
-            value ?? ""
-        ).trim() || "Unassigned";
+        return String(value ?? "").trim() || "Unassigned";
 
     }
 
-
-    /* =====================================================
-       GET ITEM
-    ===================================================== */
 
     function getItem(row){
 
@@ -2568,10 +1446,6 @@ function renderPendingItems(items){
     }
 
 
-    /* =====================================================
-       GET PENDING
-    ===================================================== */
-
     function getPending(row){
 
         const value =
@@ -2582,290 +1456,163 @@ function renderPendingItems(items){
             row["PENDING QTY"] ??
             0;
 
-        return Math.max(
-            0,
-            Number(value) || 0
-        );
+        return Math.max(0,Number(value) || 0);
 
     }
 
 
-    /* =====================================================
-       SORT ITEMS
-    ===================================================== */
+    const sortedItems = [...items].sort(
+        (a,b) => getPending(b) - getPending(a)
+    );
 
-    const sortedItems =
-        [...items].sort(
-            (a,b) =>
-                getPending(b) -
-                getPending(a)
-        );
+    badge.textContent = `${sortedItems.length} ITEMS`;
 
 
-    badge.textContent =
-        `${sortedItems.length} ITEMS`;
-
-
-    /* =====================================================
-       ITEM-WISE TABLE
-    ===================================================== */
+    /* ITEM TABLE */
 
     if(sortedItems.length === 0){
 
         table.innerHTML = `
-
             <tr>
-
-                <td
-                    colspan="5"
-                    class="no-data">
-
+                <td colspan="5" class="no-data">
                     No pending items available
-
                 </td>
-
             </tr>
-
         `;
 
     }
     else{
 
-        table.innerHTML =
-            sortedItems.map(
-                row => {
+        table.innerHTML = sortedItems.map(row => {
 
-                    const pending =
-                        getPending(row);
+            const pending = getPending(row);
+            const critical = pending > 1000;
+            const partner = getPartner(row);
+            const item = getItem(row);
 
-                    const critical =
-                        pending > 1000;
+            const team =
+                row.team ??
+                row.Team ??
+                "-";
 
-                    const partner =
-                        getPartner(row);
+            return `
+                <tr class="${critical ? "critical-row" : ""}">
 
-                    const item =
-                        getItem(row);
+                    <td>
+                        <span class="item-code">
+                            ${escapeHTML(item)}
+                        </span>
+                    </td>
 
-                    const team =
-                        row.team ??
-                        row.Team ??
-                        "-";
+                    <td>
+                        <span class="pending-number">
+                            ${formatNumber(pending)}
+                        </span>
+                    </td>
 
+                    <td>
+                        <span class="team-tag">
+                            ${escapeHTML(partner)}
+                        </span>
+                    </td>
 
-                    return `
+                    <td>
+                        <span class="team-tag">
+                            ${escapeHTML(team)}
+                        </span>
+                    </td>
 
-                        <tr
-                            class="${
+                    <td>
+                        <span class="${critical ? "critical-status" : "normal-status"}">
+                            ${
                                 critical
-                                    ? "critical-row"
-                                    : ""
-                            }">
+                                ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
+                                : '<i class="fa fa-circle-check"></i> NORMAL'
+                            }
+                        </span>
+                    </td>
 
-                            <td>
+                </tr>
+            `;
 
-                                <span class="item-code">
-
-                                    ${escapeHTML(item)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span class="pending-number">
-
-                                    ${formatNumber(pending)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span class="team-tag">
-
-                                    ${escapeHTML(partner)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span class="team-tag">
-
-                                    ${escapeHTML(team)}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="${
-                                        critical
-                                            ? "critical-status"
-                                            : "normal-status"
-                                    }">
-
-                                    ${
-                                        critical
-
-                                        ? '<i class="fa fa-triangle-exclamation"></i> CRITICAL'
-
-                                        : '<i class="fa fa-circle-check"></i> NORMAL'
-                                    }
-
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
-            ).join("");
+        }).join("");
 
     }
 
 
-    /* =====================================================
-       GROUP BY PARTNER
-    ===================================================== */
+    /* GROUP BY PARTNER */
 
     const partners = {};
 
+    sortedItems.forEach(row => {
 
-    sortedItems.forEach(
-        row => {
+        const partner = getPartner(row);
+        const pending = getPending(row);
 
-            const partner =
-                getPartner(row);
-
-            const pending =
-                getPending(row);
-
-
-            if(!partners[partner]){
-
-                partners[partner] = {
-
-                    pending:0,
-
-                    items:0
-
-                };
-
-            }
-
-
-            partners[partner].pending +=
-                pending;
-
-            partners[partner].items +=
-                1;
-
+        if(!partners[partner]){
+            partners[partner] = {
+                pending:0,
+                items:0
+            };
         }
+
+        partners[partner].pending += pending;
+        partners[partner].items += 1;
+
+    });
+
+
+    const sortedPartners = Object.entries(partners).sort(
+        (a,b) => b[1].pending - a[1].pending
     );
-
-
-    const sortedPartners =
-        Object.entries(
-            partners
-        ).sort(
-            (a,b) =>
-                b[1].pending -
-                a[1].pending
-        );
-
 
     partnerBadge.textContent =
         `${sortedPartners.length} PARTNERS`;
 
 
-    /* =====================================================
-       PARTNER TABLE
-    ===================================================== */
+    /* PARTNER TABLE */
 
     if(sortedPartners.length === 0){
 
         partnerTable.innerHTML = `
-
             <tr>
-
-                <td
-                    colspan="3"
-                    class="no-data">
-
+                <td colspan="3" class="no-data">
                     No partner pending data available
-
                 </td>
-
             </tr>
-
         `;
 
         return;
 
     }
 
+    partnerTable.innerHTML = sortedPartners.map(
+        ([partner,data]) => `
+            <tr>
 
-    partnerTable.innerHTML =
-        sortedPartners.map(
-            ([partner,data]) => `
+                <td>
+                    <span class="item-code">
+                        ${escapeHTML(partner)}
+                    </span>
+                </td>
 
-                <tr>
+                <td>
+                    <span class="pending-number">
+                        ${formatNumber(data.pending)}
+                    </span>
+                </td>
 
-                    <td>
+                <td>
+                    ${formatNumber(data.items)}
+                </td>
 
-                        <span class="item-code">
-
-                            ${escapeHTML(partner)}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <span class="pending-number">
-
-                            ${formatNumber(
-                                data.pending
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        ${formatNumber(
-                            data.items
-                        )}
-
-                    </td>
-
-                </tr>
-
-            `
-        ).join("");
+            </tr>
+        `
+    ).join("");
 
 }
 
 </script>
 
-
 </body>
-
 </html>
