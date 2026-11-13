@@ -1,0 +1,2014 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>STARK QR - W2R Scanning</title>
+
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:#07111f;
+    color:#eaf4ff;
+}
+
+/* TOP BAR */
+
+.topbar{
+    height:68px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+    background:rgba(7,17,31,.97);
+    border-bottom:1px solid rgba(70,170,255,.25);
+    box-shadow:0 4px 25px rgba(0,0,0,.3);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-icon{
+    width:40px;
+    height:40px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:10px;
+    background:linear-gradient(135deg,#087eff,#00b8ff);
+    font-size:20px;
+}
+
+.brand-title{
+    font-size:19px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.brand-subtitle{
+    color:#6fa9d3;
+    font-size:10px;
+    letter-spacing:2px;
+    margin-top:3px;
+}
+
+.top-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.operator{
+    color:#a9d8f5;
+    font-size:13px;
+}
+
+.operator i{
+    color:#38b8ff;
+    margin-right:5px;
+}
+
+.back-btn{
+    border:1px solid rgba(65,170,255,.3);
+    background:#102943;
+    color:#8ed1ff;
+    padding:9px 13px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+/* MAIN */
+
+.main{
+    max-width:1250px;
+    margin:auto;
+    padding:30px 22px;
+}
+
+.page-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:23px;
+}
+
+.page-title{
+    font-size:27px;
+    font-weight:800;
+}
+
+.page-title span{
+    color:#35b9ff;
+}
+
+.description{
+    margin-top:6px;
+    font-size:12px;
+    color:#7296b1;
+}
+
+/* CARDS */
+
+.card{
+    background:linear-gradient(145deg,#0d1d2e,#091523);
+    border:1px solid rgba(78,159,218,.17);
+    border-radius:13px;
+    overflow:hidden;
+    margin-bottom:20px;
+    box-shadow:0 7px 25px rgba(0,0,0,.18);
+}
+
+.card-header{
+    padding:16px 19px;
+    border-bottom:1px solid rgba(78,159,218,.13);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.card-title{
+    font-size:14px;
+    font-weight:bold;
+}
+
+.card-title i{
+    color:#38b8ff;
+    margin-right:8px;
+}
+
+.card-content{
+    padding:20px;
+}
+
+/* INPUT GRID */
+
+.input-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.field label{
+    color:#84a9c4;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+.field input,
+.field select{
+    width:100%;
+    height:44px;
+    padding:0 13px;
+    outline:none;
+    border:1px solid rgba(83,163,220,.25);
+    border-radius:7px;
+    background:#0a1a2b;
+    color:#eaf4ff;
+    font-size:13px;
+}
+
+.field input:focus,
+.field select:focus{
+    border-color:#26aaff;
+    box-shadow:0 0 0 2px rgba(38,170,255,.1);
+}
+
+.field input:disabled,
+.field select:disabled{
+    opacity:.55;
+}
+
+.field select option{
+    background:#0a1a2b;
+}
+
+.field.full{
+    grid-column:1/-1;
+}
+
+.field small{
+    color:#587b96;
+    font-size:10px;
+}
+
+/* ITEM INFO */
+
+.item-info{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:19px;
+}
+
+.info-box{
+    background:rgba(30,93,138,.13);
+    border:1px solid rgba(68,160,220,.13);
+    border-radius:9px;
+    padding:14px;
+}
+
+.info-label{
+    color:#668ba7;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.info-value{
+    margin-top:6px;
+    color:#55c0ff;
+    font-size:23px;
+    font-weight:800;
+}
+
+/* SCANNER */
+
+.scanner-card{
+    border-color:rgba(44,179,255,.28);
+}
+
+.scan-input-wrapper{
+    display:flex;
+    gap:10px;
+}
+
+.scan-input-wrapper input{
+    flex:1;
+    min-width:0;
+    height:55px;
+    padding:0 15px;
+    background:#061525;
+    border:1px solid rgba(66,174,255,.35);
+    border-radius:8px;
+    color:white;
+    font-size:16px;
+    outline:none;
+}
+
+.scan-input-wrapper input:focus{
+    border-color:#20baff;
+    box-shadow:0 0 14px rgba(32,186,255,.15);
+}
+
+.scan-input-wrapper input::placeholder{
+    color:#506e86;
+}
+
+.add-btn{
+    min-width:120px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(135deg,#087eff,#00baff);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.scan-help{
+    margin-top:12px;
+    color:#6588a3;
+    font-size:11px;
+}
+
+.scan-help i{
+    color:#36c2ff;
+    margin-right:5px;
+}
+
+/* SCAN STATS */
+
+.scan-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:20px;
+}
+
+.stat{
+    padding:14px;
+    border-radius:9px;
+    background:#0b2033;
+    text-align:center;
+    border:1px solid rgba(72,155,215,.14);
+}
+
+.stat-number{
+    font-size:25px;
+    font-weight:800;
+    color:#42bdff;
+}
+
+.stat-label{
+    margin-top:5px;
+    font-size:10px;
+    color:#7595ad;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.stat.duplicate .stat-number{
+    color:#ff6670;
+}
+
+.stat.capacity .stat-number{
+    color:#ffc85a;
+}
+
+/* TABLE */
+
+.table-wrapper{
+    max-height:350px;
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:550px;
+}
+
+thead th{
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:#0b1c2d;
+    color:#76a8ca;
+    padding:13px;
+    text-align:left;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+tbody td{
+    padding:12px 13px;
+    font-size:12px;
+    color:#b7cee0;
+    border-bottom:1px solid rgba(70,150,210,.08);
+}
+
+tbody tr:hover{
+    background:rgba(42,139,211,.07);
+}
+
+.serial-code{
+    color:#53baff;
+    font-weight:bold;
+}
+
+.remove-btn{
+    border:none;
+    background:rgba(255,65,75,.12);
+    color:#ff727c;
+    border-radius:5px;
+    padding:7px 10px;
+    cursor:pointer;
+}
+
+.empty-row{
+    text-align:center;
+    padding:35px !important;
+    color:#54738b;
+}
+
+/* BUTTONS */
+
+.action-buttons{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    padding:18px 20px;
+    border-top:1px solid rgba(78,159,218,.12);
+}
+
+.btn{
+    padding:12px 20px;
+    border-radius:7px;
+    border:none;
+    font-weight:bold;
+    font-size:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.btn-clear{
+    color:#ff818a;
+    background:rgba(255,65,75,.12);
+    border:1px solid rgba(255,65,75,.2);
+}
+
+.btn-submit{
+    color:white;
+    background:linear-gradient(135deg,#087eff,#00baff);
+    min-width:160px;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+.btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+    transform:none;
+}
+
+/* NOTIFICATION */
+
+.message{
+    display:none;
+    padding:13px 15px;
+    margin-bottom:17px;
+    border-radius:8px;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.message.success{
+    display:block;
+    background:rgba(24,200,110,.1);
+    color:#4de49a;
+    border:1px solid rgba(24,200,110,.25);
+}
+
+.message.error{
+    display:block;
+    background:rgba(255,65,75,.1);
+    color:#ff7b84;
+    border:1px solid rgba(255,65,75,.25);
+}
+
+.message.info{
+    display:block;
+    background:rgba(40,157,255,.1);
+    color:#75caff;
+    border:1px solid rgba(40,157,255,.25);
+}
+
+.loading{
+    color:#59c3ff;
+    font-size:12px;
+    text-align:center;
+    padding:15px;
+}
+
+.footer{
+    display:flex;
+    justify-content:space-between;
+    padding:5px 2px;
+    color:#4e6d84;
+    font-size:10px;
+}
+
+@media(max-width:650px){
+
+    .topbar{
+        padding:0 12px;
+    }
+
+    .brand-title{
+        font-size:15px;
+    }
+
+    .brand-subtitle{
+        display:none;
+    }
+
+    .operator{
+        display:none;
+    }
+
+    .main{
+        padding:22px 12px;
+    }
+
+    .page-title{
+        font-size:22px;
+    }
+
+    .input-grid{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:auto;
+    }
+
+    .item-info{
+        grid-template-columns:1fr;
+    }
+
+    .scan-stats{
+        gap:7px;
+    }
+
+    .stat{
+        padding:11px 5px;
+    }
+
+    .stat-number{
+        font-size:20px;
+    }
+
+    .scan-input-wrapper{
+        flex-direction:column;
+    }
+
+    .add-btn{
+        height:45px;
+    }
+
+    .action-buttons{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+}
+
+/* DATE ICON */
+
+input[type="date"]::-webkit-calendar-picker-indicator{
+    filter:invert(1);
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            <i class="fa fa-qrcode"></i>
+        </div>
+
+        <div>
+            <div class="brand-title">STARK QR</div>
+            <div class="brand-subtitle">W2R CONTROL SYSTEM</div>
+        </div>
+
+    </div>
+
+    <div class="top-right">
+
+        <div class="operator">
+            <i class="fa fa-user"></i>
+            <span id="operatorName">Loading...</span>
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa fa-arrow-left"></i>
+            Dashboard
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="main">
+
+    <!-- PAGE HEADING -->
+
+    <div class="page-heading">
+
+        <div>
+            <div class="page-title">
+                W2R <span>Scanning</span>
+            </div>
+
+            <div class="description">
+                Box-wise serial number scanning and submission
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div id="message" class="message"></div>
+
+
+    <!-- SCAN DETAILS -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa fa-clipboard-list"></i>
+                SCANNING DETAILS
+            </div>
+
+            <span style="color:#47d995;font-size:10px;font-weight:bold">
+                <i class="fa fa-circle"></i> OPERATOR ACTIVE
+            </span>
+
+        </div>
+
+
+        <div class="card-content">
+
+            <div class="input-grid">
+
+                <!-- OPERATOR -->
+
+                <div class="field">
+
+                    <label>Operator Name</label>
+
+                    <input
+                        type="text"
+                        id="operator"
+                        readonly
+                    >
+
+                    <small>Automatically captured from login session.</small>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="field">
+
+                    <label>Scanning Date</label>
+
+                    <input
+                        type="date"
+                        id="scanDate"
+                    >
+
+                </div>
+
+
+                <!-- ITEM CODE -->
+
+                <div class="field">
+
+                    <label>Select Item Code</label>
+
+                    <select id="itemCode">
+
+                        <option value="">
+                            Loading item codes...
+                        </option>
+
+                    </select>
+
+                    <small>Loaded from dashboard Sheet1.</small>
+
+                </div>
+
+
+                <!-- BOX NUMBER -->
+
+                <div class="field">
+
+                    <label>Box Number</label>
+
+                    <input
+                        type="text"
+                        id="boxNumber"
+                        placeholder="Enter / Scan Box Number"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <!-- BOX CAPACITY -->
+
+                <div class="field">
+
+                    <label>Box Capacity</label>
+
+                    <input
+                        type="number"
+                        id="boxCapacity"
+                        min="1"
+                        step="1"
+                        placeholder="Enter maximum serial quantity"
+                    >
+
+                    <small>Maximum serial numbers allowed in this box.</small>
+
+                </div>
+
+            </div>
+
+
+            <!-- ITEM INFORMATION -->
+
+            <div class="item-info">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Required Quantity
+                    </div>
+
+                    <div
+                        id="requiredQty"
+                        class="info-value">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Pending Quantity
+                    </div>
+
+                    <div
+                        id="pendingQty"
+                        class="info-value">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Current Box Capacity
+                    </div>
+
+                    <div
+                        id="capacityDisplay"
+                        class="info-value">
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SERIAL SCANNING -->
+
+    <section class="card scanner-card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa fa-barcode"></i>
+                SERIAL NUMBER SCANNING
+            </div>
+
+            <span style="color:#48baff;font-size:10px;font-weight:bold">
+                LIVE SCANNING
+            </span>
+
+        </div>
+
+
+        <div class="card-content">
+
+            <div class="scan-input-wrapper">
+
+                <input
+                    type="text"
+                    id="serialInput"
+                    placeholder="Scan or enter serial number..."
+                    autocomplete="off"
+                    disabled
+                >
+
+                <button
+                    class="add-btn"
+                    id="addBtn"
+                    onclick="addSerial()"
+                    disabled
+                >
+
+                    <i class="fa fa-plus"></i>
+                    ADD SERIAL
+
+                </button>
+
+            </div>
+
+
+            <div class="scan-help">
+
+                <i class="fa fa-circle-info"></i>
+
+                Scan serial number and press ENTER.
+                Each valid scan will be added automatically.
+
+            </div>
+
+
+            <!-- STATS -->
+
+            <div class="scan-stats">
+
+                <div class="stat">
+
+                    <div
+                        class="stat-number"
+                        id="scannedCount">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Scanned
+                    </div>
+
+                </div>
+
+
+                <div class="stat duplicate">
+
+                    <div
+                        class="stat-number"
+                        id="duplicateCount">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Duplicates
+                    </div>
+
+                </div>
+
+
+                <div class="stat capacity">
+
+                    <div
+                        class="stat-number"
+                        id="remainingCount">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Box Remaining
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SERIAL LIST -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                <i class="fa fa-list-check"></i>
+                SCANNED SERIAL LIST
+            </div>
+
+            <span
+                id="listBadge"
+                style="color:#50bcff;font-size:10px;font-weight:bold">
+                0 RECORDS
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>SL NO</th>
+
+                        <th>SERIAL NUMBER</th>
+
+                        <th>ITEM CODE</th>
+
+                        <th>BOX NUMBER</th>
+
+                        <th>ACTION</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="serialTable">
+
+                    <tr>
+
+                        <td colspan="5" class="empty-row">
+                            No serial numbers scanned yet.
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="action-buttons">
+
+            <button
+                class="btn btn-clear"
+                id="clearBtn"
+                onclick="clearScans()">
+
+                <i class="fa fa-trash"></i>
+                CLEAR SCANS
+
+            </button>
+
+
+            <button
+                class="btn btn-submit"
+                id="submitBtn"
+                onclick="submitData()">
+
+                <i class="fa fa-cloud-arrow-up"></i>
+                SUBMIT SCANS
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        <span>
+            <i class="fa fa-circle" style="color:#20e27a"></i>
+            STARK QR SCANNING SYSTEM
+        </span>
+
+        <span>
+            W2R MONITORING
+        </span>
+
+    </div>
+
+</main>
+
+
+<script>
+
+/************************************************************
+ * SERVER PROVIDED OPERATOR NAME
+ ************************************************************/
+
+const SERVER_OPERATOR =
+    <?!= JSON.stringify(operatorName) ?>;
+
+
+/************************************************************
+ * STATE
+ ************************************************************/
+
+let operatorName = SERVER_OPERATOR || "";
+
+let itemData = [];
+
+let scannedRecords = [];
+
+let duplicateCount = 0;
+
+let isSubmitting = false;
+
+
+/************************************************************
+ * INITIALIZE
+ ************************************************************/
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    document.getElementById("operator").value =
+        operatorName;
+
+    document.getElementById("operatorName").textContent =
+        operatorName || "Unknown";
+
+    document.getElementById("scanDate").value =
+        getToday();
+
+    if(!operatorName){
+
+        showMessage(
+            "Operator name missing. Please return to login and try again.",
+            "error"
+        );
+
+        disableScanner(true);
+
+        return;
+
+    }
+
+    loadItems();
+
+    setupEvents();
+
+});
+
+
+/************************************************************
+ * TODAY
+ ************************************************************/
+
+function getToday(){
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+
+    const month = String(
+        now.getMonth() + 1
+    ).padStart(2,"0");
+
+    const day = String(
+        now.getDate()
+    ).padStart(2,"0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+/************************************************************
+ * LOAD ITEM CODES
+ ************************************************************/
+
+function loadItems(){
+
+    showMessage(
+        "Loading item codes from Google Sheets...",
+        "info"
+    );
+
+    google.script.run
+
+        .withSuccessHandler(function(items){
+
+            itemData = Array.isArray(items)
+                ? items
+                : [];
+
+            const select =
+                document.getElementById("itemCode");
+
+            select.innerHTML = "";
+
+            const defaultOption =
+                document.createElement("option");
+
+            defaultOption.value = "";
+            defaultOption.textContent =
+                "-- Select Item Code --";
+
+            select.appendChild(defaultOption);
+
+            itemData.forEach(function(item){
+
+                const option =
+                    document.createElement("option");
+
+                option.value = item.code;
+
+                option.textContent =
+                    item.code +
+                    "  |  Pending: " +
+                    Number(item.pending).toLocaleString("en-IN");
+
+                select.appendChild(option);
+
+            });
+
+            if(itemData.length === 0){
+
+                showMessage(
+                    "No pending item codes available.",
+                    "error"
+                );
+
+            }
+            else{
+
+                showMessage(
+                    itemData.length +
+                    " item codes loaded successfully.",
+                    "success"
+                );
+
+            }
+
+        })
+
+        .withFailureHandler(function(error){
+
+            showMessage(
+                error.message || "Unable to load item codes.",
+                "error"
+            );
+
+        })
+
+        .getScannerItems();
+
+}
+
+
+/************************************************************
+ * EVENTS
+ ************************************************************/
+
+function setupEvents(){
+
+    document.getElementById("itemCode")
+        .addEventListener("change", onItemChange);
+
+    document.getElementById("boxCapacity")
+        .addEventListener("input", updateStats);
+
+    document.getElementById("boxNumber")
+        .addEventListener("input", updateScannerState);
+
+    document.getElementById("scanDate")
+        .addEventListener("change", updateScannerState);
+
+    document.getElementById("serialInput")
+        .addEventListener("keydown", function(event){
+
+            if(event.key === "Enter"){
+
+                event.preventDefault();
+
+                addSerial();
+
+            }
+
+        });
+
+    document.getElementById("serialInput")
+        .addEventListener("paste", function(){
+
+            const input = this;
+
+            setTimeout(function(){
+
+                if(input.value.includes("\n")){
+
+                    const values =
+                        input.value.split(/\r?\n/);
+
+                    input.value = "";
+
+                    values.forEach(value => {
+
+                        if(value.trim()){
+                            addSerialValue(value);
+                        }
+
+                    });
+
+                    renderTable();
+
+                    updateStats();
+
+                }
+
+            },50);
+
+        });
+
+}
+
+
+/************************************************************
+ * ITEM CHANGE
+ ************************************************************/
+
+function onItemChange(){
+
+    const code =
+        document.getElementById("itemCode").value;
+
+    const item = itemData.find(
+        x => x.code === code
+    );
+
+    document.getElementById("requiredQty").textContent =
+        item
+            ? Number(item.pending).toLocaleString("en-IN")
+            : "0";
+
+    document.getElementById("pendingQty").textContent =
+        item
+            ? Number(item.pending).toLocaleString("en-IN")
+            : "0";
+
+    updateScannerState();
+
+}
+
+
+/************************************************************
+ * SCANNER ENABLE / DISABLE
+ ************************************************************/
+
+function disableScanner(disabled){
+
+    document.getElementById("serialInput").disabled =
+        disabled;
+
+    document.getElementById("addBtn").disabled =
+        disabled;
+
+}
+
+
+function updateScannerState(){
+
+    const item =
+        document.getElementById("itemCode").value;
+
+    const box =
+        document.getElementById("boxNumber").value.trim();
+
+    const date =
+        document.getElementById("scanDate").value;
+
+    const enabled =
+        !!item &&
+        !!box &&
+        !!date &&
+        !isSubmitting;
+
+    disableScanner(!enabled);
+
+    if(enabled){
+
+        document.getElementById("serialInput").focus();
+
+    }
+
+}
+
+
+/************************************************************
+ * ADD SERIAL
+ ************************************************************/
+
+function addSerial(){
+
+    const input =
+        document.getElementById("serialInput");
+
+    const value = input.value.trim();
+
+    if(!value) return;
+
+    const success =
+        addSerialValue(value);
+
+    input.value = "";
+
+    if(success){
+
+        renderTable();
+
+        updateStats();
+
+        input.focus();
+
+    }
+
+}
+
+
+/************************************************************
+ * VALIDATE AND ADD SERIAL
+ ************************************************************/
+
+function addSerialValue(value){
+
+    if(isSubmitting) return false;
+
+    const serial = String(value).trim();
+
+    const item =
+        document.getElementById("itemCode").value;
+
+    const box =
+        document.getElementById("boxNumber").value.trim();
+
+    const date =
+        document.getElementById("scanDate").value;
+
+    const capacity =
+        Number(
+            document.getElementById("boxCapacity").value
+        );
+
+    if(!item || !box || !date){
+
+        showMessage(
+            "Please select item code, date and box number first.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+    if(!capacity || capacity < 1){
+
+        showMessage(
+            "Please enter a valid box capacity.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+    if(scannedRecords.length >= capacity){
+
+        showMessage(
+            "Box capacity reached. Maximum " +
+            capacity +
+            " serial numbers allowed.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+    // Prevent duplicate serials in current box.
+
+    const duplicate =
+        scannedRecords.some(
+            record =>
+                record.serial.toUpperCase() ===
+                serial.toUpperCase()
+        );
+
+    if(duplicate){
+
+        duplicateCount++;
+
+        updateStats();
+
+        showMessage(
+            "Duplicate serial detected: " + serial,
+            "error"
+        );
+
+        return false;
+
+    }
+
+    scannedRecords.push({
+
+        serial: serial,
+
+        itemCode: item,
+
+        box: box
+
+    });
+
+    showMessage(
+        "Serial added successfully: " + serial,
+        "success"
+    );
+
+    return true;
+
+}
+
+
+/************************************************************
+ * RENDER TABLE
+ ************************************************************/
+
+function renderTable(){
+
+    const table =
+        document.getElementById("serialTable");
+
+    if(scannedRecords.length === 0){
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="5" class="empty-row">
+
+                    No serial numbers scanned yet.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+    table.innerHTML = scannedRecords.map(
+        (record,index) => `
+
+            <tr>
+
+                <td>${index + 1}</td>
+
+                <td>
+                    <span class="serial-code">
+                        ${escapeHTML(record.serial)}
+                    </span>
+                </td>
+
+                <td>${escapeHTML(record.itemCode)}</td>
+
+                <td>${escapeHTML(record.box)}</td>
+
+                <td>
+
+                    <button
+                        class="remove-btn"
+                        onclick="removeSerial(${index})">
+
+                        <i class="fa fa-trash"></i>
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `
+    ).join("");
+
+}
+
+
+/************************************************************
+ * REMOVE SERIAL
+ ************************************************************/
+
+function removeSerial(index){
+
+    if(isSubmitting) return;
+
+    scannedRecords.splice(index,1);
+
+    renderTable();
+
+    updateStats();
+
+    showMessage(
+        "Serial removed from pending list.",
+        "info"
+    );
+
+    document.getElementById("serialInput").focus();
+
+}
+
+
+/************************************************************
+ * UPDATE COUNTS
+ ************************************************************/
+
+function updateStats(){
+
+    const count =
+        scannedRecords.length;
+
+    const capacity =
+        Number(
+            document.getElementById("boxCapacity").value
+        ) || 0;
+
+    document.getElementById("scannedCount").textContent =
+        count;
+
+    document.getElementById("duplicateCount").textContent =
+        duplicateCount;
+
+    document.getElementById("remainingCount").textContent =
+        Math.max(0,capacity-count);
+
+    document.getElementById("capacityDisplay").textContent =
+        capacity || 0;
+
+    document.getElementById("listBadge").textContent =
+        count + " RECORDS";
+
+}
+
+
+/************************************************************
+ * SUBMIT SCANS
+ ************************************************************/
+
+function submitData(){
+
+    if(isSubmitting) return;
+
+    const operator =
+        operatorName;
+
+    const itemCode =
+        document.getElementById("itemCode").value;
+
+    const scanDate =
+        document.getElementById("scanDate").value;
+
+    const boxNumber =
+        document.getElementById("boxNumber").value.trim();
+
+    const capacity =
+        Number(
+            document.getElementById("boxCapacity").value
+        );
+
+    if(!operator){
+
+        showMessage(
+            "Operator name missing.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(!itemCode){
+
+        showMessage(
+            "Please select an item code.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(!scanDate){
+
+        showMessage(
+            "Please select scanning date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(!boxNumber){
+
+        showMessage(
+            "Please enter box number.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(!capacity || capacity < 1){
+
+        showMessage(
+            "Please enter a valid box capacity.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(scannedRecords.length === 0){
+
+        showMessage(
+            "Please scan at least one serial number.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(scannedRecords.length > capacity){
+
+        showMessage(
+            "Scanned quantity exceeds box capacity.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if(
+        scannedRecords.some(
+            r => r.itemCode !== itemCode ||
+                 r.box !== boxNumber
+        )
+    ){
+
+        showMessage(
+            "Scanning details changed. Clear and scan again.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    const confirmed = confirm(
+
+        "Confirm W2R Scan Submission\n\n" +
+
+        "Operator: " + operator + "\n" +
+
+        "Item Code: " + itemCode + "\n" +
+
+        "Box Number: " + boxNumber + "\n" +
+
+        "Date: " + scanDate + "\n" +
+
+        "Total Serials: " + scannedRecords.length +
+        "\n\nSubmit to Google Sheets?"
+
+    );
+
+    if(!confirmed) return;
+
+    const payload = {
+
+        operator: operator,
+
+        itemCode: itemCode,
+
+        scanDate: scanDate,
+
+        boxNumber: boxNumber,
+
+        records: scannedRecords.map(record => ({
+
+            serial: record.serial
+
+        }))
+
+    };
+
+    isSubmitting = true;
+
+    document.getElementById("submitBtn").disabled =
+        true;
+
+    document.getElementById("submitBtn").innerHTML =
+        '<i class="fa fa-spinner fa-spin"></i> SUBMITTING...';
+
+    disableScanner(true);
+
+    document.getElementById("clearBtn").disabled =
+        true;
+
+    showMessage(
+        "Submitting serial numbers to Google Sheets. Please wait...",
+        "info"
+    );
+
+
+    google.script.run
+
+        .withSuccessHandler(function(result){
+
+            isSubmitting = false;
+
+            document.getElementById("submitBtn").disabled =
+                false;
+
+            document.getElementById("submitBtn").innerHTML =
+                '<i class="fa fa-cloud-arrow-up"></i> SUBMIT SCANS';
+
+            document.getElementById("clearBtn").disabled =
+                false;
+
+            if(!result || !result.success){
+
+                showMessage(
+                    "Submission failed.",
+                    "error"
+                );
+
+                updateScannerState();
+
+                return;
+
+            }
+
+            const saved = result.submitted || 0;
+
+            const duplicates = result.duplicates || 0;
+
+            const duplicateText =
+                result.duplicateRecords &&
+                result.duplicateRecords.length
+                    ? "\nDuplicate serials: " +
+                      result.duplicateRecords.join(", ")
+                    : "";
+
+            showMessage(
+
+                "SUBMISSION COMPLETED!\n" +
+
+                "Successfully saved: " + saved +
+                "\nDuplicates skipped: " + duplicates +
+                duplicateText,
+
+                saved > 0 ? "success" : "info"
+
+            );
+
+            // Clear only after server confirms success.
+
+            scannedRecords = [];
+
+            duplicateCount += duplicates;
+
+            renderTable();
+
+            updateStats();
+
+            // Reset box number and capacity for next box.
+
+            document.getElementById("boxNumber").value = "";
+
+            document.getElementById("boxCapacity").value = "";
+
+            // Refresh item pending quantity.
+
+            refreshItemData();
+
+            updateScannerState();
+
+        })
+
+        .withFailureHandler(function(error){
+
+            isSubmitting = false;
+
+            document.getElementById("submitBtn").disabled =
+                false;
+
+            document.getElementById("submitBtn").innerHTML =
+                '<i class="fa fa-cloud-arrow-up"></i> SUBMIT SCANS';
+
+            document.getElementById("clearBtn").disabled =
+                false;
+
+            showMessage(
+                "SUBMISSION ERROR: " +
+                (error.message || error),
+                "error"
+            );
+
+            updateScannerState();
+
+        })
+
+        .submitScans(payload);
+
+}
+
+
+/************************************************************
+ * REFRESH ITEM DATA
+ ************************************************************/
+
+function refreshItemData(){
+
+    google.script.run
+
+        .withSuccessHandler(function(items){
+
+            itemData = Array.isArray(items)
+                ? items
+                : [];
+
+            const select =
+                document.getElementById("itemCode");
+
+            const selected =
+                select.value;
+
+            select.innerHTML = "";
+
+            const defaultOption =
+                document.createElement("option");
+
+            defaultOption.value = "";
+
+            defaultOption.textContent =
+                "-- Select Item Code --";
+
+            select.appendChild(defaultOption);
+
+            itemData.forEach(function(item){
+
+                const option =
+                    document.createElement("option");
+
+                option.value = item.code;
+
+                option.textContent =
+                    item.code +
+                    " | Pending: " +
+                    Number(item.pending).toLocaleString("en-IN");
+
+                select.appendChild(option);
+
+            });
+
+            if(
+                itemData.some(x => x.code === selected)
+            ){
+
+                select.value = selected;
+
+            }
+
+            onItemChange();
+
+        })
+
+        .withFailureHandler(function(error){
+
+            console.error(error);
+
+        })
+
+        .getScannerItems();
+
+}
+
+
+/************************************************************
+ * CLEAR SCANS
+ ************************************************************/
+
+function clearScans(){
+
+    if(isSubmitting) return;
+
+    if(scannedRecords.length === 0) return;
+
+    const confirmed = confirm(
+
+        "Are you sure you want to clear all scanned serial numbers?"
+
+    );
+
+    if(!confirmed) return;
+
+    scannedRecords = [];
+
+    duplicateCount = 0;
+
+    renderTable();
+
+    updateStats();
+
+    showMessage(
+        "Pending scans cleared.",
+        "info"
+    );
+
+    document.getElementById("serialInput").focus();
+
+}
+
+
+/************************************************************
+ * MESSAGE
+ ************************************************************/
+
+function showMessage(message,type){
+
+    const element =
+        document.getElementById("message");
+
+    element.className =
+        "message " + type;
+
+    element.textContent =
+        message;
+
+    element.style.whiteSpace =
+        "pre-line";
+
+}
+
+
+/************************************************************
+ * HTML ESCAPE
+ ************************************************************/
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/************************************************************
+ * BACK TO DASHBOARD
+ ************************************************************/
+
+function goBack(){
+
+    const user =
+        encodeURIComponent(operatorName);
+
+    window.location.href =
+        "YOUR_DASHBOARD_URL";
+
+}
+
+</script>
+
+</body>
+</html>
