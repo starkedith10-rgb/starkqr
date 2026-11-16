@@ -620,7 +620,7 @@ tbody tr:hover{background:rgba(42,139,211,.07);}
                 <div class="panel-header">
                     <div class="panel-title">
                         <i class="fa fa-users"></i>
-                        Team Performance
+                        Name-wise Performance
                     </div>
                     <div class="panel-badge">LIVE</div>
                 </div>
@@ -1128,7 +1128,7 @@ async function loadDashboard(){
 
         /* TEAM + PENDING TABLES */
 
-        renderTeams(data.teamWise || {},totalScanned);
+        renderNamePerformance(data.nameWise || {},totalTodayScanned);
         renderPendingItems(data.itemList || [],moduleAtStart);
 
 
@@ -1172,27 +1172,28 @@ async function loadDashboard(){
    TEAM PERFORMANCE
 ========================================================= */
 
-function renderTeams(teams,totalScanned){
+function renderNamePerformance(operators,totalTodayScanned){
 
     const teamBox = document.getElementById("teamBox");
-    const teamNames = Object.keys(teams || {});
+    const operatorNames = Object.keys(operators || {})
+        .sort((a,b) => (Number(operators[b]) || 0) - (Number(operators[a]) || 0));
 
-    if(teamNames.length === 0){
+    if(operatorNames.length === 0){
         teamBox.innerHTML = `
-            <div class="team-empty">No team data available.</div>
+            <div class="team-empty">No operator scans recorded today.</div>
         `;
         return;
     }
 
     let html = "";
 
-    teamNames.forEach(function(team){
+    operatorNames.forEach(function(operatorName){
 
-        const count = Number(teams[team]) || 0;
+        const count = Number(operators[operatorName]) || 0;
 
         let percentage = 0;
-        if(totalScanned > 0){
-            percentage = (count / totalScanned) * 100;
+        if(totalTodayScanned > 0){
+            percentage = (count / totalTodayScanned) * 100;
         }
 
         percentage = Math.max(0,Math.min(100,percentage));
@@ -1200,8 +1201,8 @@ function renderTeams(teams,totalScanned){
         html += `
             <div class="team-item">
                 <div class="team-top">
-                    <span class="team-name">${escapeHTML(team)}</span>
-                    <span class="team-count">${formatNumber(count)}</span>
+                    <span class="team-name">${escapeHTML(operatorName)}</span>
+                    <span class="team-count">${formatNumber(count)} scans</span>
                 </div>
                 <div class="team-progress">
                     <div class="team-fill" style="width:${percentage.toFixed(1)}%"></div>
