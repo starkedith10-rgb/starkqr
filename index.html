@@ -8,6 +8,7 @@
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 *{
@@ -736,6 +737,32 @@ tbody tr:hover{background:rgba(42,139,211,.07);}
             </section>
         </div>
 
+        <!-- R2W ONLY: EACH COMPLETED LR CAN BE DOWNLOADED AS ITS OWN XLSX FILE. -->
+        <section class="panel table-panel" id="completedLRPanel" style="display:none; margin-top:22px;">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fa fa-file-excel"></i>
+                    <span>Completed LR Numbers - Excel Download</span>
+                </div>
+                <div id="completedLRBadge" class="panel-badge">0 COMPLETED</div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>LR Number</th>
+                            <th>Scanned Records</th>
+                            <th>Item Codes</th>
+                            <th>Download</th>
+                        </tr>
+                    </thead>
+                    <tbody id="completedLRTable">
+                        <tr><td colspan="4" class="no-data">Loading completed LR numbers...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <div class="bottom-info">
             <div class="live-indicator">
                 <span class="live-dot"></span>
@@ -913,6 +940,11 @@ function switchDashboard(moduleName){
 
     const config = MODULES[moduleName];
 
+    const completedPanel = document.getElementById("completedLRPanel");
+    if(completedPanel){
+        completedPanel.style.display = moduleName === "r2w" ? "block" : "none";
+    }
+
     document.getElementById("moduleTitle").innerText = config.title;
     document.getElementById("moduleDescription").innerText = config.description;
     document.getElementById("statusMessage").innerText =
@@ -974,6 +1006,14 @@ function resetDashboardDisplay(){
 
     document.getElementById("partnerPendingTable").innerHTML =
         `<tr><td colspan="3" class="no-data">Loading data...</td></tr>`;
+
+    const completedTable = document.getElementById("completedLRTable");
+    if(completedTable){
+        completedTable.innerHTML =
+            `<tr><td colspan="4" class="no-data">Loading completed LR numbers...</td></tr>`;
+    }
+    const completedBadge = document.getElementById("completedLRBadge");
+    if(completedBadge) completedBadge.textContent = "0 COMPLETED";
 
     document.getElementById("connectionError").style.display = "none";
 }
@@ -1131,6 +1171,9 @@ async function loadDashboard(){
         renderNamePerformance(data.nameWise || {},totalTodayScanned);
         renderPendingItems(data.itemList || [],moduleAtStart);
 
+        if(moduleAtStart === "r2w") {
+            renderCompletedLRs(data.completedLRs || []);
+        }
 
         /* LAST UPDATE */
 
@@ -1212,6 +1255,104 @@ function renderNamePerformance(operators,totalTodayScanned){
     });
 
     teamBox.innerHTML = html;
+}
+
+
+/* =========================================================
+   R2W COMPLETED LR LIST + INDIVIDUAL EXCEL DOWNLOAD
+========================================================= */
+
+function renderCompletedLRs(completedLRs){
+
+    const panel = document.getElementById("completedLRPanel");
+    const table = document.getElementById("completedLRTable");
+    const badge = document.getElementById("completedLRBadge");
+
+    if(!panel || !table || !badge) return;
+
+    panel.style.display = currentModule === "r2w" ? "block" : "none";
+
+    const list = Array.isArray(completedLRs) ? completedLRs : [];
+    badge.textContent = `${list.length} COMPLETED`;
+
+    if(list.length === 0){
+        table.innerHTML = `
+            <tr><td colspan="4" class="no-data">No completed LR Numbers available yet</td></tr>
+        `;
+        return;
+    }
+
+    table.innerHTML = list.map(item => {
+        const lr = String(item.lr || "");
+        const encodedLR = encodeURIComponent(lr).replace(/'/g,"%27");
+        return `
+            <tr>
+                <td><span class="item-code">${escapeHTML(lr)}</span></td>
+                <td>${formatNumber(item.records || 0)}</td>
+                <td>${formatNumber(item.items || 0)}</td>
+                <td>
+                    <button type="button" class="logout-btn" style="background:#168a57; padding:8px 12px;"
+                        onclick="downloadCompletedLR(decodeURIComponent('${encodedLR}'), this)">
+                        <i class="fa fa-file-excel"></i> Download Excel
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join("");
+}
+
+
+async function downloadCompletedLR(lrNumber, button){
+
+    if(!lrNumber) return;
+
+    const originalHTML = button ? button.innerHTML : "";
+
+    try{
+
+        if(button){
+            button.disabled = true;
+            button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Preparing...';
+        }
+
+        const url = SCANNER_WEB_APP_URL +
+            "?action=r2w-completed-export&lr=" + encodeURIComponent(lrNumber) +
+            "&nocache=" + Date.now();
+
+        const response = await fetch(url,{method:"GET",cache:"no-store"});
+        if(!response.ok) throw new Error("HTTP Error " + response.status);
+
+        const data = await response.json();
+        if(!data.success){
+            throw new Error(data.error || "Completed LR export failed.");
+        }
+
+        if(typeof XLSX === "undefined") {
+            throw new Error("Excel export library could not be loaded. Please refresh the dashboard and try again.");
+        }
+
+        const worksheetData = [data.headers || [], ...(data.rows || [])];
+        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+        worksheet["!cols"] = (data.headers || []).map((header,index) => ({
+            wch: Math.min(32, Math.max(14, String(header || "").length + 3,
+                ...((data.rows || []).slice(0,100).map(row => String(row[index] == null ? "" : row[index]).length + 2))))
+        }));
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook,worksheet,"R2W Completed LR");
+
+        const safeLR = String(data.lr || lrNumber).replace(/[^A-Za-z0-9_-]/g,"_");
+        XLSX.writeFile(workbook,`R2W_Completed_LR_${safeLR}.xlsx`);
+
+    }catch(error){
+        console.error("Completed LR export error:",error);
+        alert("Excel download failed: " + error.message);
+    }finally{
+        if(button){
+            button.disabled = false;
+            button.innerHTML = originalHTML;
+        }
+    }
 }
 
 
