@@ -420,6 +420,73 @@ tbody tr:hover{background:rgba(42,139,211,.07);}
     .page-title{font-size:22px;}
     .pending-grid table{min-width:360px;}
 }
+
+/* =========================================================
+   STARK QR CONTROL CENTER - UI POLISH ONLY
+   Existing HTML IDs, JavaScript, events and data flow preserved.
+========================================================= */
+:root{color-scheme:dark;--stark-bg:#060f1c;--stark-line:rgba(86,174,235,.18);--stark-blue:#299cff;--stark-cyan:#35d2ff;}
+html,body{background:var(--stark-bg);}
+#dashboard{background:radial-gradient(ellipse at 78% 4%,rgba(18,126,226,.13),transparent 34%),radial-gradient(ellipse at 8% 55%,rgba(0,195,255,.045),transparent 30%),var(--stark-bg);}
+.topbar{height:72px;padding:0 28px;background:rgba(5,15,28,.94);border-bottom:1px solid var(--stark-line);box-shadow:0 8px 30px rgba(0,0,0,.28);}
+.brand-icon{width:43px;height:43px;border-radius:13px;box-shadow:0 5px 18px rgba(0,139,255,.25);}
+.brand-title{letter-spacing:1.5px;}
+.system-status{padding:8px 12px;border:1px solid rgba(33,230,122,.17);border-radius:30px;background:rgba(33,230,122,.055);letter-spacing:.7px;}
+.logout-btn{border-radius:9px;padding:10px 15px;box-shadow:0 5px 14px rgba(185,28,44,.18);transition:background .2s,transform .2s,box-shadow .2s;}
+.logout-btn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(225,38,56,.25);}
+.sidebar{top:72px;width:232px;padding:22px 14px;background:linear-gradient(180deg,#0a192a 0%,#071321 100%);border-right:1px solid var(--stark-line);}
+.menu-title{padding:10px 13px 13px;color:#6689a8;letter-spacing:2.2px;}
+.menu li{min-height:45px;margin-bottom:7px;padding:13px 14px;border:1px solid transparent;border-radius:10px;transition:background .2s,border-color .2s,color .2s;}
+.menu li:hover{transform:none;background:rgba(37,145,231,.11);border-color:rgba(64,166,235,.12);}
+.menu li.active{background:linear-gradient(100deg,rgba(23,133,235,.23),rgba(20,112,190,.055));border:1px solid rgba(55,169,255,.2);border-left:3px solid var(--stark-blue);box-shadow:inset 0 0 18px rgba(24,133,230,.045);}
+.menu li.active i{color:var(--stark-cyan);}
+.sidebar-footer{border-color:var(--stark-line);background:rgba(28,75,112,.17);line-height:1.8;}
+.main{margin-left:232px;padding:98px 30px 34px;}
+.page-header{margin-bottom:24px;}
+.page-title{font-size:29px;letter-spacing:.2px;}
+.page-description{font-size:13px;color:#85a6c0;}
+.refresh-info{padding:10px 14px;border:1px solid var(--stark-line);border-radius:10px;background:rgba(12,34,55,.55);line-height:1.8;}
+.status-panel{min-height:176px;padding:28px 30px;margin-bottom:22px;border-radius:18px;background:radial-gradient(circle at 90% 15%,rgba(30,161,255,.16),transparent 32%),linear-gradient(115deg,#0d2944,#0a1b2e 62%,#0b2740);border-color:rgba(62,175,255,.23);box-shadow:0 14px 38px rgba(0,0,0,.22);}
+.status-circle{width:78px;height:78px;background:rgba(39,228,124,.075);box-shadow:0 0 28px rgba(39,228,124,.08);}
+.status-ready{font-size:28px;letter-spacing:.5px;}
+.progress-area{max-width:520px;}
+.progress-bar{height:12px;background:#102a40;}
+.progress-fill{border-radius:20px;box-shadow:0 0 14px rgba(0,202,255,.25);}
+.kpi-grid{gap:18px;margin-bottom:22px;}
+.kpi-card{position:relative;overflow:hidden;min-height:136px;padding:20px;border-radius:15px;background:linear-gradient(145deg,rgba(14,34,54,.98),rgba(8,22,37,.98));border-color:var(--stark-line);box-shadow:0 10px 26px rgba(0,0,0,.16);}
+.kpi-card:after{content:"";position:absolute;top:0;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,rgba(80,185,255,.28),transparent);}
+.kpi-card:hover{transform:translateY(-2px);border-color:rgba(60,177,255,.35);box-shadow:0 14px 30px rgba(0,0,0,.22);}
+.kpi-icon{width:42px;height:42px;border-radius:11px;}
+.kpi-label{margin-top:14px;font-size:10px;letter-spacing:1.25px;}
+.kpi-value{font-size:31px;letter-spacing:.2px;}
+.panel{border-radius:16px;background:linear-gradient(145deg,rgba(13,30,48,.98),rgba(8,21,35,.98));border-color:var(--stark-line);box-shadow:0 10px 28px rgba(0,0,0,.16);}
+.panel-header{padding:17px 19px;background:rgba(20,49,75,.18);}
+.panel-title{font-size:14px;letter-spacing:.15px;}
+.panel-badge{padding:5px 9px;border:1px solid rgba(48,172,255,.14);border-radius:20px;letter-spacing:.45px;}
+.team-list{padding:17px 19px 19px;}
+.team-item{margin-bottom:16px;}
+.team-progress{height:8px;background:#142b40;}
+.team-fill{box-shadow:0 0 10px rgba(32,197,255,.15);}
+.quick-actions{gap:11px;padding:18px;}
+.quick-btn{min-height:82px;padding:16px 10px;border-radius:12px;background:rgba(19,48,73,.42);border-color:rgba(65,150,210,.16);}
+.quick-btn i{font-size:21px;}
+.quick-btn:hover{transform:translateY(-2px);background:rgba(31,121,188,.17);border-color:rgba(70,185,255,.34);}
+.table-panel{margin-top:20px;}
+.table-wrapper{scrollbar-width:thin;}
+thead th{padding:13px 14px;background:#0b1c2d;color:#83b7d9;font-size:10px;letter-spacing:1.1px;}
+tbody td{padding:13px 14px;font-size:12px;}
+tbody tr{transition:background .16s;}
+tbody tr:hover{background:rgba(42,139,211,.09);}
+.team-tag{border:1px solid rgba(72,157,216,.13);border-radius:6px;}
+.no-data{padding:40px!important;}
+.connection-error{border-radius:11px;padding:14px 17px;}
+.bottom-info{padding:10px 2px 0;letter-spacing:.45px;}
+#completedLRPanel{border-color:rgba(42,194,137,.2);}
+#completedLRPanel .panel-header{background:rgba(22,125,91,.07);}
+@media(max-width:1100px){.main{padding-left:22px;padding-right:22px;}}
+@media(max-width:750px){.sidebar{top:72px;width:66px;}.main{margin-left:66px;padding:88px 14px 22px;}.topbar{padding:0 16px;}.status-panel{padding:22px;}}
+@media(max-width:500px){.topbar{height:64px;padding:0 11px;}.sidebar{top:64px;}.main{padding-top:80px;}.status-panel{padding:18px;border-radius:14px;}.kpi-card{min-height:120px;}}
+
 </style>
 </head>
 
