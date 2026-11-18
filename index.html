@@ -1469,7 +1469,39 @@ function renderPendingItems(items,moduleName){
         ],"Unassigned");
     }
 
-    const sortedItems = [...items].sort(
+    // R2W dashboard: combine material types into one row per LR Number + Item Code.
+    // Scanning still keeps REFURBED_STR and PROSCRAP separate.
+    let displayItems = items;
+
+    if(!isW2R){
+        const combined = {};
+
+        items.forEach(row => {
+            const lr = getLR(row);
+            const item = getItem(row);
+            const key = JSON.stringify([String(lr).trim().toUpperCase(), String(item).trim().toUpperCase()]);
+
+            if(!combined[key]){
+                combined[key] = {...row, pending:0, required:0, scanned:0, teams:[]};
+            }
+
+            combined[key].pending += getPending(row);
+            combined[key].required += Number(firstValue(row,["required","requiredQty","required_qty"],0)) || 0;
+            combined[key].scanned += Number(firstValue(row,["scanned","scannedQty","scanned_qty"],0)) || 0;
+
+            const teamName = getTeam(row);
+            if(teamName && teamName !== "-" && !combined[key].teams.includes(teamName)){
+                combined[key].teams.push(teamName);
+            }
+        });
+
+        displayItems = Object.values(combined).map(row => ({
+            ...row,
+            team: row.teams.length ? row.teams.join(" & ") : "-"
+        }));
+    }
+
+    const sortedItems = [...displayItems].sort(
         (a,b) => getPending(b) - getPending(a)
     );
 
