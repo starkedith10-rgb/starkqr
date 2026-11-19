@@ -74,8 +74,23 @@ select, input[type="text"], input[type="file"] { font-size: 12px; padding: 3px; 
   .sticker { margin: 0; page-break-inside: avoid; }
 }
 </style>
+
+<style>
+.dashboard-nav{
+  position:fixed;top:14px;right:18px;z-index:99999;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border:1px solid rgba(75,170,255,.55);
+  border-radius:9px;background:#0b1b30;color:#eaf4ff;
+  font:600 13px Arial,Helvetica,sans-serif;text-decoration:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.28);cursor:pointer;
+}
+.dashboard-nav:hover{background:#12365a;border-color:#55b7ff;color:#fff}
+@media print{.dashboard-nav{display:none!important}}
+</style>
+
 </head>
 <body>
+<a class="dashboard-nav" href="index.html" aria-label="Return to STARK QR Dashboard">&#8592; Dashboard</a>
 
 <div class="settings">
   <label>Upload Excel (.xlsx or .csv)</label>
