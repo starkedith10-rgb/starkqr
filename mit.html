@@ -86,10 +86,31 @@ select, input[type="text"], input[type="file"] { font-size: 12px; padding: 3px; 
 }
 .dashboard-nav:hover{background:#12365a;border-color:#55b7ff;color:#fff}
 @media print{.dashboard-nav{display:none!important}}
+
+/* STARK QR unified application theme - print sticker artwork remains unchanged */
+html,body{min-height:100%;background:#07111f;color:#eaf4ff;font-family:Arial,Helvetica,sans-serif}
+body{padding:86px 22px 24px;box-sizing:border-box}
+.stark-page-header{position:absolute;top:0;left:0;right:0;height:64px;display:flex;align-items:center;gap:14px;padding:0 24px;background:rgba(7,17,31,.97);border-bottom:1px solid rgba(70,170,255,.25);box-shadow:0 4px 22px rgba(0,0,0,.3)}
+.stark-brand-mark{font-size:18px;font-weight:900;letter-spacing:2px;color:#52b7ff}
+.stark-page-heading{display:flex;flex-direction:column;gap:3px}
+.stark-page-heading strong{font-size:13px;letter-spacing:1px;color:#eaf4ff}
+.stark-page-heading span{font-size:10px;color:#7198b7}
+.settings{width:min(100%,430px);margin:0 0 12px;background:linear-gradient(145deg,#0d2034,#091625);border:1px solid rgba(78,159,218,.25);border-radius:12px;padding:16px;color:#d9ecfb;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.settings label{color:#83bce4;margin-top:10px}
+.settings input,.settings select{background:#071626;color:#eaf4ff;border:1px solid #285477;border-radius:6px;padding:7px}
+.print-btn,body>button:not(.dashboard-nav){margin:4px 6px 14px 0;padding:9px 15px;background:linear-gradient(135deg,#087eff,#00aeea);color:#fff;border:1px solid rgba(91,190,255,.4);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer}
+.print-btn:hover,body>button:not(.dashboard-nav):hover{filter:brightness(1.15)}
+.sticker-container{max-width:none;gap:12px}
+.sticker{background:#fff;color:#000;box-shadow:0 5px 18px rgba(0,0,0,.3)}
+.dashboard-nav{position:fixed;top:13px;right:18px;z-index:99999;padding:9px 14px;border:1px solid rgba(75,170,255,.55);border-radius:9px;background:#102943;color:#eaf4ff;font:600 12px Arial,Helvetica,sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.dashboard-nav:hover{background:#17436b;color:#fff}
+@media(max-width:600px){body{padding:78px 12px 18px}.stark-page-header{padding:0 14px}.stark-brand-mark{font-size:15px}.sticker-container{justify-content:center}}
+@media print{html,body{background:#fff!important;color:#000!important;padding:0}.stark-page-header{display:none!important}.sticker-container{gap:.12in}.sticker{box-shadow:none}}
 </style>
 
 </head>
 <body>
+<div class="stark-page-header"><div class="stark-brand-mark">STARK QR</div><div class="stark-page-heading"><strong>MIT STICKER CONTROL</strong><span>Excel upload · Sticker preview · Label printing</span></div></div>
 <a class="dashboard-nav" href="index.html" aria-label="Return to STARK QR Dashboard">&#8592; Dashboard</a>
 
 <div class="settings">
