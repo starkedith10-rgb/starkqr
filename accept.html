@@ -31,7 +31,11 @@ button:hover{transform:translateY(-1px);filter:brightness(1.12)}
 .danger{background:#54202b;color:#ffc2c8;border:1px solid #813541}
 button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .status{margin-top:12px;min-height:18px;color:#76d9a4;font-size:12px}
-.qr-area{display:flex;flex-direction:column;align-items:center}\n.qr-settings{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:-2px 0 16px}\n.qr-settings label{font-size:10px;font-weight:bold;letter-spacing:.8px;color:#7fa7bf}\n.qr-settings select{height:36px;min-width:170px;border:1px solid #21435d;border-radius:7px;background:#081522;color:#dff7ff;padding:0 10px;font-size:12px;outline:none}\n.qr-settings select:focus{border-color:#28aaff;box-shadow:0 0 0 2px rgba(40,170,255,.1)}
+.qr-area{display:flex;flex-direction:column;align-items:center}
+.qr-settings{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:-2px 0 16px}
+.qr-settings label{font-size:10px;font-weight:bold;letter-spacing:.8px;color:#7fa7bf}
+.qr-settings select{height:36px;min-width:170px;border:1px solid #21435d;border-radius:7px;background:#081522;color:#dff7ff;padding:0 10px;font-size:12px;outline:none}
+.qr-settings select:focus{border-color:#28aaff;box-shadow:0 0 0 2px rgba(40,170,255,.1)}
 .qr-frame{width:290px;height:290px;background:#fff;border-radius:12px;padding:12px;display:grid;place-items:center;max-width:100%;transition:width .15s,height .15s}
 #qrcode{width:266px;height:266px;display:grid;place-items:center}
 #qrcode img,#qrcode canvas{max-width:100%;max-height:100%;image-rendering:pixelated}
@@ -115,7 +119,10 @@ var TAB="\t";
 var END_A="\x01";
 var pages=[];
 var currentPage=0;
-var qrInstance=null;\nvar qrSizeSelect=document.getElementById("qrSize");\nvar qrFrame=document.getElementById("qrFrame");\nvar refreshQRBtn=document.getElementById("refreshQRBtn");
+var qrInstance=null;
+var qrSizeSelect=document.getElementById("qrSize");
+var qrFrame=document.getElementById("qrFrame");
+var refreshQRBtn=document.getElementById("refreshQRBtn");
 
 var input=document.getElementById("inputData");
 var qrBox=document.getElementById("qrcode");
@@ -128,12 +135,16 @@ var nextBtn=document.getElementById("nextBtn");
 var copyBtn=document.getElementById("copyBtn");
 
 function splitIntoPages(text){
-    var lines=text.replace(/\r\n?/g,"\n").split("\n");
+    var lines=text.replace(/\r
+?/g,"
+").split("
+");
     var chunks=[];
     var current=START_A;
 
     // Ignore only the final empty element caused by a trailing newline.
-    if(lines.length && lines[lines.length-1]==="" && /\n$/.test(text)) lines.pop();
+    if(lines.length && lines[lines.length-1]==="" && /
+$/.test(text)) lines.pop();
 
     for(var i=0;i<lines.length;i++){
         // A record is indivisible: line + TAB + Ctrl+A.
@@ -161,7 +172,8 @@ function splitIntoPages(text){
 }
 
 function visibleControls(value){
-    return value.replace(/\x01/g,"[Ctrl+A / ^A]").replace(/\t/g,"[TAB]").replace(/\n/g,"[LINE BREAK]");
+    return value.replace(/\x01/g,"[Ctrl+A / ^A]").replace(/\t/g,"[TAB]").replace(/
+/g,"[LINE BREAK]");
 }
 
 function renderPage(){
@@ -229,7 +241,9 @@ function generate(){
     statusEl.textContent="Generated "+pages.length+" QR code(s). Strict maximum: 1,200 characters per QR, including all control characters. Complete lines are never split.";
 }
 
-document.getElementById("generateBtn").addEventListener("click",generate);\nqrSizeSelect.addEventListener("change",function(){if(pages.length)renderPage();});\nrefreshQRBtn.addEventListener("click",function(){if(pages.length)renderPage();});
+document.getElementById("generateBtn").addEventListener("click",generate);
+qrSizeSelect.addEventListener("change",function(){if(pages.length)renderPage();});
+refreshQRBtn.addEventListener("click",function(){if(pages.length)renderPage();});
 document.getElementById("clearBtn").addEventListener("click",function(){
     input.value="";
     pages=[];
