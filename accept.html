@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STARK QR - Accept</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+:root{color-scheme:dark}
+body{min-height:100vh;background:radial-gradient(circle at 75% 5%,rgba(0,126,255,.13),transparent 32%),#07111f;color:#eaf4ff;padding:22px}
+.page{max-width:1250px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#087eff,#00b8ff);display:grid;place-items:center;font-size:20px}
+h1{font-size:24px;letter-spacing:.5px}
+.sub{color:#7fa5c4;font-size:12px;margin-top:4px}
+.back{border:1px solid rgba(76,170,235,.25);background:#102840;color:#bfe5ff;padding:10px 15px;border-radius:8px;text-decoration:none;font-weight:bold}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.85fr);gap:18px}
+.panel{background:linear-gradient(145deg,#0d1e31,#091625);border:1px solid rgba(78,159,218,.2);border-radius:15px;padding:20px;box-shadow:0 10px 28px rgba(0,0,0,.2);min-width:0}
+.panel h2{font-size:15px;margin-bottom:13px;color:#d9efff}
+.hint{font-size:12px;color:#82a4bf;line-height:1.6;margin-bottom:12px}
+textarea{width:100%;min-height:340px;resize:vertical;background:#061321;color:#e8f5ff;border:1px solid #244967;border-radius:10px;padding:14px;outline:none;font:13px/1.55 Consolas,monospace}
+textarea:focus{border-color:#28aaff;box-shadow:0 0 0 3px rgba(40,170,255,.1)}
+.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
+button{border:0;border-radius:8px;padding:11px 15px;font-weight:bold;cursor:pointer;transition:.18s}
+button:hover{transform:translateY(-1px);filter:brightness(1.12)}
+.primary{background:linear-gradient(90deg,#087eff,#00b8ff);color:white}
+.secondary{background:#173650;color:#c5e7ff;border:1px solid #285578}
+.danger{background:#54202b;color:#ffc2c8;border:1px solid #813541}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.status{margin-top:12px;min-height:18px;color:#76d9a4;font-size:12px}
+.qr-area{display:flex;flex-direction:column;align-items:center}
+.qr-frame{width:290px;height:290px;background:#fff;border-radius:12px;padding:12px;display:grid;place-items:center;max-width:100%}
+#qrcode{width:266px;height:266px;display:grid;place-items:center}
+#qrcode img,#qrcode canvas{max-width:100%;max-height:100%;image-rendering:pixelated}
+.empty{color:#607f99;text-align:center;font-size:12px;padding:20px}
+.page-info{margin-top:16px;text-align:center}
+.page-count{font-size:18px;font-weight:800;color:#58c5ff}
+.page-meta{font-size:11px;color:#83a5bf;margin-top:5px}
+.nav{display:flex;gap:10px;width:100%;margin-top:15px}
+.nav button{flex:1}
+.payload{width:100%;margin-top:16px}
+.payload summary{cursor:pointer;color:#8fcfff;font-size:12px;font-weight:bold}
+.payload pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:170px;overflow:auto;background:#061321;border:1px solid #1d3b55;border-radius:8px;padding:10px;margin-top:8px;color:#a9cde6;font:11px/1.5 Consolas,monospace}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.rule{background:rgba(24,67,101,.35);border:1px solid rgba(70,150,210,.15);border-radius:8px;padding:10px;text-align:center}
+.rule strong{display:block;color:#55c1ff;font-size:16px}
+.rule span{font-size:10px;color:#84a6c0}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.qr-frame{width:270px;height:270px}#qrcode{width:246px;height:246px}}
+@media(max-width:520px){body{padding:12px}.panel{padding:14px}h1{font-size:20px}textarea{min-height:260px}.rules{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="top">
+  <div class="brand"><div class="logo"><i class="fa-solid fa-qrcode"></i></div><div><h1>STARK QR · ACCEPT</h1><div class="sub">TAB + Ctrl+A line formatter · multi-QR navigator</div></div></div>
+  <a class="back" href="index.html"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+</header>
+<div class="layout">
+  <section class="panel">
+    <h2><i class="fa-solid fa-list"></i> Input Data</h2>
+    <p class="hint">Paste or type one record per line. Each completed line is encoded as <b>line + TAB + Ctrl+A</b>. Every QR page starts with Ctrl+A.</p>
+    <textarea id="inputData" spellcheck="false" placeholder="Paste your data here&#10;One record per line&#10;Another record..."></textarea>
+    <div class="controls">
+      <button class="primary" id="generateBtn"><i class="fa-solid fa-qrcode"></i> Generate QR</button>
+      <button class="secondary" id="clearBtn"><i class="fa-solid fa-eraser"></i> Clear</button>
+      <button class="secondary" id="copyBtn" disabled><i class="fa-regular fa-copy"></i> Copy Payload</button>
+    </div>
+    <div class="status" id="status" role="status">Ready. Maximum target size: approximately 1,200 characters per QR.</div>
+    <div class="rules">
+      <div class="rule"><strong>^A</strong><span>First in every QR</span></div>
+      <div class="rule"><strong>TAB + ^A</strong><span>After every line</span></div>
+      <div class="rule"><strong>1,200</strong><span>Target chars / QR</span></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2><i class="fa-solid fa-qrcode"></i> QR Preview</h2>
+    <div class="qr-area">
+      <div class="qr-frame"><div id="qrcode"><div class="empty">Generate QR codes to preview</div></div></div>
+      <div class="page-info">
+        <div class="page-count" id="pageCount">0 / 0</div>
+        <div class="page-meta" id="pageMeta">No QR generated</div>
+      </div>
+      <div class="nav">
+        <button class="secondary" id="prevBtn" disabled><i class="fa-solid fa-chevron-left"></i> Prev</button>
+        <button class="secondary" id="nextBtn" disabled>Next <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+      <details class="payload">
+        <summary>Show current QR payload (control characters shown visibly)</summary>
+        <pre id="payloadPreview">No payload</pre>
+      </details>
+    </div>
+  </section>
+</div>
+</div>
+<script>
+(function(){
+"use strict";
+var LIMIT=1200;
+var START_A="\x01";
+var TAB="\t";
+var END_A="\x01";
+var pages=[];
+var currentPage=0;
+var qrInstance=null;
+
+var input=document.getElementById("inputData");
+var qrBox=document.getElementById("qrcode");
+var statusEl=document.getElementById("status");
+var pageCount=document.getElementById("pageCount");
+var pageMeta=document.getElementById("pageMeta");
+var payloadPreview=document.getElementById("payloadPreview");
+var prevBtn=document.getElementById("prevBtn");
+var nextBtn=document.getElementById("nextBtn");
+var copyBtn=document.getElementById("copyBtn");
+
+function splitIntoPages(text){
+    var lines=text.replace(/\r\n?/g,"\n").split("\n");
+    var chunks=[];
+    var current=START_A;
+
+    for(var i=0;i<lines.length;i++){
+        var line=lines[i];
+        if(line.length===0 && i===lines.length-1) continue;
+
+        var record=line+TAB+END_A;
+        var offset=0;
+
+        while(offset<record.length){
+            var available=LIMIT-current.length;
+            if(available<=0){
+                chunks.push(current);
+                current=START_A;
+                available=LIMIT-current.length;
+            }
+            var take=Math.min(available,record.length-offset);
+            current+=record.slice(offset,offset+take);
+            offset+=take;
+
+            if(current.length>=LIMIT && (offset<record.length || i<lines.length-1)){
+                chunks.push(current);
+                current=START_A;
+            }
+        }
+    }
+
+    if(current.length>START_A.length || chunks.length===0) chunks.push(current);
+    return chunks;
+}
+
+function visibleControls(value){
+    return value.replace(/\x01/g,"[Ctrl+A / ^A]").replace(/\t/g,"[TAB]").replace(/\n/g,"[LINE BREAK]");
+}
+
+function renderPage(){
+    if(!pages.length) return;
+    var payload=pages[currentPage];
+    qrBox.innerHTML="";
+    qrInstance=null;
+
+    try{
+        qrInstance=new QRCode(qrBox,{
+            text:payload,
+            width:266,
+            height:266,
+            colorDark:"#000000",
+            colorLight:"#ffffff",
+            correctLevel:QRCode.CorrectLevel.L
+        });
+    }catch(err){
+        qrBox.innerHTML='<div class="empty">QR generation failed. Try a shorter input line.</div>';
+        statusEl.textContent="QR error: "+err.message;
+        statusEl.style.color="#ff858d";
+        return;
+    }
+
+    pageCount.textContent=(currentPage+1)+" / "+pages.length;
+    pageMeta.textContent=payload.length+" characters · starts with Ctrl+A";
+    payloadPreview.textContent=visibleControls(payload);
+    prevBtn.disabled=currentPage===0;
+    nextBtn.disabled=currentPage===pages.length-1;
+    copyBtn.disabled=false;
+}
+
+function generate(){
+    var value=input.value;
+    if(!value.trim()){
+        statusEl.textContent="Please enter at least one line of data.";
+        statusEl.style.color="#ff9a9f";
+        input.focus();
+        return;
+    }
+    pages=splitIntoPages(value);
+    currentPage=0;
+    renderPage();
+    statusEl.style.color="#76d9a4";
+    statusEl.textContent="Generated "+pages.length+" QR code(s). Each QR begins with Ctrl+A; each line ends with TAB + Ctrl+A.";
+}
+
+document.getElementById("generateBtn").addEventListener("click",generate);
+document.getElementById("clearBtn").addEventListener("click",function(){
+    input.value="";
+    pages=[];
+    currentPage=0;
+    qrBox.innerHTML='<div class="empty">Generate QR codes to preview</div>';
+    pageCount.textContent="0 / 0";
+    pageMeta.textContent="No QR generated";
+    payloadPreview.textContent="No payload";
+    statusEl.textContent="Cleared. Ready for new data.";
+    statusEl.style.color="#76d9a4";
+    prevBtn.disabled=true;
+    nextBtn.disabled=true;
+    copyBtn.disabled=true;
+    input.focus();
+});
+prevBtn.addEventListener("click",function(){
+    if(currentPage>0){currentPage--;renderPage();}
+});
+nextBtn.addEventListener("click",function(){
+    if(currentPage<pages.length-1){currentPage++;renderPage();}
+});
+copyBtn.addEventListener("click",function(){
+    if(!pages.length)return;
+    var payload=pages[currentPage];
+    if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(payload).then(function(){
+            statusEl.textContent="Current QR payload copied with actual TAB and Ctrl+A control characters.";
+            statusEl.style.color="#76d9a4";
+        }).catch(function(){fallbackCopy(payload);});
+    }else fallbackCopy(payload);
+});
+function fallbackCopy(value){
+    var temp=document.createElement("textarea");
+    temp.value=value;
+    document.body.appendChild(temp);
+    temp.select();
+    try{
+        document.execCommand("copy");
+        statusEl.textContent="Current QR payload copied.";
+        statusEl.style.color="#76d9a4";
+    }catch(e){
+        statusEl.textContent="Copy was blocked by the browser.";
+        statusEl.style.color="#ff9a9f";
+    }
+    temp.remove();
+}
+input.addEventListener("keydown",function(e){
+    if((e.ctrlKey||e.metaKey)&&e.key==="Enter")generate();
+});
+})();
+<\/script>
+</body>
+</html>
