@@ -68,11 +68,11 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       <button class="secondary" id="clearBtn"><i class="fa-solid fa-eraser"></i> Clear</button>
       <button class="secondary" id="copyBtn" disabled><i class="fa-regular fa-copy"></i> Copy Payload</button>
     </div>
-    <div class="status" id="status" role="status">Ready. Maximum target size: approximately 1,200 characters per QR.</div>
+    <div class="status" id="status" role="status">Ready. Strict maximum: 1,200 characters per QR, including Ctrl+A and TAB.</div>
     <div class="rules">
       <div class="rule"><strong>^A</strong><span>First in every QR</span></div>
       <div class="rule"><strong>TAB + ^A</strong><span>After every line</span></div>
-      <div class="rule"><strong>1,200</strong><span>Target chars / QR</span></div>
+      <div class="rule"><strong>1,200</strong><span>Maximum total chars / QR</span></div>
     </div>
   </section>
   <section class="panel">
@@ -121,33 +121,32 @@ function splitIntoPages(text){
     var chunks=[];
     var current=START_A;
 
+    // Ignore only the final empty element caused by a trailing newline.
+    if(lines.length && lines[lines.length-1]==="" && /\n$/.test(text)) lines.pop();
+
     for(var i=0;i<lines.length;i++){
-        var line=lines[i];
-        if(line.length===0 && i===lines.length-1) continue;
+        // A record is indivisible: line + TAB + Ctrl+A.
+        var record=lines[i]+TAB+END_A;
 
-        var record=line+TAB+END_A;
-        var offset=0;
-
-        while(offset<record.length){
-            var available=LIMIT-current.length;
-            if(available<=0){
-                chunks.push(current);
-                current=START_A;
-                available=LIMIT-current.length;
-            }
-            var take=Math.min(available,record.length-offset);
-            current+=record.slice(offset,offset+take);
-            offset+=take;
-
-            if(current.length>=LIMIT && (offset<record.length || i<lines.length-1)){
-                chunks.push(current);
-                current=START_A;
-            }
+        // The page's leading Ctrl+A also counts toward the 1,200-char limit.
+        if(START_A.length+record.length>LIMIT){
+            return {
+                error:"Line "+(i+1)+" is too long ("+(START_A.length+record.length)+
+                      " characters including control characters). Maximum allowed for one line is "+
+                      (LIMIT-START_A.length-TAB.length-END_A.length)+" characters."
+            };
         }
+
+        if(current.length+record.length>LIMIT){
+            chunks.push(current);
+            current=START_A;
+        }
+
+        current+=record;
     }
 
     if(current.length>START_A.length || chunks.length===0) chunks.push(current);
-    return chunks;
+    return {pages:chunks};
 }
 
 function visibleControls(value){
@@ -192,11 +191,26 @@ function generate(){
         input.focus();
         return;
     }
-    pages=splitIntoPages(value);
+    var result=splitIntoPages(value);
+    if(result.error){
+        pages=[];
+        currentPage=0;
+        qrBox.innerHTML='<div class="empty">Line exceeds the QR capacity</div>';
+        pageCount.textContent="0 / 0";
+        pageMeta.textContent="Input needs correction";
+        payloadPreview.textContent="No payload";
+        prevBtn.disabled=true;
+        nextBtn.disabled=true;
+        copyBtn.disabled=true;
+        statusEl.style.color="#ff9a9f";
+        statusEl.textContent=result.error+" No line was split. Shorten that line and generate again.";
+        return;
+    }
+    pages=result.pages;
     currentPage=0;
     renderPage();
     statusEl.style.color="#76d9a4";
-    statusEl.textContent="Generated "+pages.length+" QR code(s). Each QR begins with Ctrl+A; each line ends with TAB + Ctrl+A.";
+    statusEl.textContent="Generated "+pages.length+" QR code(s). Strict maximum: 1,200 characters per QR, including all control characters. Complete lines are never split.";
 }
 
 document.getElementById("generateBtn").addEventListener("click",generate);
