@@ -31,8 +31,8 @@ button:hover{transform:translateY(-1px);filter:brightness(1.12)}
 .danger{background:#54202b;color:#ffc2c8;border:1px solid #813541}
 button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .status{margin-top:12px;min-height:18px;color:#76d9a4;font-size:12px}
-.qr-area{display:flex;flex-direction:column;align-items:center}
-.qr-frame{width:290px;height:290px;background:#fff;border-radius:12px;padding:12px;display:grid;place-items:center;max-width:100%}
+.qr-area{display:flex;flex-direction:column;align-items:center}\n.qr-settings{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:-2px 0 16px}\n.qr-settings label{font-size:10px;font-weight:bold;letter-spacing:.8px;color:#7fa7bf}\n.qr-settings select{height:36px;min-width:170px;border:1px solid #21435d;border-radius:7px;background:#081522;color:#dff7ff;padding:0 10px;font-size:12px;outline:none}\n.qr-settings select:focus{border-color:#28aaff;box-shadow:0 0 0 2px rgba(40,170,255,.1)}
+.qr-frame{width:290px;height:290px;background:#fff;border-radius:12px;padding:12px;display:grid;place-items:center;max-width:100%;transition:width .15s,height .15s}
 #qrcode{width:266px;height:266px;display:grid;place-items:center}
 #qrcode img,#qrcode canvas{max-width:100%;max-height:100%;image-rendering:pixelated}
 .empty{color:#607f99;text-align:center;font-size:12px;padding:20px}
@@ -76,9 +76,20 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     </div>
   </section>
   <section class="panel">
-    <h2><i class="fa-solid fa-qrcode"></i> QR Preview</h2>
+    <h2><i class="fa-solid fa-qrcode"></i> QR Settings & Preview</h2>
+    <div class="qr-settings">
+      <label for="qrSize">QR SIZE</label>
+      <select id="qrSize">
+        <option value="200">Small · 200 px</option>
+        <option value="266" selected>Medium · 266 px</option>
+        <option value="320">Large · 320 px</option>
+        <option value="400">Extra Large · 400 px</option>
+        <option value="500">Maximum · 500 px</option>
+      </select>
+      <button class="secondary" id="refreshQRBtn" type="button"><i class="fa-solid fa-rotate"></i> Refresh QR</button>
+    </div>
     <div class="qr-area">
-      <div class="qr-frame"><div id="qrcode"><div class="empty">Generate QR codes to preview</div></div></div>
+      <div class="qr-frame" id="qrFrame"><div id="qrcode"><div class="empty">Generate QR codes to preview</div></div></div>
       <div class="page-info">
         <div class="page-count" id="pageCount">0 / 0</div>
         <div class="page-meta" id="pageMeta">No QR generated</div>
@@ -104,7 +115,7 @@ var TAB="\t";
 var END_A="\x01";
 var pages=[];
 var currentPage=0;
-var qrInstance=null;
+var qrInstance=null;\nvar qrSizeSelect=document.getElementById("qrSize");\nvar qrFrame=document.getElementById("qrFrame");\nvar refreshQRBtn=document.getElementById("refreshQRBtn");
 
 var input=document.getElementById("inputData");
 var qrBox=document.getElementById("qrcode");
@@ -176,7 +187,7 @@ function renderPage(){
     }
 
     pageCount.textContent=(currentPage+1)+" / "+pages.length;
-    pageMeta.textContent=payload.length+" characters · starts with Ctrl+A";
+    pageMeta.textContent=payload.length+" characters · "+selectedSize+" × "+selectedSize+" px · starts with Ctrl+A";
     payloadPreview.textContent=visibleControls(payload);
     prevBtn.disabled=currentPage===0;
     nextBtn.disabled=currentPage===pages.length-1;
@@ -213,7 +224,7 @@ function generate(){
     statusEl.textContent="Generated "+pages.length+" QR code(s). Strict maximum: 1,200 characters per QR, including all control characters. Complete lines are never split.";
 }
 
-document.getElementById("generateBtn").addEventListener("click",generate);
+document.getElementById("generateBtn").addEventListener("click",generate);\nqrSizeSelect.addEventListener("change",function(){if(pages.length)renderPage();});\nrefreshQRBtn.addEventListener("click",function(){if(pages.length)renderPage();});
 document.getElementById("clearBtn").addEventListener("click",function(){
     input.value="";
     pages=[];
