@@ -167,14 +167,19 @@ function visibleControls(value){
 function renderPage(){
     if(!pages.length) return;
     var payload=pages[currentPage];
+    var selectedSize=parseInt(qrSizeSelect.value,10)||266;
     qrBox.innerHTML="";
     qrInstance=null;
+    qrFrame.style.width=(selectedSize+24)+"px";
+    qrFrame.style.height=(selectedSize+24)+"px";
+    qrBox.style.width=selectedSize+"px";
+    qrBox.style.height=selectedSize+"px";
 
     try{
         qrInstance=new QRCode(qrBox,{
             text:payload,
-            width:266,
-            height:266,
+            width:selectedSize,
+            height:selectedSize,
             colorDark:"#000000",
             colorLight:"#ffffff",
             correctLevel:QRCode.CorrectLevel.L
