@@ -619,12 +619,12 @@ input[type="file"]{
 
 <style>
 .dashboard-nav{
-  position:fixed;top:14px;right:18px;z-index:99999;
+  position:static;top:auto;right:auto;z-index:10;
   display:inline-flex;align-items:center;gap:8px;
-  padding:10px 16px;border:1px solid rgba(75,170,255,.55);
-  border-radius:9px;background:#0b1b30;color:#eaf4ff;
-  font:600 13px Arial,Helvetica,sans-serif;text-decoration:none;
-  box-shadow:0 4px 16px rgba(0,0,0,.28);cursor:pointer;
+  padding:7px 13px;border:1px solid rgba(75,170,255,.55);
+  border-radius:20px;background:#0b1b30;color:#eaf4ff;
+  font:600 11px Arial,Helvetica,sans-serif;text-decoration:none;
+  white-space:nowrap;box-shadow:none;cursor:pointer;
 }
 .dashboard-nav:hover{background:#12365a;border-color:#55b7ff;color:#fff}
 @media print{.dashboard-nav{display:none!important}}
@@ -633,7 +633,7 @@ input[type="file"]{
 </head>
 
 <body>
-<a class="dashboard-nav" href="index.html" aria-label="Return to STARK QR Dashboard">&#8592; Dashboard</a>
+
 
 <div class="app">
 
@@ -665,6 +665,7 @@ input[type="file"]{
       <div class="user-badge" id="userBadge">
         USER
       </div>
+<a class="dashboard-nav" href="index.html" aria-label="Return to STARK QR Dashboard">&#8592; Dashboard</a>
 
     </div>
 
