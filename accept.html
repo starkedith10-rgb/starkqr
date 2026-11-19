@@ -135,16 +135,12 @@ var nextBtn=document.getElementById("nextBtn");
 var copyBtn=document.getElementById("copyBtn");
 
 function splitIntoPages(text){
-    var lines=text.replace(/\r
-?/g,"
-").split("
-");
+    var lines=text.replace(/\r\n?/g,"\n").split("\n");
     var chunks=[];
     var current=START_A;
 
     // Ignore only the final empty element caused by a trailing newline.
-    if(lines.length && lines[lines.length-1]==="" && /
-$/.test(text)) lines.pop();
+    if(lines.length && lines[lines.length-1]==="" && /\n$/.test(text)) lines.pop();
 
     for(var i=0;i<lines.length;i++){
         // A record is indivisible: line + TAB + Ctrl+A.
@@ -172,8 +168,7 @@ $/.test(text)) lines.pop();
 }
 
 function visibleControls(value){
-    return value.replace(/\x01/g,"[Ctrl+A / ^A]").replace(/\t/g,"[TAB]").replace(/
-/g,"[LINE BREAK]");
+    return value.replace(/\x01/g,"[Ctrl+A / ^A]").replace(/\t/g,"[TAB]").replace(/\n/g,"[LINE BREAK]");
 }
 
 function renderPage(){
