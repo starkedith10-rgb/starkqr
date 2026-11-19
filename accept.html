@@ -191,6 +191,16 @@ function renderPage(){
             colorLight:"#ffffff",
             correctLevel:QRCode.CorrectLevel.L
         });
+        // Prevent the encoded payload from appearing as a hover tooltip.
+        qrBox.removeAttribute("title");
+        qrBox.setAttribute("aria-label","Generated QR code");
+        qrBox.querySelectorAll("*").forEach(function(node){
+            node.removeAttribute("title");
+            if(node.tagName==="IMG"){
+                node.alt="QR code";
+                node.setAttribute("aria-label","QR code");
+            }
+        });
     }catch(err){
         qrBox.innerHTML='<div class="empty">QR generation failed. Try a shorter input line.</div>';
         statusEl.textContent="QR error: "+err.message;
