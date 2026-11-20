@@ -488,6 +488,23 @@ tbody tr:hover{background:rgba(42,139,211,.09);}
 @media(max-width:500px){.topbar{height:64px;padding:0 11px;}.sidebar{top:64px;}.main{padding-top:80px;}.status-panel{padding:18px;border-radius:14px;}.kpi-card{min-height:120px;}}
 
 </style>
+
+<!-- STARK QR: basic source-view deterrent (not a security boundary) -->
+<script id="stark-source-view-deterrent">
+(function () {
+  'use strict';
+  document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+  }, true);
+  document.addEventListener('keydown', function (event) {
+    var key = (event.key || '').toLowerCase();
+    if (event.ctrlKey && !event.shiftKey && key === 'u') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+})();
+</script>
 </head>
 
 <body>
