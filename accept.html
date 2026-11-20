@@ -57,6 +57,23 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.qr-frame{width:270px;height:270px}#qrcode{width:246px;height:246px}}
 @media(max-width:520px){body{padding:12px}.panel{padding:14px}h1{font-size:20px}textarea{min-height:260px}.rules{grid-template-columns:1fr}}
 </style>
+
+<!-- STARK QR: basic source-view deterrent (not a security boundary) -->
+<script id="stark-source-view-deterrent">
+(function () {
+  'use strict';
+  document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+  }, true);
+  document.addEventListener('keydown', function (event) {
+    var key = (event.key || '').toLowerCase();
+    if (event.ctrlKey && !event.shiftKey && key === 'u') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+})();
+</script>
 </head>
 <body>
 <div class="page">
