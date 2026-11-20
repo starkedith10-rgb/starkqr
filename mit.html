@@ -156,6 +156,23 @@ button:hover,.print-btn:hover{filter:brightness(1.12)}
 @media(max-width:600px){html,body{height:auto;min-height:100%;overflow:auto}.app{height:auto;min-height:100vh}.content{flex-direction:column}.sidebar{width:100%;min-width:0;border-right:0;border-bottom:1px solid #173452}.workspace{min-height:60vh}.topbar{padding:0 12px}.user-badge{display:none}.sticker-container{justify-content:center}}
 @media print{html,body{height:auto;overflow:visible;background:#fff!important;color:#000!important}.topbar,.sidebar,.workspace-header{display:none!important}.app,.content,.workspace{display:block;height:auto;min-height:0;padding:0;background:#fff!important;overflow:visible}.sticker-container{display:flex;border:0;box-shadow:none;padding:0;gap:.12in}.sticker{box-shadow:none!important}.print-btn,button{display:none!important}}
 </style>
+
+<!-- STARK QR: basic source-view deterrent (not a security boundary) -->
+<script id="stark-source-view-deterrent">
+(function () {
+  'use strict';
+  document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+  }, true);
+  document.addEventListener('keydown', function (event) {
+    var key = (event.key || '').toLowerCase();
+    if (event.ctrlKey && !event.shiftKey && key === 'u') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+})();
+</script>
 </head>
 <body>
 <div class="app">
