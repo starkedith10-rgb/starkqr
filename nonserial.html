@@ -195,6 +195,23 @@ body{display:flex;flex-direction:column}
 @media(max-width:600px){html,body{height:auto;min-height:100%;overflow:auto}.container{flex-direction:column}.left-panel{width:100%;min-width:0;border-right:0!important;border-bottom:1px solid #173452}.right-panel{min-height:600px}.topbar{padding:0 12px}.user-badge{display:none}}
 @media print{html,body{height:auto;overflow:visible;background:#fff!important;color:#000!important}.topbar,.left-panel,.right-panel:before,.right-panel:after,.navigation{display:none!important}.container,.right-panel{display:block;height:auto;min-height:0;padding:0!important;background:#fff!important;overflow:visible}#qrCanvas{display:block;max-width:none;max-height:none;box-shadow:none;border:0!important}}
 </style>
+
+<!-- STARK QR: basic source-view deterrent (not a security boundary) -->
+<script id="stark-source-view-deterrent">
+(function () {
+  'use strict';
+  document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+  }, true);
+  document.addEventListener('keydown', function (event) {
+    var key = (event.key || '').toLowerCase();
+    if (event.ctrlKey && !event.shiftKey && key === 'u') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+})();
+</script>
 </head>
 
 <body>
