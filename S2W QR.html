@@ -630,6 +630,23 @@ input[type="file"]{
 @media print{.dashboard-nav{display:none!important}}
 </style>
 
+
+<!-- STARK QR: basic source-view deterrent (not a security boundary) -->
+<script id="stark-source-view-deterrent">
+(function () {
+  'use strict';
+  document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+  }, true);
+  document.addEventListener('keydown', function (event) {
+    var key = (event.key || '').toLowerCase();
+    if (event.ctrlKey && !event.shiftKey && key === 'u') {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+})();
+</script>
 </head>
 
 <body>
