@@ -160,58 +160,69 @@ button:hover,.print-btn:hover{filter:brightness(1.12)}
 @media(max-width:600px){.stark-page-header{padding:0 14px}.stark-brand-mark{font-size:15px}}
 @media print{.stark-page-header,.dashboard-nav{display:none!important}}
 </style>
+<style>
+/* SERIAL PAGE LAYOUT MATCH — NON-SERIAL */
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#07111f!important;color:#eaf7ff!important;font-family:Arial,Helvetica,sans-serif!important}
+body{display:flex;flex-direction:column}
+.topbar{height:64px;min-height:64px;background:#0b1728;border-bottom:1px solid #173452;display:flex;align-items:center;justify-content:space-between;padding:0 22px;box-shadow:0 4px 20px rgba(0,0,0,.35);z-index:10}
+.brand{display:flex;align-items:center;gap:12px}.brand-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#00d9ff,#0077ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:bold;box-shadow:0 0 18px rgba(0,217,255,.35)}
+.brand-text h1{font-size:18px;letter-spacing:1px;color:#fff;margin:0}.brand-text span{font-size:11px;color:#6f9ab8;letter-spacing:1px}
+.top-right{display:flex;align-items:center;gap:12px}.page-badge{padding:7px 13px;border:1px solid #16415f;border-radius:20px;color:#4fdfff;background:#0a2031;font-size:11px;font-weight:bold;letter-spacing:.8px}
+.user-badge{padding:7px 13px;border-radius:20px;background:#101f32;border:1px solid #203c56;color:#b9d9eb;font-size:11px}
+.dashboard-nav{position:static!important;display:inline-flex;align-items:center;padding:8px 13px;border:1px solid #16415f;border-radius:20px;background:#0a2031;color:#b9eaff;font:600 11px Arial,sans-serif;text-decoration:none;white-space:nowrap;box-shadow:none!important}
+.dashboard-nav:hover{background:#12365a;border-color:#55b7ff;color:#fff}
+.container{display:flex;flex:1;width:100%;height:auto;min-height:0;padding:0!important}
+.left-panel{width:310px;min-width:310px;background:#0a1626!important;border-right:1px solid #173452!important;border-radius:0!important;padding:18px!important;overflow-y:auto;box-shadow:none!important}
+.left-panel h2{color:#5ee7ff!important;font-size:11px!important;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;text-align:left!important;text-shadow:none!important;margin:0 0 14px!important}
+#fileInput{width:100%;padding:10px;background:#0d1e31!important;border:1px dashed #24506d!important;border-radius:12px;color:#9fc1d6!important;margin-bottom:16px}
+#counter,#info{display:block;background:linear-gradient(145deg,#0d2034,#0b1728);border:1px solid #1b3d58;border-radius:12px;padding:12px;margin:0 0 8px;color:#8fc9ef!important;font-size:12px}
+.qr-options{margin-top:14px}
+.qr-options label{display:block;color:#7fa7bf!important;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.8px;margin:10px 0 5px}
+.qr-options input,.qr-options select{width:100%;height:34px;background:#081522!important;color:#dff7ff!important;border:1px solid #21435d!important;border-radius:7px!important;padding:0 9px!important}
+.qr-options button{width:100%;height:36px;margin-top:10px}
+.quote{margin-top:20px!important;padding-top:15px!important;border-top:1px solid #183249!important;color:#486b82!important;font-size:10px!important;text-shadow:none!important}
+.right-panel{flex:1;min-width:0;min-height:0;text-align:center;background:radial-gradient(circle at 50% 30%,rgba(0,174,255,.08),transparent 35%),#07111f!important;color:#eaf4ff!important;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:18px!important;overflow:auto}
+.right-panel:before{content:"Non-Serial QR Preview";display:block;text-align:left;color:#fff;font-size:17px;font-weight:bold;margin:0 0 3px}
+.right-panel:after{content:"Upload Excel data to generate scan-ready QR batches";display:block;order:0;text-align:left;color:#5f839b;font-size:10px;margin-bottom:12px}
+#qrCanvas{align-self:center;flex:1;min-height:0;max-width:90%;max-height:calc(100% - 100px);background:#fff!important;border:8px solid #fff!important;border-radius:4px!important;box-shadow:0 0 0 1px #31566d,0 0 35px rgba(0,204,255,.18);margin:0 0 12px}
+.navigation{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;flex-wrap:wrap}
+.navigation button,.download-btn{min-width:105px;height:38px;border-radius:8px!important;border:1px solid #21455f!important;background:#0c1d2e!important;color:#a9d0e2!important;cursor:pointer;font-size:11px;font-weight:bold;padding:8px 13px!important;margin:0!important}
+.navigation button:hover,.download-btn:hover{background:#102c43!important;border-color:#00bfe8!important;color:#5de4ff!important}
+#downloadBtn{background:#0d3029!important;border-color:#1d6d5b!important;color:#4dedae!important}
+@media(max-width:800px){.left-panel{width:260px;min-width:260px}.brand-text h1{font-size:15px}.page-badge{display:none}}
+@media(max-width:600px){html,body{height:auto;min-height:100%;overflow:auto}.container{flex-direction:column}.left-panel{width:100%;min-width:0;border-right:0!important;border-bottom:1px solid #173452}.right-panel{min-height:600px}.topbar{padding:0 12px}.user-badge{display:none}}
+@media print{html,body{height:auto;overflow:visible;background:#fff!important;color:#000!important}.topbar,.left-panel,.right-panel:before,.right-panel:after,.navigation{display:none!important}.container,.right-panel{display:block;height:auto;min-height:0;padding:0!important;background:#fff!important;overflow:visible}#qrCanvas{display:block;max-width:none;max-height:none;box-shadow:none;border:0!important}}
+</style>
 </head>
 
 <body>
-<div class="stark-page-header"><div class="stark-brand-mark">STARK QR</div><div class="stark-page-heading"><strong>NON-SERIAL QR CONTROL</strong><span>Excel upload · QR generation · Batch navigation</span></div></div>
-
-<a class="dashboard-nav" href="index.html" aria-label="Return to STARK QR Dashboard">&#8592; Dashboard</a>
+  <div class="topbar">
+    <div class="brand"><div class="brand-icon">QR</div><div class="brand-text"><h1>STARK QR</h1><span>WAREHOUSE QR MANAGEMENT SYSTEM</span></div></div>
+    <div class="top-right"><div class="page-badge">NON-SERIAL QR</div><div class="user-badge" id="userBadge">USER</div><a class="dashboard-nav" href="index.html" aria-label="Return to STARK QR Dashboard">← Dashboard</a></div>
+  </div>
   <div class="container">
     <div class="left-panel">
-      <h2>Stark QR</h2>
+      <h2>Data Input</h2>
       <input type="file" id="fileInput" accept=".xlsx,.xls">
-
       <div id="counter">QR 0 / 0</div>
       <div id="info">Rows in this QR: 0</div>
-
       <div class="qr-options">
         <label for="moduleWidthUnit">Module Width Unit</label>
-        <select id="moduleWidthUnit">
-          <option value="default" selected>Fit (Default)</option>
-          <option value="px">Pixels</option>
-          <option value="mm">Millimeters</option>
-          <option value="in">Inches</option>
-        </select>
-
+        <select id="moduleWidthUnit"><option value="default" selected>Fit (Default)</option><option value="px">Pixels</option><option value="mm">Millimeters</option><option value="in">Inches</option></select>
         <label for="moduleWidth">Module Width</label>
         <input type="number" id="moduleWidth" value="4" min="1" max="20">
-
         <label for="dpi">Image Resolution (DPI)</label>
         <input type="number" id="dpi" value="96" min="72" max="300">
-
         <label for="imageFormat">Image Format</label>
-        <select id="imageFormat">
-          <option value="png" selected>PNG</option>
-          <option value="jpeg">JPEG</option>
-          <option value="webp">WEBP</option>
-        </select>
-
-        <button id="refreshQRBtn">Refresh QR</button>
+        <select id="imageFormat"><option value="png" selected>PNG</option><option value="jpeg">JPEG</option><option value="webp">WEBP</option></select>
+        <button id="refreshQRBtn">↻ REFRESH QR</button>
       </div>
-
-      <div class="quote">
-        "No amount of money ever bought a single second of time." – Tony Stark
-      </div>
+      <div class="quote">"No amount of money ever bought a single second of time." – Tony Stark</div>
     </div>
-
     <div class="right-panel">
       <canvas id="qrCanvas"></canvas>
-      <div class="navigation">
-        <button id="prevBtn">← Previous</button>
-        <button id="nextBtn">Next →</button>
-        <button id="refreshBtn">Refresh / Upload</button>
-        <button id="downloadBtn" class="download-btn">Download QR</button>
-      </div>
+      <div class="navigation"><button id="prevBtn">← PREVIOUS</button><button id="nextBtn">NEXT →</button><button id="refreshBtn">↻ RESET / UPLOAD</button><button id="downloadBtn" class="download-btn">↓ DOWNLOAD QR</button></div>
     </div>
   </div>
 <script src="logger.js"></script>
@@ -223,6 +234,7 @@ trackPage("NON-SERIAL PAGE OPEN");
 <script>
 let user = sessionStorage.getItem("wms_user");
 if(!user) window.location.href = "login.html";
+document.getElementById("userBadge").textContent = "👤 " + user;
 
 sendLog(`📦 NON-SERIAL PAGE\n👤 ${user}\n⏰ ${getTime()}`);
 </script>
