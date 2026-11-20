@@ -20,7 +20,7 @@
     }
 
     body { display: flex; flex-direction: column; }
-    .container { display: flex; flex: 1; width: 100%; height: 100%; }
+    .container { display: flex; flex: 1; width: 100%; height: 100%; padding-top:64px; box-sizing:border-box; }
 
     .left-panel {
       background: rgba(0, 51, 102, 0.85);
@@ -143,9 +143,28 @@ input[type="file"],.qr-options select,.qr-options input,.qr-options button{backg
 @media(max-width:650px){.left-panel{width:235px!important;padding:12px!important}.navigation{display:flex;flex-wrap:wrap;justify-content:center}}
 </style>
 
+<style>
+/* SHARED STARK QR PAGE THEME */
+:root{--stark-bg:#07111f;--stark-text:#eaf4ff;--stark-blue:#087eff;--stark-cyan:#00aeea;--stark-border:rgba(70,170,255,.25)}
+html,body{background:var(--stark-bg)!important;color:var(--stark-text)!important;font-family:Arial,Helvetica,sans-serif!important}
+.stark-page-header{position:absolute;top:0;left:0;right:0;height:64px;z-index:1000;display:flex;align-items:center;gap:14px;padding:0 24px;box-sizing:border-box;background:rgba(7,17,31,.98);border-bottom:1px solid var(--stark-border);box-shadow:0 4px 22px rgba(0,0,0,.3)}
+.stark-brand-mark{font-size:18px;font-weight:900;letter-spacing:2px;color:#52b7ff}
+.stark-page-heading{display:flex;flex-direction:column;gap:3px}
+.stark-page-heading strong{font-size:13px;letter-spacing:1px;color:var(--stark-text)}
+.stark-page-heading span{font-size:10px;color:#7198b7}
+.dashboard-nav{position:fixed!important;top:13px!important;right:18px!important;z-index:1001!important;padding:9px 14px!important;border:1px solid rgba(75,170,255,.55)!important;border-radius:9px!important;background:#102943!important;color:var(--stark-text)!important;font:600 12px Arial,Helvetica,sans-serif!important;text-decoration:none!important;box-shadow:0 4px 16px rgba(0,0,0,.25)!important}
+.dashboard-nav:hover{background:#17436b!important;border-color:#55b7ff!important;color:#fff!important}
+input:not([type=checkbox]):not([type=radio]),select,textarea{background:#071626;color:var(--stark-text);border:1px solid #285477;border-radius:6px}
+button,.print-btn{background:linear-gradient(135deg,var(--stark-blue),var(--stark-cyan));color:#fff;border:1px solid rgba(91,190,255,.4);border-radius:7px;font-weight:700;cursor:pointer}
+button:hover,.print-btn:hover{filter:brightness(1.12)}
+@media(max-width:600px){.stark-page-header{padding:0 14px}.stark-brand-mark{font-size:15px}}
+@media print{.stark-page-header,.dashboard-nav{display:none!important}}
+</style>
 </head>
 
 <body>
+<div class="stark-page-header"><div class="stark-brand-mark">STARK QR</div><div class="stark-page-heading"><strong>NON-SERIAL QR CONTROL</strong><span>Excel upload · QR generation · Batch navigation</span></div></div>
+
 <a class="dashboard-nav" href="index.html" aria-label="Return to STARK QR Dashboard">&#8592; Dashboard</a>
   <div class="container">
     <div class="left-panel">
