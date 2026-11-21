@@ -24,7 +24,7 @@ window.track = async function(action) {
 📄 PAGE: ${page}
 ⏰ TIME: ${new Date().toLocaleString()}`;
 
-    await fetch("/.netlify/functions/log", {
+    await fetch("https://starkqr-oq7x.onrender.com/api/log", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
