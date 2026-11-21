@@ -12,7 +12,7 @@
       .slice(0, maxLength);
   }
   function textRecord(value, row, column) {
-    return "121100000" + String(row).padStart(4, "0") +
+    return "1211000" + String(row).padStart(4, "0") +
       String(column).padStart(4, "0") + clean(value, 80) + "\r";
   }
   function buildMitDplPayload(fields) {
