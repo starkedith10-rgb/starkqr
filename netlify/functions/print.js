@@ -27,6 +27,14 @@ export async function handler(event) {
       };
     }
 
+    if (String(data.format || "").toUpperCase() !== "DPL") {
+      return {
+        statusCode: 400,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ success: false, error: "MIT cloud printer accepts DPL jobs only" })
+      };
+    }
+
     const queueUrl = process.env.STARK_PRINT_QUEUE_URL;
     const queueToken = process.env.STARK_PRINT_QUEUE_TOKEN;
 
@@ -45,7 +53,7 @@ export async function handler(event) {
       body: JSON.stringify({
         token: queueToken,
         action: "ENQUEUE",
-        format: "TSPL",
+        format: "DPL",
         payload: data.message
       }),
       redirect: "follow"
