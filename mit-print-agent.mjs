@@ -2,12 +2,15 @@
 /**
  * STARK QR - MIT-only Citizen CL-E321 cloud print agent.
  * Node.js 20+; built-in modules only. No admin rights or inbound ports.
+ * Queue HTTPS uses Windows curl + integrated proxy authentication.
  */
 import net from "node:net";
 import os from "node:os";
+import { spawn } from "node:child_process";
 
 const QUEUE_URL = process.env.STARK_PRINT_QUEUE_URL;
 const QUEUE_TOKEN = process.env.STARK_PRINT_QUEUE_TOKEN;
+const PROXY_URL = process.env.STARK_PRINT_PROXY || "http://airtelproxy.airtel.com:4145";
 const PRINTER_HOST = process.env.STARK_PRINTER_HOST || "10.96.64.93";
 const PRINTER_PORT = Number(process.env.STARK_PRINTER_PORT || 9100);
 const POLL_MS = Math.max(1000, Number(process.env.STARK_PRINT_POLL_MS || 2500));
@@ -23,22 +26,55 @@ if (!Number.isInteger(PRINTER_PORT) || PRINTER_PORT < 1 || PRINTER_PORT > 65535)
 }
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-async function queueRequest(action, extra = {}) {
-  const response = await fetch(QUEUE_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token: QUEUE_TOKEN, action, ...extra }),
-    redirect: "follow",
-    signal: AbortSignal.timeout(20000)
+function queueRequest(action, extra = {}) {
+  const body = JSON.stringify({ token: QUEUE_TOKEN, action, ...extra });
+  return new Promise((resolve, reject) => {
+    const args = [
+      "--silent", "--show-error", "--fail-with-body", "--location",
+      "--max-time", "25",
+      "--ssl-revoke-best-effort",
+      "--proxy-negotiate", "-U", ":",
+      "--proxy", PROXY_URL,
+      "--header", "Content-Type: application/json",
+      "--data-binary", "@-",
+      QUEUE_URL
+    ];
+    const child = spawn("curl.exe", args, { windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+    const timer = setTimeout(() => {
+      child.kill();
+      finish(new Error("Queue request timed out after 25 seconds."));
+    }, 30000);
+    const finish = err => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (err) return reject(err);
+      let result;
+      try { result = JSON.parse(stdout); }
+      catch { return reject(new Error("Queue returned non-JSON response. " + stderr.trim())); }
+      if (result.success !== true) {
+        return reject(new Error(result.error || "Queue request was not successful."));
+      }
+      resolve(result);
+    };
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", chunk => { stdout += chunk; });
+    child.stderr.on("data", chunk => { stderr += chunk; });
+    child.once("error", err => finish(new Error("Could not start curl.exe: " + err.message)));
+    child.once("close", code => {
+      if (code !== 0) {
+        const detail = stderr.trim() || stdout.trim() || ("curl exit code " + code);
+        finish(new Error("Proxy/HTTPS request failed: " + detail));
+      } else {
+        finish();
+      }
+    });
+    child.stdin.end(body);
   });
-  const text = await response.text();
-  let result;
-  try { result = JSON.parse(text); }
-  catch { throw new Error("Queue returned non-JSON response (HTTP " + response.status + ")."); }
-  if (!response.ok || result.success !== true) {
-    throw new Error(result.error || ("Queue request failed (HTTP " + response.status + ")."));
-  }
-  return result;
 }
 
 function sendRawToPrinter(payload) {
@@ -101,6 +137,8 @@ async function processJob(job) {
 console.log("STARK QR MIT Print Agent started.");
 console.log("Agent: " + AGENT_ID);
 console.log("Printer: " + PRINTER_HOST + ":" + PRINTER_PORT);
+console.log("Proxy: " + PROXY_URL + " (Windows integrated authentication)");
+console.log("TLS: certificate verification enabled; best-effort revocation checking.");
 console.log("Mode: outbound HTTPS polling; no internet-facing printer port.");
 
 let stopping = false;
