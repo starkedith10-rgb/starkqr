@@ -202,6 +202,7 @@ button:hover,.print-btn:hover{filter:brightness(1.12)}
   </div>
 </div>
 <script src="logger.js"></script>
+<script src="mit-dpl.js"></script>
 
 <script>
 // login check
@@ -299,26 +300,17 @@ document.addEventListener("DOMContentLoaded", function() {
   generateStickersFromData([{PARTCODE:'', Description:'', SerialNo:'', Port:''}]);
 });
   function printMIT() {
+  const part = document.querySelector(".partcode")?.value || "N/A";
+  const serial = document.querySelector(".serialNo")?.value || "N/A";
+  const port = document.querySelector(".port")?.value || "N/A";
 
-  let part = document.querySelector(".partcode")?.value || "N/A";
-  let serial = document.querySelector(".serialNo")?.value || "N/A";
-  let port = document.querySelector(".port")?.value || "N/A";
+  if (typeof window.buildMitDplPayload !== "function") {
+    alert("MIT DMI print module did not load. Please refresh the page.");
+    return;
+  }
 
-  let tspl = `
-SIZE 100 mm, 50 mm
-GAP 2 mm, 0 mm
-CLS
-
-TEXT 30,30,"3",0,1,1,"PART: ${part}"
-TEXT 30,70,"3",0,1,1,"SERIAL: ${serial}"
-TEXT 30,110,"3",0,1,1,"PORT: ${port}"
-
-BARCODE 30,150,"128",80,1,0,2,2,"${serial}"
-
-PRINT 1
-`;
-
-  sendPrint(tspl);
+  const dpl = window.buildMitDplPayload({ part, serial, port });
+  sendPrint(dpl);
 }
 
 </script>
@@ -328,7 +320,7 @@ async function sendPrint(data) {
     const response = await fetch("/.netlify/functions/print", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: data })
+      body: JSON.stringify({ message: data, format: "DPL" })
     });
 
     const result = await response.json();
