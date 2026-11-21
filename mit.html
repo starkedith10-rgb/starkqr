@@ -323,16 +323,24 @@ PRINT 1
 
 </script>
 <script>
-function sendPrint(data) {
-  fetch("http://localhost:3001/print", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: data
-    })
-  });
+async function sendPrint(data) {
+  try {
+    const response = await fetch("/.netlify/functions/print", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: data })
+    });
+
+    const result = await response.json();
+    if (!response.ok || result.success !== true) {
+      throw new Error(result.error || "Unable to add MIT print job to queue");
+    }
+
+    alert("MIT print job added to cloud queue. Job ID: " + (result.jobId || "received"));
+  } catch (error) {
+    console.error("MIT cloud print error:", error);
+    alert("MIT print queue error: " + error.message);
+  }
 }</script>
 </body>
 </html>
